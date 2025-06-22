@@ -3,17 +3,18 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-    Alert,
-    Modal,
-    RefreshControl,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Alert,
+  Modal,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import InteriorSection from '../components/InteriorSection';
 import MeasurementForm from '../components/MeasurementForm';
+import { INTERIOR_SCHEMAS } from '../components/interiorSchemas';
 
 export default function ProjectDetails() {
   const { id } = useLocalSearchParams();
@@ -21,6 +22,14 @@ export default function ProjectDetails() {
   const [showMeasurementForm, setShowMeasurementForm] = useState(false);
   const [editingMeasurement, setEditingMeasurement] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('curtains');
+
+  // Define INTERIOR_TYPES for the tab bar
+  const INTERIOR_TYPES = [
+    { key: 'curtains', label: INTERIOR_SCHEMAS.curtains.label, icon: 'logo-windows' },
+    { key: 'mosquito-nets', label: INTERIOR_SCHEMAS['mosquito-nets'].label, icon: 'bug' },
+    { key: 'wallpapers', label: INTERIOR_SCHEMAS.wallpapers.label, icon: 'image' },
+  ];
 
   useEffect(() => {
     loadProject();
@@ -201,43 +210,59 @@ export default function ProjectDetails() {
         </View>
       </View>
 
+      {/* Tab Bar */}
+      <View style={styles.tabBar}>
+        {INTERIOR_TYPES.map(type => (
+          <TouchableOpacity
+            key={type.key}
+            style={[styles.tabItem, selectedTab === type.key && styles.tabItemActive]}
+            onPress={() => setSelectedTab(type.key)}
+          >
+            <Ionicons name={type.icon} size={18} color={selectedTab === type.key ? '#2563eb' : '#64748b'} />
+            <Text style={[styles.tabLabel, selectedTab === type.key && styles.tabLabelActive]}>{type.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       <ScrollView
         style={styles.scrollView}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-
-        {/* Interior Sections */}
-        <InteriorSection
-          title="Curtains"
-          icon="logo-windows"
-          measurements={project.measurements?.filter(m => m.interiorType === 'curtains') || []}
-          total={project.curtainTotal || 0}
-          onEdit={editMeasurement}
-          onDelete={deleteMeasurement}
-        />
-
-        <InteriorSection
-          title="Mosquito Nets"
-          icon="bug"
-          measurements={project.measurements?.filter(m => m.interiorType === 'mosquito-nets') || []}
-          total={project.netTotal || 0}
-          onEdit={editMeasurement}
-          onDelete={deleteMeasurement}
-        />
-
-        <InteriorSection
-          title="Wallpapers"
-          icon="image"
-          measurements={project.measurements?.filter(m => m.interiorType === 'wallpapers') || []}
-          total={project.wallpaperTotal || 0}
-          onEdit={editMeasurement}
-          onDelete={deleteMeasurement}
-        />
-
-        {/* Rod Installation */}
-        {project.measurements?.some(m => m.interiorType === 'curtains') && (
+        {/* Only show the selected interior section */}
+        {selectedTab === 'curtains' && (
+          <InteriorSection
+            title="Curtains"
+            icon="logo-windows"
+            measurements={project.measurements?.filter(m => m.interiorType === 'curtains') || []}
+            total={project.curtainTotal || 0}
+            onEdit={editMeasurement}
+            onDelete={deleteMeasurement}
+          />
+        )}
+        {selectedTab === 'mosquito-nets' && (
+          <InteriorSection
+            title="Mosquito Nets"
+            icon="bug"
+            measurements={project.measurements?.filter(m => m.interiorType === 'mosquito-nets') || []}
+            total={project.netTotal || 0}
+            onEdit={editMeasurement}
+            onDelete={deleteMeasurement}
+          />
+        )}
+        {selectedTab === 'wallpapers' && (
+          <InteriorSection
+            title="Wallpapers"
+            icon="image"
+            measurements={project.measurements?.filter(m => m.interiorType === 'wallpapers') || []}
+            total={project.wallpaperTotal || 0}
+            onEdit={editMeasurement}
+            onDelete={deleteMeasurement}
+          />
+        )}
+        {/* Rod Installation (show only on curtains tab if any curtains) */}
+        {selectedTab === 'curtains' && project.measurements?.some(m => m.interiorType === 'curtains') && (
           <View style={styles.rodInstallation}>
             <Text style={styles.rodTitle}>Rod Installation</Text>
             <View style={styles.rodDetails}>
@@ -250,8 +275,7 @@ export default function ProjectDetails() {
             </View>
           </View>
         )}
-
-        {/* Grand Total */}
+        {/* Grand Total (always show) */}
         <View style={styles.grandTotalContainer}>
           <View style={styles.grandTotalContent}>
             <Text style={styles.grandTotalLabel}>Grand Total</Text>
@@ -260,10 +284,8 @@ export default function ProjectDetails() {
             </Text>
           </View>
         </View>
-
         <View style={styles.bottomPadding} />
       </ScrollView>
-
       {/* Floating Action Button */}
       <TouchableOpacity
         style={styles.fab}
@@ -271,7 +293,6 @@ export default function ProjectDetails() {
       >
         <Ionicons name="add" size={28} color="white" />
       </TouchableOpacity>
-
       {/* Measurement Form Modal */}
       <Modal
         visible={showMeasurementForm}
@@ -442,5 +463,38 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+  },
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: '#e0e7ef',
+    borderBottomWidth: 1,
+    borderBottomColor: '#cbd5e1',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    justifyContent: 'space-around',
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginHorizontal: 4,
+    backgroundColor: 'transparent',
+  },
+  tabItemActive: {
+    backgroundColor: '#fff',
+    borderBottomWidth: 2,
+    borderBottomColor: '#2563eb',
+  },
+  tabLabel: {
+    marginLeft: 6,
+    color: '#64748b',
+    fontWeight: '600',
+    fontSize: 15,
+  },
+  tabLabelActive: {
+    color: '#2563eb',
   },
 });

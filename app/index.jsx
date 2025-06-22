@@ -103,7 +103,7 @@ export default function Home() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>SmartQuote Interiors</Text>
+        <Text style={styles.headerTitle}>Vanaraj Interiors</Text>
         <Text style={styles.headerSubtitle}>Professional Quote Generator</Text>
       </View>
 
