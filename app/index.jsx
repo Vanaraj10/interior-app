@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  TouchableOpacity, 
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
+import {
   Alert,
   RefreshControl,
-  StyleSheet 
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons } from '@expo/vector-icons';
 
 export default function Home() {
   const [projects, setProjects] = useState([]);
@@ -194,33 +194,51 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     marginHorizontal: 16,
+    // Allow text to wrap inside
+    minWidth: 0,
   },
   projectHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 8,
+    minWidth: 0,
   },
   projectInfo: {
     flex: 1,
+    minWidth: 0,
   },
   clientName: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#1f2937',
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    minWidth: 0,
   },
   phone: {
     fontSize: 14,
     color: '#6b7280',
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    minWidth: 0,
   },
   address: {
     fontSize: 12,
     color: '#9ca3af',
     marginTop: 4,
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    minWidth: 0,
   },
   date: {
     fontSize: 12,
     color: '#9ca3af',
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    minWidth: 0,
+    textAlign: 'right',
+    maxWidth: 100,
   },
   projectFooter: {
     flexDirection: 'row',
@@ -232,26 +250,43 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#059669',
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    minWidth: 0,
   },
   buttonGroup: {
     flexDirection: 'row',
     gap: 8,
+    flexShrink: 1,
+    minWidth: 0,
   },
   viewButton: {
     backgroundColor: '#3b82f6',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 4,
+    minWidth: 56,
+    alignItems: 'center',
+    flexShrink: 1,
+    minWidth: 0,
   },
   deleteButton: {
     backgroundColor: '#ef4444',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 4,
+    minWidth: 56,
+    alignItems: 'center',
+    flexShrink: 1,
+    minWidth: 0,
   },
   buttonText: {
     color: 'white',
     fontSize: 12,
+    textAlign: 'center',
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    minWidth: 0,
   },
   fab: {
     position: 'absolute',

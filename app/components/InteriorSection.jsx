@@ -42,7 +42,7 @@ export default function InteriorSection({
             {measurement.curtainType && ` • ${measurement.curtainType}`}
           </Text>
           <Text style={styles.measurementSpecs}>
-            {measurement.pieces?.toFixed(1)} pieces • {measurement.totalMeters?.toFixed(2)}m
+            {measurement.pieces?.toFixed(1)} pieces • {measurement.totalMeters?.toFixed(2)}m Cloth
           </Text>
         </View>
         <Text style={styles.measurementCost}>
