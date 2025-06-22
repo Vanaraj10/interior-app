@@ -1,24 +1,23 @@
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  TextInput, 
-  TouchableOpacity, 
-  Alert,
-  StyleSheet 
-} from 'react-native';
-import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
 export default function NewProject() {
   const [formData, setFormData] = useState({
     clientName: '',
     phone: '',
     address: '',
-    projectTitle: '',
-    rodRatePerLength: '200'
+    projectTitle: ''
   });
 
   const updateField = (field, value) => {
@@ -49,7 +48,6 @@ export default function NewProject() {
       const newProject = {
         id: projectId,
         ...formData,
-        rodRatePerLength: parseFloat(formData.rodRatePerLength) || 200,
         createdDate: new Date().toISOString(),
         measurements: [],
         grandTotal: 0
@@ -127,25 +125,6 @@ export default function NewProject() {
               onChangeText={(text) => updateField('projectTitle', text)}
               placeholder="e.g., Living Room Renovation"
             />
-          </View>
-        </View>
-
-        {/* Rod Configuration */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Rod Installation</Text>
-          
-          <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Rod Rate per Length (₹)</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.rodRatePerLength}
-              onChangeText={(text) => updateField('rodRatePerLength', text)}
-              placeholder="200"
-              keyboardType="numeric"
-            />
-            <Text style={styles.helpText}>
-              Rate per unit length for rod installation
-            </Text>
           </View>
         </View>
 

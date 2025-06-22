@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  TextInput, 
-  TouchableOpacity, 
-  Alert,
-  StyleSheet 
-} from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
+import { Picker } from '@react-native-picker/picker';
+import { useEffect, useState } from 'react';
+import {
+    Alert,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from 'react-native';
 
 const CURTAIN_TYPES = ['Eyelet', 'Pleated', 'Plain', 'Belt Model', 'Ripple', 'Button'];
 const INTERIOR_TYPES = [
@@ -26,7 +26,8 @@ export default function MeasurementForm({ onSave, onCancel, editingMeasurement }
     height: '',
     curtainType: 'Eyelet',
     clothRatePerMeter: '',
-    stitchingCostPerPiece: ''
+    stitchingCostPerPiece: '',
+    rodRatePerLength: '' // new field for curtains
   });
 
   const [calculatedData, setCalculatedData] = useState({
@@ -46,7 +47,8 @@ export default function MeasurementForm({ onSave, onCancel, editingMeasurement }
         height: editingMeasurement.height?.toString() || '',
         curtainType: editingMeasurement.curtainType || 'Eyelet',
         clothRatePerMeter: editingMeasurement.clothRatePerMeter?.toString() || '',
-        stitchingCostPerPiece: editingMeasurement.stitchingCostPerPiece?.toString() || ''
+        stitchingCostPerPiece: editingMeasurement.stitchingCostPerPiece?.toString() || '',
+        rodRatePerLength: editingMeasurement.rodRatePerLength?.toString() || '' // load if present
       });
     }
   }, [editingMeasurement]);
@@ -157,6 +159,10 @@ export default function MeasurementForm({ onSave, onCancel, editingMeasurement }
       Alert.alert('Error', 'Valid stitching cost is required');
       return false;
     }
+    if (formData.interiorType === 'curtains' && (!formData.rodRatePerLength || parseFloat(formData.rodRatePerLength) <= 0)) {
+      Alert.alert('Error', 'Rod rate per length is required for curtains');
+      return false;
+    }
     return true;
   };
 
@@ -169,6 +175,7 @@ export default function MeasurementForm({ onSave, onCancel, editingMeasurement }
       height: parseFloat(formData.height),
       clothRatePerMeter: parseFloat(formData.clothRatePerMeter),
       stitchingCostPerPiece: parseFloat(formData.stitchingCostPerPiece),
+      rodRatePerLength: formData.interiorType === 'curtains' ? parseFloat(formData.rodRatePerLength) : undefined,
       ...calculatedData,
       id: editingMeasurement?.id
     };
@@ -293,6 +300,20 @@ export default function MeasurementForm({ onSave, onCancel, editingMeasurement }
               />
             </View>
           </View>
+          {/* Rod Rate input for curtains only */}
+          {formData.interiorType === 'curtains' && (
+            <View style={styles.fieldContainer}>
+              <Text style={styles.label}>Rod Rate per Length (₹) *</Text>
+              <TextInput
+                style={styles.input}
+                value={formData.rodRatePerLength}
+                onChangeText={(text) => updateField('rodRatePerLength', text)}
+                placeholder="200"
+                keyboardType="numeric"
+              />
+              <Text style={styles.helpText}>Rate per unit length for rod installation (specific to this curtain)</Text>
+            </View>
+          )}
         </View>
 
         {/* Calculations */}
@@ -485,5 +506,10 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
+  },
+  helpText: {
+    fontSize: 12,
+    color: '#6b7280',
+    marginTop: 4,
   },
 });

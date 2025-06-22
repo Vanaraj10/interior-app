@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  TouchableOpacity, 
-  Alert,
-  Share,
-  StyleSheet 
-} from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Print from 'expo-print';
+import { router, useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
+import { useEffect, useState } from 'react';
+import {
+    Alert,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
 
 export default function PDFPreview() {
   const { id } = useLocalSearchParams();
@@ -274,22 +273,34 @@ export default function PDFPreview() {
         </table>
         ` : ''}
 
-        ${project.rodCost > 0 ? `
+        ${curtainMeasurements.length > 0 ? `
         <div class="section-title">ROD INSTALLATION</div>
         <table>
           <thead>
             <tr>
-              <th>Description</th>
+              <th>Room Label</th>
+              <th>Width (in)</th>
               <th>Length (Units)</th>
-              <th>Rate per Unit</th>
-              <th>Total Cost</th>
+              <th>Rate per Unit (₹)</th>
+              <th>Total Rod Cost</th>
             </tr>
           </thead>
           <tbody>
+            ${curtainMeasurements.map(m => {
+              const width = m.width || 0;
+              const rate = m.rodRatePerLength || 200;
+              const length = width / 12;
+              const cost = length * rate;
+              return `<tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">${m.roomLabel}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${width}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${length.toFixed(2)}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₹${rate}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(cost)}</td>
+              </tr>`;
+            }).join('')}
             <tr>
-              <td style="padding: 8px; border: 1px solid #ddd;">Curtain Rod Installation</td>
-              <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${(project.rodLength || 0).toFixed(1)}</td>
-              <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₹${project.rodRatePerLength}</td>
+              <td colspan="4" style="text-align: right; font-weight: bold;">Total Rod Cost</td>
               <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(project.rodCost || 0)}</td>
             </tr>
           </tbody>

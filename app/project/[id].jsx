@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  TouchableOpacity, 
-  Alert, 
-  RefreshControl,
-  Modal,
-  StyleSheet
-} from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
-import MeasurementForm from '../components/MeasurementForm';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import {
+    Alert,
+    Modal,
+    RefreshControl,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from 'react-native';
 import InteriorSection from '../components/InteriorSection';
+import MeasurementForm from '../components/MeasurementForm';
 
 export default function ProjectDetails() {
   const { id } = useLocalSearchParams();
@@ -124,25 +124,31 @@ export default function ProjectDetails() {
 
   const calculateProjectTotals = (projectData) => {
     const measurements = projectData.measurements || [];
-    
+
     // Group measurements by interior type
     const curtainMeasurements = measurements.filter(m => m.interiorType === 'curtains');
     const netMeasurements = measurements.filter(m => m.interiorType === 'mosquito-nets');
     const wallpaperMeasurements = measurements.filter(m => m.interiorType === 'wallpapers');
-    
+
     // Calculate totals for each type
     const curtainTotal = curtainMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
     const netTotal = netMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
     const wallpaperTotal = wallpaperMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
-    
-    // Calculate rod cost for curtains only
-    const totalCurtainWidth = curtainMeasurements.reduce((sum, m) => sum + (m.width || 0), 0);
-    const rodLength = totalCurtainWidth / 12;
-    const rodCost = rodLength * (projectData.rodRatePerLength || 200);
-    
+
+    // Calculate rod cost for curtains only, using each measurement's rodRatePerLength
+    let rodLength = 0;
+    let rodCost = 0;
+    curtainMeasurements.forEach(m => {
+      const width = m.width || 0;
+      const rate = m.rodRatePerLength || 200;
+      const length = width / 12;
+      rodLength += length;
+      rodCost += length * rate;
+    });
+
     const subtotal = curtainTotal + netTotal + wallpaperTotal;
     const grandTotal = subtotal + rodCost;
-    
+
     return {
       ...projectData,
       curtainTotal,
