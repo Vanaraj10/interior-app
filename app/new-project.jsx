@@ -16,8 +16,7 @@ export default function NewProject() {
   const [formData, setFormData] = useState({
     clientName: '',
     phone: '',
-    address: '',
-    projectTitle: ''
+    address: ''
   });
 
   const updateField = (field, value) => {
@@ -114,16 +113,6 @@ export default function NewProject() {
               placeholder="Enter complete address"
               multiline
               textAlignVertical="top"
-            />
-          </View>
-
-          <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Project Title (Optional)</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.projectTitle}
-              onChangeText={(text) => updateField('projectTitle', text)}
-              placeholder="e.g., Living Room Renovation"
             />
           </View>
         </View>

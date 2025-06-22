@@ -5,12 +5,12 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import { useEffect, useState } from 'react';
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 export default function PDFPreview() {
@@ -197,11 +197,6 @@ export default function PDFPreview() {
           <div class="info-row">
             <span><strong>Address:</strong> ${project.address}</span>
           </div>
-          ${project.projectTitle ? `
-          <div class="info-row">
-            <span><strong>Project Title:</strong> ${project.projectTitle}</span>
-          </div>
-          ` : ''}
         </div>
 
         ${curtainMeasurements.length > 0 ? `
@@ -448,9 +443,6 @@ export default function PDFPreview() {
             </View>
             <Text style={styles.clientText}>Phone: {project.phone}</Text>
             <Text style={styles.clientText}>Address: {project.address}</Text>
-            {project.projectTitle && (
-              <Text style={styles.clientText}>Project: {project.projectTitle}</Text>
-            )}
           </View>
 
           {/* Measurements Summary */}
