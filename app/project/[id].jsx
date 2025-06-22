@@ -211,7 +211,7 @@ export default function ProjectDetails() {
         {/* Interior Sections */}
         <InteriorSection
           title="Curtains"
-          icon="window-outline"
+          icon="logo-windows"
           measurements={project.measurements?.filter(m => m.interiorType === 'curtains') || []}
           total={project.curtainTotal || 0}
           onEdit={editMeasurement}
@@ -220,7 +220,7 @@ export default function ProjectDetails() {
 
         <InteriorSection
           title="Mosquito Nets"
-          icon="bug-outline"
+          icon="bug"
           measurements={project.measurements?.filter(m => m.interiorType === 'mosquito-nets') || []}
           total={project.netTotal || 0}
           onEdit={editMeasurement}
@@ -229,7 +229,7 @@ export default function ProjectDetails() {
 
         <InteriorSection
           title="Wallpapers"
-          icon="image-outline"
+          icon="image"
           measurements={project.measurements?.filter(m => m.interiorType === 'wallpapers') || []}
           total={project.wallpaperTotal || 0}
           onEdit={editMeasurement}
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#2563eb',
     paddingTop: 48,
-    paddingBottom: 24,
+    paddingBottom:4,
     paddingHorizontal: 16,
   },
   headerContent: {

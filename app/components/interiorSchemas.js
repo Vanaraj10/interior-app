@@ -1,5 +1,4 @@
 // Schema and calculation logic for each interior type
-
 export const INTERIOR_SCHEMAS = {
   curtains: {
     label: 'Curtains',

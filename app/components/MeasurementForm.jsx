@@ -158,9 +158,9 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#2563eb',
-    paddingTop: 48,
-    paddingBottom: 24,
-    paddingHorizontal: 16,
+    paddingTop: 15, // reduced from 48
+    paddingBottom: 15, // reduced from 24
+    paddingHorizontal: 12, // reduced from 16
   },
   headerContent: {
     flexDirection: 'row',
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 20, // reduced from 20
     fontWeight: 'bold',
   },
   scrollView: {
@@ -290,6 +290,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    marginBottom:40
   },
   saveButtonText: {
     color: 'white',
