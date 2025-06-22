@@ -313,31 +313,6 @@ export default function PDFPreview() {
             <span>${formatCurrency(project.grandTotal || 0)}</span>
           </div>
         </div>
-
-        <div class="footer">
-          <p><strong>Terms & Conditions:</strong></p>
-          <ul style="margin: 10px 0; padding-left: 20px;">
-            <li>This quotation is valid for 15 days from the date of issue</li>
-            <li>50% advance payment required to start work</li>
-            <li>Installation will be completed within 7-10 working days</li>
-            <li>All materials are of premium quality with warranty</li>
-            <li>Final measurements will be taken before production</li>
-          </ul>
-        </div>
-
-        <div class="signature-section">
-          <div class="signature-box">
-            <div style="border-top: 1px solid #333; margin-top: 40px; padding-top: 10px;">
-              Customer Signature
-            </div>
-          </div>
-          <div class="signature-box">
-            <div style="border-top: 1px solid #333; margin-top: 40px; padding-top: 10px;">
-              Authorized Signature<br>
-              Royal Curtain
-            </div>
-          </div>
-        </div>
       </body>
       </html>
     `;
@@ -498,17 +473,6 @@ export default function PDFPreview() {
                 </Text>
               </View>
             </View>
-          </View>
-
-          {/* Terms Preview */}
-          <View style={styles.termsSection}>
-            <Text style={styles.termsTitle}>Terms & Conditions:</Text>
-            <Text style={styles.termsText}>
-              • Quotation valid for 15 days{'\n'}
-              • 50% advance payment required{'\n'}
-              • Installation within 7-10 working days{'\n'}
-              • Premium quality materials with warranty
-            </Text>
           </View>
         </View>
       </ScrollView>

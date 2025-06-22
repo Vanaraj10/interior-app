@@ -207,17 +207,6 @@ export default function ProjectDetails() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* Project Info */}
-        <View style={styles.projectInfo}>
-          <Text style={styles.projectInfoTitle}>Project Details</Text>
-          <Text style={styles.projectInfoText}>{project.address}</Text>
-          {project.projectTitle && (
-            <Text style={styles.projectInfoText}>{project.projectTitle}</Text>
-          )}
-          <Text style={styles.projectInfoDate}>
-            Created: {new Date(project.createdDate).toLocaleDateString()}
-          </Text>
-        </View>
 
         {/* Interior Sections */}
         <InteriorSection
