@@ -1,0 +1,367 @@
+================================================================================
+                    CURTAIN MEASUREMENT & QUOTATION SYSTEM
+                         COMPLETE DOCUMENTATION
+================================================================================
+
+OVERVIEW
+--------
+This system calculates curtain measurements, costs, and generates quotations
+for interior design projects. It handles multiple curtain types, automatic
+piece calculations, fabric requirements, and rod installation costs.
+
+================================================================================
+1. PROJECT STRUCTURE
+================================================================================
+
+1.1 PROJECT FIELDS
+------------------
+- Project ID          : Auto-generated unique identifier
+- Client Name         : Customer name
+- Phone Number        : Customer contact
+- Address             : Installation address
+- Project Title       : Optional project description
+- Created Date        : Auto-generated timestamp
+- Rod Rate Per Length : Cost per rod unit (₹)
+
+1.2 MEASUREMENT RECORD FIELDS
+-----------------------------
+- ID                  : Auto-generated measurement identifier
+- Room Label          : Description (e.g., "Bedroom Window 1")
+- Width (inches)      : Window/opening width
+- Height (inches)     : Window/opening height
+- Pieces              : Auto-calculated based on width
+- Curtain Type        : Style selection
+- Cloth Rate/Meter    : Fabric cost per meter (₹)
+- Stitching Cost/Piece: Labor cost per piece (₹)
+- Total Meters        : Auto-calculated fabric requirement
+- Total Cost          : Auto-calculated final cost
+
+================================================================================
+2. CURTAIN TYPES SUPPORTED
+================================================================================
+
+Available curtain styles:
+- Eyelet
+- Pleated
+- Plain
+- Belt Model
+- Ripple
+- Button
+
+================================================================================
+3. AUTOMATIC CALCULATIONS
+================================================================================
+
+3.1 PIECES CALCULATION (Based on Width)
+---------------------------------------
+Formula: Pieces = f(width_inches)
+
+Width Range (inches)    →    Pieces Required
+-----------------            ---------------
+Under 12               →    1.0
+12 - 20               →    1.0
+21 - 28               →    1.5
+29 - 40               →    2.0
+41 - 50               →    2.5
+51 - 60               →    3.0
+61 - 70               →    3.5
+71 - 80               →    4.0
+81 - 90               →    4.5
+91 - 100              →    5.0
+101 - 110             →    5.5
+111 - 120             →    6.0
+121 - 130             →    6.5
+131 - 140             →    7.0
+Above 140             →    7 + (ceiling((width-140)/10) × 0.5)
+
+RATIONALE:
+- Based on standard curtain panel widths
+- Accounts for proper fullness and gathering
+- Ensures adequate coverage for window openings
+
+3.2 CLOTH METERS CALCULATION
+----------------------------
+Formula: Total Meters = ((Height + 15) × Rounded Pieces) ÷ 39
+
+Components:
+- Height: Window height in inches
+- +15: Additional fabric for hems, headers, and adjustments
+- Rounded Pieces: Math.ceil(calculated pieces) - always round UP
+- ÷39: Conversion factor (inches to meters with fabric width consideration)
+
+Example:
+- Height: 60 inches
+- Calculated Pieces: 2.5
+- Rounded Pieces: 3 (always round up for purchasing)
+- Calculation: ((60 + 15) × 3) ÷ 39 = 225 ÷ 39 = 5.77 meters
+
+RATIONALE:
+- +15 inches accounts for:
+  * Top hem/header: 6-8 inches
+  * Bottom hem: 4-6 inches
+  * Adjustment allowance: 3-5 inches
+- Rounding pieces up ensures sufficient fabric for cutting
+- Division by 39 accounts for fabric roll width and wastage
+
+3.3 COST CALCULATIONS
+--------------------
+
+Individual Item Costs:
+- Cloth Cost = Cloth Rate/Meter × Total Meters
+- Stitching Cost = Stitching Rate/Piece × Actual Pieces
+- Item Total = Cloth Cost + Stitching Cost
+
+Project Totals:
+- Total Cloth Cost = Sum of all cloth costs
+- Total Stitching Cost = Sum of all stitching costs
+- Curtain Subtotal = Total Cloth + Total Stitching
+- Rod Installation Cost = Rod Length × Rod Rate/Length
+- Grand Total = Curtain Subtotal + Rod Installation Cost
+
+3.4 ROD CALCULATIONS
+-------------------
+Formula: Rod Length = Total Width ÷ 12
+
+Components:
+- Total Width: Sum of all window widths in inches
+- ÷12: Conversion to rod length units
+- Rod Cost = Rod Length × Rate per Length
+
+Example:
+- Window 1: 48 inches
+- Window 2: 36 inches
+- Total Width: 84 inches
+- Rod Length: 84 ÷ 12 = 7 units
+- Rod Cost: 7 × ₹200 = ₹1,400
+
+================================================================================
+4. QUOTATION GENERATION
+================================================================================
+
+4.1 PDF QUOTATION INCLUDES
+--------------------------
+- Header: Company name (ROYAL CURTAIN)
+- Customer Information: Name, date, project details
+- Measurement Table: All measurements with calculations
+- Rod Installation Details: Coverage, length, rate, cost
+- Cost Summary: Itemized breakdown and grand total
+- Terms & Conditions
+- Signature sections
+
+4.2 TABLE FORMAT
+----------------
+Columns in quotation:
+1. S.No
+2. Room Label
+3. Width (inches)
+4. Height (inches)
+5. Pieces
+6. Meters
+7. Fabric Type
+8. Cloth Price (with calculation breakdown)
+9. Stitching Price (with calculation breakdown)
+10. Total Price
+
+Cost Display Format:
+- Cloth Price: "₹250" with "5.0m × ₹50" underneath
+- Stitching Price: "₹100" with "2 × ₹50" underneath
+
+================================================================================
+5. BUSINESS LOGIC & WORKFLOW
+================================================================================
+
+5.1 PROJECT CREATION FLOW
+-------------------------
+1. Create new project with customer details
+2. Add measurements for each window/opening
+3. System auto-calculates pieces and fabric requirements
+4. Set rod installation rate
+5. Review total costs
+6. Generate PDF quotation
+
+5.2 MEASUREMENT ADDITION FLOW
+----------------------------
+1. Enter room/window label
+2. Input width → System calculates pieces automatically
+3. Input height
+4. Select curtain type
+5. Enter cloth rate per meter
+6. Enter stitching cost per piece
+7. System calculates:
+   - Total meters required
+   - Individual costs
+   - Item total
+8. Add to project measurements
+
+5.3 COST CALCULATION SEQUENCE
+----------------------------
+For each measurement:
+1. Width → Pieces (auto-calculated)
+2. Height + Pieces → Cloth Meters
+3. Cloth Meters × Rate → Cloth Cost
+4. Pieces × Stitching Rate → Stitching Cost
+5. Cloth Cost + Stitching Cost → Item Total
+
+For project totals:
+1. Sum all cloth costs
+2. Sum all stitching costs
+3. Calculate rod requirements
+4. Add rod installation cost
+5. Generate grand total
+
+================================================================================
+6. TECHNICAL IMPLEMENTATION
+================================================================================
+
+6.1 DATA STORAGE
+---------------
+- Uses browser localStorage
+- JSON format for project data
+- Auto-generated unique IDs
+- Timestamp tracking
+
+6.2 KEY FUNCTIONS
+----------------
+- calculatePiecesFromWidth(widthInches)
+- calculateClothMeters(heightInches, pieces)
+- calculateTotalCost(clothRate, meters, stitchingRate, pieces)
+- generateQuotationPDF(project, measurements)
+
+6.3 VALIDATION RULES
+-------------------
+- All measurement fields required
+- Numeric validation for dimensions and rates
+- Minimum values: width > 0, height > 0, rates ≥ 0
+- Pieces auto-calculated (read-only)
+
+6.4 PDF GENERATION
+-----------------
+- HTML-based PDF generation
+- Browser print functionality
+- Professional formatting
+- Automatic calculations display
+
+================================================================================
+7. USER INTERFACE FEATURES
+================================================================================
+
+7.1 DASHBOARD
+------------
+- Project list with summaries
+- Total cost per project
+- Creation dates
+- Quick actions (View, Delete)
+
+7.2 PROJECT DETAILS
+------------------
+- Measurement table with live calculations
+- Add/remove measurements
+- Rod installation calculator
+- Cost breakdown visualization
+- PDF generation button
+
+7.3 MEASUREMENT FORM
+-------------------
+- Width-to-pieces guide
+- Auto-calculation hints
+- Input validation
+- Cost preview
+
+================================================================================
+8. EXAMPLE CALCULATION WALKTHROUGH
+================================================================================
+
+SCENARIO: Bedroom curtain installation
+
+INPUT DATA:
+- Room: "Master Bedroom"
+- Width: 72 inches
+- Height: 84 inches
+- Curtain Type: Eyelet
+- Cloth Rate: ₹80/meter
+- Stitching Cost: ₹60/piece
+
+STEP-BY-STEP CALCULATION:
+
+1. Pieces Calculation:
+   Width = 72 inches
+   Range: 71-80 inches → 4 pieces
+
+2. Cloth Meters Calculation:
+   Height = 84 inches
+   Pieces = 4 (already whole number)
+   Meters = ((84 + 15) × 4) ÷ 39
+   Meters = (99 × 4) ÷ 39
+   Meters = 396 ÷ 39 = 10.15 meters
+
+3. Cost Calculations:
+   Cloth Cost = 10.15 × ₹80 = ₹812.00
+   Stitching Cost = 4 × ₹60 = ₹240.00
+   Item Total = ₹812.00 + ₹240.00 = ₹1,052.00
+
+4. Rod Calculation (if applicable):
+   Rod Length = 72 ÷ 12 = 6 units
+   Rod Cost = 6 × ₹150 = ₹900.00
+
+5. Final Total:
+   Curtain Cost = ₹1,052.00
+   Rod Cost = ₹900.00
+   Grand Total = ₹1,952.00
+
+================================================================================
+9. BUSINESS CONSIDERATIONS
+================================================================================
+
+9.1 PRICING STRATEGY
+-------------------
+- Fabric costs vary by quality and type
+- Stitching rates based on complexity
+- Rod installation includes labor and materials
+- Quotation valid for 15 days
+
+9.2 MEASUREMENT ACCURACY
+-----------------------
+- Always round pieces UP for fabric purchasing
+- Include generous allowances for adjustments
+- Account for pattern matching if required
+- Consider fabric shrinkage factors
+
+9.3 CUSTOMER COMMUNICATION
+-------------------------
+- Clear breakdown of all costs
+- Transparent calculation methods
+- Professional quotation format
+- Terms and conditions included
+
+================================================================================
+10. TROUBLESHOOTING & VALIDATION
+================================================================================
+
+10.1 COMMON ISSUES
+-----------------
+- Width input validation (must be positive)
+- Height input validation (must be positive)
+- Rate validation (must be non-negative)
+- Pieces auto-calculation edge cases
+
+10.2 DATA INTEGRITY     
+------------------
+- All calculations use parseFloat() for safety
+- Error handling for invalid inputs
+- Automatic ID generation prevents duplicates
+- localStorage error handling
+
+10.3 CALCULATION VERIFICATION
+----------------------------
+- Cross-check pieces calculation with width table
+- Verify cloth meters against manual calculation
+- Confirm cost totals match individual items
+- Validate rod calculations
+
+================================================================================
+
+SYSTEM DEVELOPED FOR: Royal Curtain Interior Solutions
+DOCUMENTATION VERSION: 1.0
+LAST UPDATED: June 2025
+
+================================================================================
