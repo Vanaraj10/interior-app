@@ -10,6 +10,7 @@ export const INTERIOR_SCHEMAS = {
       { name: 'clothRatePerMeter', label: 'Cloth Rate/Meter (₹)', type: 'number', required: true },
       { name: 'stitchingCostPerPiece', label: 'Stitching Cost/Piece (₹)', type: 'number', required: true },
       { name: 'rodRatePerLength', label: 'Rod Rate per Length (₹)', type: 'number', required: true },
+      { name: 'parts', label: 'Parts', type: 'picker', options: ['Two Parts', 'One Part'], required: false },
     ],
     calculate: (data) => {
       // Pieces calculation
@@ -40,7 +41,8 @@ export const INTERIOR_SCHEMAS = {
       const clothCost = totalMeters * clothRate;
       const stitchingCost = pieces * stitchingRate;
       const totalCost = clothCost + stitchingCost;
-      return { pieces, totalMeters, clothCost, stitchingCost, totalCost };
+      const parts = data.parts || 'Two Parts';
+      return { pieces, totalMeters, clothCost, stitchingCost, totalCost, parts };
     }
   },
   'mosquito-nets': {

@@ -81,9 +81,16 @@ export default function InteriorSection({
               <Text style={styles.measurementDimensions}>
                 {measurement.width}" × {measurement.height}" {measurement.curtainType && `• ${measurement.curtainType}`}
               </Text>
-              <Text style={styles.measurementSpecs}>
-                {measurement.pieces?.toFixed(1)} pieces • {measurement.totalMeters?.toFixed(2)}m Cloth
-              </Text>
+              <View style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
+                {measurement.parts === 'One Part' ? (
+                  <View style={{borderWidth: 2, borderColor: '#2563eb', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, marginRight: 4}}>
+                    <Text style={{color: '#2563eb', fontWeight: 'bold'}}>{measurement.pieces?.toFixed(1)} pieces</Text>
+                  </View>
+                ) : (
+                  <Text style={styles.measurementSpecs}>{measurement.pieces?.toFixed(1)} Pieces </Text>
+                )}
+                <Text style={styles.measurementSpecs}>• {measurement.totalMeters?.toFixed(2)}m Cloth</Text>
+              </View>
               <Text style={styles.measurementSpecs}>
                 Cloth: {formatCurrency(measurement.clothCost || 0)} | Stitching: {formatCurrency(measurement.stitchingCost || 0)}
               </Text>

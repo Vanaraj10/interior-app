@@ -7,7 +7,7 @@ OVERVIEW
 --------
 This system calculates curtain measurements, costs, and generates quotations
 for interior design projects. It handles multiple curtain types, automatic
-piece calculations, fabric requirements, and rod installation costs.
+part calculations, fabric requirements, and rod installation costs.
 
 ================================================================================
 1. PROJECT STRUCTURE
@@ -29,10 +29,10 @@ piece calculations, fabric requirements, and rod installation costs.
 - Room Label          : Description (e.g., "Bedroom Window 1")
 - Width (inches)      : Window/opening width
 - Height (inches)     : Window/opening height
-- Pieces              : Auto-calculated based on width
+- Parts               : Auto-calculated based on width
 - Curtain Type        : Style selection
 - Cloth Rate/Meter    : Fabric cost per meter (₹)
-- Stitching Cost/Piece: Labor cost per piece (₹)
+- Stitching Cost/Part : Labor cost per part (₹)
 - Total Meters        : Auto-calculated fabric requirement
 - Total Cost          : Auto-calculated final cost
 
@@ -52,12 +52,12 @@ Available curtain styles:
 3. AUTOMATIC CALCULATIONS
 ================================================================================
 
-3.1 PIECES CALCULATION (Based on Width)
----------------------------------------
-Formula: Pieces = f(width_inches)
+3.1 PARTS CALCULATION (Based on Width)
+--------------------------------------
+Formula: Parts = f(width_inches)
 
-Width Range (inches)    →    Pieces Required
------------------            ---------------
+Width Range (inches)    →    Parts Required
+-----------------            --------------
 Under 12               →    1.0
 12 - 20               →    1.0
 21 - 28               →    1.5
@@ -81,18 +81,18 @@ RATIONALE:
 
 3.2 CLOTH METERS CALCULATION
 ----------------------------
-Formula: Total Meters = ((Height + 15) × Rounded Pieces) ÷ 39
+Formula: Total Meters = ((Height + 15) × Rounded Parts) ÷ 39
 
 Components:
 - Height: Window height in inches
 - +15: Additional fabric for hems, headers, and adjustments
-- Rounded Pieces: Math.ceil(calculated pieces) - always round UP
+- Rounded Parts: Math.ceil(calculated parts) - always round UP
 - ÷39: Conversion factor (inches to meters with fabric width consideration)
 
 Example:
 - Height: 60 inches
-- Calculated Pieces: 2.5
-- Rounded Pieces: 3 (always round up for purchasing)
+- Calculated Parts: 2.5
+- Rounded Parts: 3 (always round up for purchasing)
 - Calculation: ((60 + 15) × 3) ÷ 39 = 225 ÷ 39 = 5.77 meters
 
 RATIONALE:
@@ -100,7 +100,7 @@ RATIONALE:
   * Top hem/header: 6-8 inches
   * Bottom hem: 4-6 inches
   * Adjustment allowance: 3-5 inches
-- Rounding pieces up ensures sufficient fabric for cutting
+- Rounding parts up ensures sufficient fabric for cutting
 - Division by 39 accounts for fabric roll width and wastage
 
 3.3 COST CALCULATIONS
@@ -108,7 +108,7 @@ RATIONALE:
 
 Individual Item Costs:
 - Cloth Cost = Cloth Rate/Meter × Total Meters
-- Stitching Cost = Stitching Rate/Piece × Actual Pieces
+- Stitching Cost = Stitching Rate/Part × Actual Parts
 - Item Total = Cloth Cost + Stitching Cost
 
 Project Totals:
@@ -155,7 +155,7 @@ Columns in quotation:
 2. Room Label
 3. Width (inches)
 4. Height (inches)
-5. Pieces
+5. Parts
 6. Meters
 7. Fabric Type
 8. Cloth Price (with calculation breakdown)
@@ -174,7 +174,7 @@ Cost Display Format:
 -------------------------
 1. Create new project with customer details
 2. Add measurements for each window/opening
-3. System auto-calculates pieces and fabric requirements
+3. System auto-calculates parts and fabric requirements
 4. Set rod installation rate
 5. Review total costs
 6. Generate PDF quotation
@@ -182,11 +182,11 @@ Cost Display Format:
 5.2 MEASUREMENT ADDITION FLOW
 ----------------------------
 1. Enter room/window label
-2. Input width → System calculates pieces automatically
+2. Input width → System calculates parts automatically
 3. Input height
 4. Select curtain type
 5. Enter cloth rate per meter
-6. Enter stitching cost per piece
+6. Enter stitching cost per part
 7. System calculates:
    - Total meters required
    - Individual costs
@@ -196,10 +196,10 @@ Cost Display Format:
 5.3 COST CALCULATION SEQUENCE
 ----------------------------
 For each measurement:
-1. Width → Pieces (auto-calculated)
-2. Height + Pieces → Cloth Meters
+1. Width → Parts (auto-calculated)
+2. Height + Parts → Cloth Meters
 3. Cloth Meters × Rate → Cloth Cost
-4. Pieces × Stitching Rate → Stitching Cost
+4. Parts × Stitching Rate → Stitching Cost
 5. Cloth Cost + Stitching Cost → Item Total
 
 For project totals:
@@ -222,9 +222,9 @@ For project totals:
 
 6.2 KEY FUNCTIONS
 ----------------
-- calculatePiecesFromWidth(widthInches)
-- calculateClothMeters(heightInches, pieces)
-- calculateTotalCost(clothRate, meters, stitchingRate, pieces)
+- calculatePartsFromWidth(widthInches)
+- calculateClothMeters(heightInches, parts)
+- calculateTotalCost(clothRate, meters, stitchingRate, parts)
 - generateQuotationPDF(project, measurements)
 
 6.3 VALIDATION RULES
@@ -232,7 +232,7 @@ For project totals:
 - All measurement fields required
 - Numeric validation for dimensions and rates
 - Minimum values: width > 0, height > 0, rates ≥ 0
-- Pieces auto-calculated (read-only)
+- Parts auto-calculated (read-only)
 
 6.4 PDF GENERATION
 -----------------
@@ -262,7 +262,7 @@ For project totals:
 
 7.3 MEASUREMENT FORM
 -------------------
-- Width-to-pieces guide
+- Width-to-parts guide
 - Auto-calculation hints
 - Input validation
 - Cost preview
@@ -279,17 +279,17 @@ INPUT DATA:
 - Height: 84 inches
 - Curtain Type: Eyelet
 - Cloth Rate: ₹80/meter
-- Stitching Cost: ₹60/piece
+- Stitching Cost: ₹60/part
 
 STEP-BY-STEP CALCULATION:
 
-1. Pieces Calculation:
+1. Parts Calculation:
    Width = 72 inches
-   Range: 71-80 inches → 4 pieces
+   Range: 71-80 inches → 4 parts
 
 2. Cloth Meters Calculation:
    Height = 84 inches
-   Pieces = 4 (already whole number)
+   Parts = 4 (already whole number)
    Meters = ((84 + 15) × 4) ÷ 39
    Meters = (99 × 4) ÷ 39
    Meters = 396 ÷ 39 = 10.15 meters
@@ -321,7 +321,7 @@ STEP-BY-STEP CALCULATION:
 
 9.2 MEASUREMENT ACCURACY
 -----------------------
-- Always round pieces UP for fabric purchasing
+- Always round parts UP for fabric purchasing
 - Include generous allowances for adjustments
 - Account for pattern matching if required
 - Consider fabric shrinkage factors
@@ -342,7 +342,7 @@ STEP-BY-STEP CALCULATION:
 - Width input validation (must be positive)
 - Height input validation (must be positive)
 - Rate validation (must be non-negative)
-- Pieces auto-calculation edge cases
+- Parts auto-calculation edge cases
 
 10.2 DATA INTEGRITY     
 ------------------
@@ -353,7 +353,7 @@ STEP-BY-STEP CALCULATION:
 
 10.3 CALCULATION VERIFICATION
 ----------------------------
-- Cross-check pieces calculation with width table
+- Cross-check parts calculation with width table
 - Verify cloth meters against manual calculation
 - Confirm cost totals match individual items
 - Validate rod calculations
