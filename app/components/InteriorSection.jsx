@@ -1,6 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function InteriorSection({ 
   title, 
@@ -13,44 +12,124 @@ export default function InteriorSection({
   const formatCurrency = (amount) => {
     return `₹${amount.toLocaleString('en-IN')}`;
   };
-  const MeasurementItem = ({ measurement }) => (
-    <View style={styles.measurementItem}>
-      <View style={styles.measurementHeader}>
-        <Text style={styles.measurementLabel}>
-          {measurement.roomLabel}
-        </Text>
-        <View style={styles.buttonGroup}>
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => onEdit(measurement)}
-          >
-            <Ionicons name="pencil" size={12} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => onDelete(measurement.id)}
-          >
-            <Ionicons name="trash" size={12} color="white" />
-          </TouchableOpacity>
+  const MeasurementItem = ({ measurement }) => {
+    // Custom rendering based on interior type
+    if (measurement.interiorType === 'mosquito-nets') {
+      return (
+        <View style={styles.measurementItem}>
+          <View style={styles.measurementHeader}>
+            <Text style={styles.measurementLabel}>{measurement.roomLabel}</Text>
+            <View style={styles.buttonGroup}>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => onEdit(measurement)}
+              >
+                <Ionicons name="pencil" size={12} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => onDelete(measurement.id)}
+              >
+                <Ionicons name="trash" size={12} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.measurementDetails}>
+            <View style={styles.measurementInfo}>
+              <Text style={styles.measurementDimensions}>
+                {measurement.width}" ({measurement.widthFeet}ft) × {measurement.height}" ({measurement.heightFeet}ft)
+              </Text>
+              <Text style={styles.measurementSpecs}>
+                Material: {measurement.materialType || '-'} | Rate: ₹{measurement.materialRatePerSqft || 0}/sqft
+              </Text>
+              <Text style={styles.measurementSpecs}>
+                Total Sqft: {measurement.totalSqft || 0} | Material Cost: {formatCurrency(measurement.materialCost || 0)}
+              </Text>
+              {measurement.customDescription ? (
+                <Text style={styles.measurementSpecs}>
+                  Note: {measurement.customDescription}
+                </Text>
+              ) : null}
+            </View>
+            <Text style={styles.measurementCost}>{formatCurrency(measurement.materialCost || 0)}</Text>
+          </View>
         </View>
-      </View>
-      
-      <View style={styles.measurementDetails}>
-        <View style={styles.measurementInfo}>
-          <Text style={styles.measurementDimensions}>
-            {measurement.width}" × {measurement.height}" 
-            {measurement.curtainType && ` • ${measurement.curtainType}`}
-          </Text>
-          <Text style={styles.measurementSpecs}>
-            {measurement.pieces?.toFixed(1)} pieces • {measurement.totalMeters?.toFixed(2)}m Cloth
-          </Text>
+      );
+    }
+    if (measurement.interiorType === 'curtains') {
+      return (
+        <View style={styles.measurementItem}>
+          <View style={styles.measurementHeader}>
+            <Text style={styles.measurementLabel}>{measurement.roomLabel}</Text>
+            <View style={styles.buttonGroup}>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => onEdit(measurement)}
+              >
+                <Ionicons name="pencil" size={12} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => onDelete(measurement.id)}
+              >
+                <Ionicons name="trash" size={12} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.measurementDetails}>
+            <View style={styles.measurementInfo}>
+              <Text style={styles.measurementDimensions}>
+                {measurement.width}" × {measurement.height}" {measurement.curtainType && `• ${measurement.curtainType}`}
+              </Text>
+              <Text style={styles.measurementSpecs}>
+                {measurement.pieces?.toFixed(1)} pieces • {measurement.totalMeters?.toFixed(2)}m Cloth
+              </Text>
+              <Text style={styles.measurementSpecs}>
+                Cloth: {formatCurrency(measurement.clothCost || 0)} | Stitching: {formatCurrency(measurement.stitchingCost || 0)}
+              </Text>
+            </View>
+            <Text style={styles.measurementCost}>{formatCurrency(measurement.totalCost || 0)}</Text>
+          </View>
         </View>
-        <Text style={styles.measurementCost}>
-          {formatCurrency(measurement.totalCost || 0)}
-        </Text>
-      </View>
-    </View>
-  );
+      );
+    }
+    if (measurement.interiorType === 'wallpapers') {
+      return (
+        <View style={styles.measurementItem}>
+          <View style={styles.measurementHeader}>
+            <Text style={styles.measurementLabel}>{measurement.roomLabel}</Text>
+            <View style={styles.buttonGroup}>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => onEdit(measurement)}
+              >
+                <Ionicons name="pencil" size={12} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => onDelete(measurement.id)}
+              >
+                <Ionicons name="trash" size={12} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.measurementDetails}>
+            <View style={styles.measurementInfo}>
+              <Text style={styles.measurementDimensions}>
+                {measurement.width}" × {measurement.height}" • Wallpaper
+              </Text>
+              <Text style={styles.measurementSpecs}>
+                {measurement.totalMeters?.toFixed(2)}m | Material: {formatCurrency(measurement.clothCost || 0)} | Install: {formatCurrency(measurement.stitchingCost || 0)}
+              </Text>
+            </View>
+            <Text style={styles.measurementCost}>{formatCurrency(measurement.totalCost || 0)}</Text>
+          </View>
+        </View>
+      );
+    }
+    // fallback (should not happen)
+    return null;
+  };
 
   return (
     <View style={styles.container}>
