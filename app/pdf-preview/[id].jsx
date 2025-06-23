@@ -74,6 +74,22 @@ export default function PDFPreview() {
       `).join('');
     };
 
+    const generateMosquitoNetRows = (measurements) => {
+      return measurements.map((m, index) => `
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${index + 1}</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${m.roomLabel}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.width}" (${m.widthFeet}ft)</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.height}" (${m.heightFeet}ft)</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.materialType || ''}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₹${m.materialRatePerSqft || 0}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.totalSqft || 0}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(m.materialCost || 0)}</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">${m.customDescription || ''}</td>
+        </tr>
+      `).join('');
+    };
+
     return `
       <!DOCTYPE html>
       <html>
@@ -229,18 +245,17 @@ export default function PDFPreview() {
             <tr>
               <th>S.No</th>
               <th>Room Label</th>
-              <th>Width</th>
-              <th>Height</th>
-              <th>Pieces</th>
-              <th>Meters</th>
-              <th>Type</th>
-              <th>Material Price</th>
-              <th>Installation Price</th>
-              <th>Total Price</th>
+              <th>Width (in/ft)</th>
+              <th>Height (in/ft)</th>
+              <th>Material Type</th>
+              <th>Rate/Sqft (₹)</th>
+              <th>Total Sqft</th>
+              <th>Material Cost</th>
+              <th>Description</th>
             </tr>
           </thead>
           <tbody>
-            ${generateMeasurementRows(netMeasurements)}
+            ${generateMosquitoNetRows(netMeasurements)}
           </tbody>
         </table>
         ` : ''}

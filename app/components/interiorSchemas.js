@@ -49,20 +49,25 @@ export const INTERIOR_SCHEMAS = {
       { name: 'roomLabel', label: 'Room/Location Label', type: 'text', required: true },
       { name: 'width', label: 'Width (inches)', type: 'number', required: true },
       { name: 'height', label: 'Height (inches)', type: 'number', required: true },
-      { name: 'clothRatePerMeter', label: 'Material Rate/Meter (₹)', type: 'number', required: true },
-      { name: 'stitchingCostPerPiece', label: 'Installation Cost/Piece (₹)', type: 'number', required: true },
+      { name: 'materialType', label: 'Material Type', type: 'picker', required: true, options: ['Fibre net', 'S.S net', 'Sleek net', 'Magnatic net', 'Pleated net', 'Honey Comb'] },
+      { name: 'materialRatePerSqft', label: 'Material Rate/Sqft (₹)', type: 'number', required: true },
+      { name: 'customDescription', label: 'Custom Description', type: 'text', required: false },
     ],
     calculate: (data) => {
-      const width = parseFloat(data.width) || 0;
-      const height = parseFloat(data.height) || 0;
-      const pieces = Math.ceil((width * height) / 100);
-      const totalMeters = (width * height) / 1500;
-      const clothRate = parseFloat(data.clothRatePerMeter) || 0;
-      const stitchingRate = parseFloat(data.stitchingCostPerPiece) || 0;
-      const clothCost = totalMeters * clothRate;
-      const stitchingCost = pieces * stitchingRate;
-      const totalCost = clothCost + stitchingCost;
-      return { pieces, totalMeters, clothCost, stitchingCost, totalCost };
+      // Convert inches to feet and round up
+      const widthInches = parseFloat(data.width) || 0;
+      const heightInches = parseFloat(data.height) || 0;
+      const widthFeet = Math.ceil(widthInches / 12);
+      const heightFeet = Math.ceil(heightInches / 12);
+      const totalSqft = widthFeet * heightFeet;
+      const materialRate = parseFloat(data.materialRatePerSqft) || 0;
+      const materialCost = totalSqft * materialRate;
+      return {
+        widthFeet,
+        heightFeet,
+        totalSqft,
+        materialCost,
+      };
     }
   },
   wallpapers: {
