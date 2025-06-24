@@ -59,12 +59,13 @@ func CreateProject(c *gin.Context) {
 			"updatedAt": time.Now(),
 		},
 		"$setOnInsert": bson.M{
-			"clientName": req.ClientName,
-			"phone":      req.Phone,
-			"address":    req.Address,
-			"createdAt":  time.Now(),
-			"workerId":   workerObjID,
-			"adminId":    adminObjID,
+			"clientName":  req.ClientName,
+			"phone":       req.Phone,
+			"address":     req.Address,
+			"createdAt":   time.Now(),
+			"workerId":    workerObjID,
+			"adminId":     adminObjID,
+			"isCompleted": false,
 		},
 	}
 	opts := options.Update().SetUpsert(true)
@@ -119,4 +120,43 @@ func GetProject(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, project)
+}
+
+// Admin toggles isCompleted for a project
+func ToggleProjectCompleted(c *gin.Context) {
+	adminId := c.GetString("admin_id")
+	projectId := c.Param("id")
+	if adminId == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	var req struct {
+		IsCompleted bool `json:"isCompleted"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	objID, err := primitive.ObjectIDFromHex(projectId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+	adminObjID, err := primitive.ObjectIDFromHex(adminId)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin ID"})
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	db := config.GetDB()
+	res, err := db.Collection("projects").UpdateOne(ctx,
+		bson.M{"_id": objID, "adminId": adminObjID},
+		bson.M{"$set": bson.M{"isCompleted": req.IsCompleted}},
+	)
+	if err != nil || res.MatchedCount == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not update project"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true})
 }

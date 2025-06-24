@@ -23,13 +23,14 @@ type Worker struct {
 }
 
 type Project struct {
-	ID         primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	WorkerID   primitive.ObjectID `bson:"workerId" json:"workerId"`
-	AdminID    primitive.ObjectID `bson:"adminId" json:"adminId"`
-	ClientName string             `bson:"clientName" json:"clientName"`
-	Phone      string             `bson:"phone" json:"phone"`
-	Address    string             `bson:"address" json:"address"`
-	CreatedAt  time.Time          `bson:"createdAt" json:"createdAt"`
-	HTML       string             `bson:"html" json:"html"`
-	RawData    interface{}        `bson:"rawData,omitempty" json:"rawData,omitempty"`
+	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	WorkerID    primitive.ObjectID `bson:"workerId" json:"workerId"`
+	AdminID     primitive.ObjectID `bson:"adminId" json:"adminId"`
+	ClientName  string             `bson:"clientName" json:"clientName"`
+	Phone       string             `bson:"phone" json:"phone"`
+	Address     string             `bson:"address" json:"address"`
+	CreatedAt   time.Time          `bson:"createdAt" json:"createdAt"`
+	HTML        string             `bson:"html" json:"html"`
+	RawData     interface{}        `bson:"rawData,omitempty" json:"rawData,omitempty"`
+	IsCompleted bool               `bson:"isCompleted" json:"isCompleted"`
 }

@@ -41,6 +41,7 @@ func main() {
 		adminGroup.GET("/workers", handlers.ListWorkers)
 		adminGroup.GET("/projects", handlers.ListProjects)
 		adminGroup.GET("/projects/:id", handlers.GetProject)
+		adminGroup.PUT("/projects/:id/completed", handlers.ToggleProjectCompleted)
 		adminGroup.PUT("/admin/password", handlers.ChangeAdminPassword)
 	}
 
