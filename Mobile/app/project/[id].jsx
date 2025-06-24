@@ -140,9 +140,9 @@ export default function ProjectDetails() {
     const wallpaperMeasurements = measurements.filter(m => m.interiorType === 'wallpapers');
 
     // Calculate totals for each type
-    const curtainTotal = curtainMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
-    const netTotal = netMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
-    const wallpaperTotal = wallpaperMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
+    const curtainTotal = curtainMeasurements.reduce((sum, m) => sum + (m.totalCost || m.materialCost || 0), 0);
+    const netTotal = netMeasurements.reduce((sum, m) => sum + (m.totalCost || m.materialCost || 0), 0);
+    const wallpaperTotal = wallpaperMeasurements.reduce((sum, m) => sum + (m.totalCost || m.materialCost || 0), 0);
 
     // Calculate rod cost for curtains only, using each measurement's rodRatePerLength
     let rodLength = 0;

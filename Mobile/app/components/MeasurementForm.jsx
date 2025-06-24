@@ -49,8 +49,18 @@ export default function MeasurementForm({ onSave, onCancel, editingMeasurement }
   const handleSave = () => {
     if (!validateForm()) return;
     const schema = INTERIOR_SCHEMAS[formData.interiorType];
-    const calc = schema.calculate(formData);
-    onSave({ ...formData, ...calc, id: editingMeasurement?.id });
+    // Convert all number fields to numbers BEFORE calculation
+    const cleanedFormData = { ...formData };
+    schema.fields.forEach(field => {
+      if (field.type === 'number') {
+        let val = cleanedFormData[field.name];
+        if (typeof val === 'string') val = val.replace(/[^\d.\-]/g, '');
+        cleanedFormData[field.name] = val === '' || val === undefined || isNaN(Number(val)) ? 0 : Number(val);
+      }
+    });
+    // Now run calculation with cleaned numbers
+    const calc = schema.calculate(cleanedFormData);
+    onSave({ ...cleanedFormData, ...calc, id: editingMeasurement?.id });
   };
 
   const renderField = (field) => {

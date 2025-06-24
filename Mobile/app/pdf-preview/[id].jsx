@@ -491,6 +491,47 @@ export default function PDFPreview() {
               </View>
             </View>
           </View>
+
+          {/* Upload Project Button */}
+          <TouchableOpacity
+            style={[styles.button, { marginTop: 24 }]}
+            onPress={async () => {
+              try {
+                const token = await AsyncStorage.getItem('token');
+                if (!token) {
+                  Alert.alert('Not Authenticated', 'Please login first.');
+                  router.replace('/login');
+                  return;
+                }
+                const htmlContent = generatePDFContent();
+                // Use backend API: POST /api/projects (worker JWT)
+                const response = await fetch('http://localhost:8080/api/projects', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                  },
+                  body: JSON.stringify({
+                    clientName: project.clientName,
+                    phone: project.phone,
+                    address: project.address,
+                    html: htmlContent,
+                    rawData: project
+                  })
+                });
+                if (response.ok) {
+                  Alert.alert('Success', 'Project uploaded to backend!');
+                } else {
+                  const data = await response.json();
+                  Alert.alert('Upload Failed', data.error || 'Failed to upload project');
+                }
+              } catch (error) {
+                Alert.alert('Error', 'Could not upload project');
+              }
+            }}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Upload Project</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>
@@ -690,5 +731,12 @@ const styles = StyleSheet.create({
   termsText: {
     fontSize: 14,
     color: '#6b7280',
+  },
+  button: {
+    backgroundColor: '#2563eb',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
