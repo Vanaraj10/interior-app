@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Worker submits a project (order)
@@ -28,31 +29,51 @@ func CreateProject(c *gin.Context) {
 		Address    string      `json:"address"`
 		HTML       string      `json:"html"`
 		RawData    interface{} `json:"rawData"`
+		ProjectID  string      `json:"projectId"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	project := models.Project{
-		ID:         primitive.NewObjectID(),
-		WorkerID:   workerObjID,
-		AdminID:    adminObjID,
-		ClientName: req.ClientName,
-		Phone:      req.Phone,
-		Address:    req.Address,
-		CreatedAt:  time.Now(),
-		HTML:       req.HTML,
-		RawData:    req.RawData,
-	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	db := config.GetDB()
-	_, err = db.Collection("projects").InsertOne(ctx, project)
+
+	// Use projectId if provided, else fallback to unique key (clientName+phone+address)
+	filter := bson.M{
+		"workerId": workerObjID,
+		"adminId":  adminObjID,
+	}
+	if req.ProjectID != "" {
+		filter["rawData.id"] = req.ProjectID
+	} else {
+		filter["clientName"] = req.ClientName
+		filter["phone"] = req.Phone
+		filter["address"] = req.Address
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"html":      req.HTML,
+			"rawData":   req.RawData,
+			"updatedAt": time.Now(),
+		},
+		"$setOnInsert": bson.M{
+			"clientName": req.ClientName,
+			"phone":      req.Phone,
+			"address":    req.Address,
+			"createdAt":  time.Now(),
+			"workerId":   workerObjID,
+			"adminId":    adminObjID,
+		},
+	}
+	opts := options.Update().SetUpsert(true)
+	_, err = db.Collection("projects").UpdateOne(ctx, filter, update, opts)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save project"})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "Project saved"})
+	c.JSON(http.StatusOK, gin.H{"message": "Project saved/updated"})
 }
 
 // Admin lists all projects for their workers
