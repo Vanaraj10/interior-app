@@ -64,7 +64,6 @@ export default function ProjectDetails() {
       const projectsData = await AsyncStorage.getItem('projects');
       const projects = JSON.parse(projectsData);
       const projectIndex = projects.findIndex(p => p.id === id);
-      
       if (projectIndex !== -1) {
         if (editingMeasurement) {
           // Update existing measurement
@@ -76,15 +75,16 @@ export default function ProjectDetails() {
           }
         } else {
           // Add new measurement
+          projects[projectIndex].measurements = projects[projectIndex].measurements || [];
           projects[projectIndex].measurements.push({
             ...measurementData,
             id: Date.now().toString()
           });
         }
-        
+        // Remove any measurements with missing or invalid id (defensive)
+        projects[projectIndex].measurements = projects[projectIndex].measurements.filter(m => m.id);
         // Recalculate grand total
         projects[projectIndex] = calculateProjectTotals(projects[projectIndex]);
-        
         await AsyncStorage.setItem('projects', JSON.stringify(projects));
         setProject(projects[projectIndex]);
         setShowMeasurementForm(false);
@@ -97,38 +97,23 @@ export default function ProjectDetails() {
   };
 
   const deleteMeasurement = async (measurementId) => {
-    Alert.alert(
-      'Delete Measurement',
-      'Are you sure you want to delete this measurement?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const projectsData = await AsyncStorage.getItem('projects');
-              const projects = JSON.parse(projectsData);
-              const projectIndex = projects.findIndex(p => p.id === id);
-              
-              if (projectIndex !== -1) {
-                projects[projectIndex].measurements = projects[projectIndex].measurements.filter(
-                  m => m.id !== measurementId
-                );
-                
-                // Recalculate grand total
-                projects[projectIndex] = calculateProjectTotals(projects[projectIndex]);
-                
-                await AsyncStorage.setItem('projects', JSON.stringify(projects));
-                setProject(projects[projectIndex]);
-              }
-            } catch (error) {
-              console.error('Error deleting measurement:', error);
-            }
-          },
-        },
-      ]
-    );
+    try {
+      const projectsData = await AsyncStorage.getItem('projects');
+      const projects = JSON.parse(projectsData);
+      const projectIndex = projects.findIndex(p => p.id === id);
+      if (projectIndex !== -1) {
+        projects[projectIndex].measurements = projects[projectIndex].measurements.filter(
+          m => m.id !== measurementId
+        );
+        // Recalculate grand total
+        projects[projectIndex] = calculateProjectTotals(projects[projectIndex]);
+        await AsyncStorage.setItem('projects', JSON.stringify(projects));
+        setProject(projects[projectIndex]);
+      }
+    } catch (error) {
+      console.error('Error deleting measurement:', error);
+      Alert.alert('Error', 'Failed to delete measurement');
+    }
   };
 
   const calculateProjectTotals = (projectData) => {
@@ -140,9 +125,9 @@ export default function ProjectDetails() {
     const wallpaperMeasurements = measurements.filter(m => m.interiorType === 'wallpapers');
 
     // Calculate totals for each type
-    const curtainTotal = curtainMeasurements.reduce((sum, m) => sum + (m.totalCost || m.materialCost || 0), 0);
-    const netTotal = netMeasurements.reduce((sum, m) => sum + (m.totalCost || m.materialCost || 0), 0);
-    const wallpaperTotal = wallpaperMeasurements.reduce((sum, m) => sum + (m.totalCost || m.materialCost || 0), 0);
+    const curtainTotal = curtainMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
+    const netTotal = netMeasurements.reduce((sum, m) => sum + (m.materialCost || m.totalCost || 0), 0);
+    const wallpaperTotal = wallpaperMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
 
     // Calculate rod cost for curtains only, using each measurement's rodRatePerLength
     let rodLength = 0;

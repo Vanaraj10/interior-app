@@ -21,8 +21,20 @@ export default function MeasurementForm({ onSave, onCancel, editingMeasurement }
   useEffect(() => {
     if (editingMeasurement) {
       setFormData(editingMeasurement);
+    } else {
+      // Ensure default values for pickers
+      setFormData(prev => {
+        const schema = INTERIOR_SCHEMAS[prev.interiorType || 'curtains'];
+        const defaults = {};
+        schema.fields.forEach(field => {
+          if (field.type === 'picker' && !prev[field.name]) {
+            defaults[field.name] = field.options[0];
+          }
+        });
+        return { ...prev, ...defaults };
+      });
     }
-  }, [editingMeasurement]);
+  }, [editingMeasurement, formData.interiorType]);
 
   useEffect(() => {
     const schema = INTERIOR_SCHEMAS[formData.interiorType];
@@ -38,7 +50,7 @@ export default function MeasurementForm({ onSave, onCancel, editingMeasurement }
   const validateForm = () => {
     const schema = INTERIOR_SCHEMAS[formData.interiorType];
     for (const field of schema.fields) {
-      if (field.required && (!formData[field.name] || formData[field.name].toString().trim() === '')) {
+      if (field.required && (formData[field.name] === undefined || formData[field.name] === null || formData[field.name].toString().trim() === '')) {
         Alert.alert('Error', `${field.label} is required`);
         return false;
       }
