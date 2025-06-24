@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/Vanaraj10/interior-backend/config"
 	"github.com/Vanaraj10/interior-backend/handlers"
@@ -34,7 +35,7 @@ func main() {
 	r.POST("/api/admin/login", handlers.AdminLogin)
 	r.POST("/api/worker/login", handlers.WorkerLogin)
 
-	adminGroup := r.Group("/api").Use(middleware.AdminAuthMiddleware())
+	adminGroup := r.Group("/api/admin").Use(middleware.AdminAuthMiddleware())
 	{
 		adminGroup.POST("/workers", handlers.CreateWorker)
 		adminGroup.DELETE("/workers/:id", handlers.DeleteWorker)
@@ -42,14 +43,18 @@ func main() {
 		adminGroup.GET("/projects", handlers.ListProjects)
 		adminGroup.GET("/projects/:id", handlers.GetProject)
 		adminGroup.PUT("/projects/:id/completed", handlers.ToggleProjectCompleted)
-		adminGroup.PUT("/admin/password", handlers.ChangeAdminPassword)
+		adminGroup.PUT("/password", handlers.ChangeAdminPassword)
 	}
 
-	workerGroup := r.Group("/api").Use(middleware.WorkerAuthMiddleware())
+	workerGroup := r.Group("/api/worker").Use(middleware.WorkerAuthMiddleware())
 	{
 		workerGroup.POST("/projects", handlers.CreateProject)
 		workerGroup.PUT("/projects/:id/completed", handlers.WorkerToggleProjectCompleted)
 	}
 
-	r.Run(":8080") // listen and serve on 0.0.0.0:8080
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	r.Run(":" + port) // listen and serve on 0.0.0.0:PORT
 }
