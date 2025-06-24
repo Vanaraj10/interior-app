@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/Vanaraj10/interior-backend/config"
@@ -13,7 +14,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var jwtSecret = []byte("supersecretkey") // Use env var in production
+var jwtSecret = []byte(os.Getenv("JWT_SECRET")) // Use env var in production
 
 type LoginRequest struct {
 	Username string `json:"username"`

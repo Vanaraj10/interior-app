@@ -48,6 +48,7 @@ func main() {
 	workerGroup := r.Group("/api").Use(middleware.WorkerAuthMiddleware())
 	{
 		workerGroup.POST("/projects", handlers.CreateProject)
+		workerGroup.PUT("/projects/:id/completed", handlers.WorkerToggleProjectCompleted)
 	}
 
 	r.Run(":8080") // listen and serve on 0.0.0.0:8080

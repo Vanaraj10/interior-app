@@ -160,3 +160,37 @@ func ToggleProjectCompleted(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true})
 }
+
+// Worker toggles isCompleted for a project
+func WorkerToggleProjectCompleted(c *gin.Context) {
+	workerId := c.GetString("worker_id")
+	projectId := c.Param("id")
+	if workerId == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	var req struct {
+		IsCompleted bool `json:"isCompleted"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	objID, err := primitive.ObjectIDFromHex(projectId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	db := config.GetDB()
+	res, err := db.Collection("projects").UpdateOne(ctx,
+		bson.M{"_id": objID, "workerId": workerId},
+		bson.M{"$set": bson.M{"isCompleted": req.IsCompleted}},
+	)
+	if err != nil || res.MatchedCount == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not update project"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true})
+}
