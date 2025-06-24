@@ -504,8 +504,16 @@ export default function PDFPreview() {
                   return;
                 }
                 const htmlContent = generatePDFContent();
+                // FINAL CLEAN: Remove all backslashes and ensure only normal quotes
+                const cleanedHtmlContent = htmlContent
+                  .replace(/\\/g, '') // Remove all backslashes
+                  .replace(/>\s+</g, '><') // Remove whitespace between tags
+                  .replace(/[\n\r\t]+/g, ' ') // Remove newlines, tabs
+                  .replace(/\s{2,}/g, ' ') // Collapse multiple spaces
+                  .replace(/\"/g, '"') // Replace any escaped quotes with normal quotes
+                  .trim();
                 // Use backend API: POST /api/projects (worker JWT)
-                const response = await fetch('http://localhost:8080/api/projects', {
+                const response = await fetch('https://interior-app-production.up.railway.app/api/worker/projects', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -515,7 +523,7 @@ export default function PDFPreview() {
                     clientName: project.clientName,
                     phone: project.phone,
                     address: project.address,
-                    html: htmlContent,
+                    html: cleanedHtmlContent,
                   })
                 });
                 if (response.ok) {

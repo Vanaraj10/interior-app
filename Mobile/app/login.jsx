@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
 export default function Login() {
-  const [phone, setPhone] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -20,17 +20,17 @@ export default function Login() {
   }, []);
 
   const handleLogin = async () => {
-    if (!phone || !password) {
+    if (!username || !password) {
       Alert.alert('Error', 'Please enter phone and password');
       return;
     }
     setLoading(true);
     try {
       // Backend expects { username, password } for worker login
-      const response = await fetch('http://localhost:8080/api/worker/login', {
+      const response = await fetch('https://interior-app-production.up.railway.app/api/worker/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: phone, password })
+        body: JSON.stringify({ username, password })
       });
       const data = await response.json();
       if (response.ok && data.token) {
@@ -52,9 +52,8 @@ export default function Login() {
       <TextInput
         style={styles.input}
         placeholder="Phone"
-        keyboardType="phone-pad"
-        value={phone}
-        onChangeText={setPhone}
+        value={username}
+        onChangeText={setUsername}
       />
       <TextInput
         style={styles.input}

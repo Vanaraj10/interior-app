@@ -18,9 +18,13 @@ func CreateProject(c *gin.Context) {
 	workerId := c.GetString("worker_id")
 	adminId := c.GetString("admin_id")
 	workerObjID, err := primitive.ObjectIDFromHex(workerId)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid worker ID"})
+		return
+	}
 	adminObjID, err2 := primitive.ObjectIDFromHex(adminId)
-	if err != nil || err2 != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid worker or admin ID"})
+	if err2 != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin ID"})
 		return
 	}
 	var req struct {
@@ -104,6 +108,11 @@ func ListProjects(c *gin.Context) {
 // Admin gets a specific project
 func GetProject(c *gin.Context) {
 	adminId := c.GetString("admin_id")
+	adminObjID, err := primitive.ObjectIDFromHex(adminId)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin ID"})
+		return
+	}
 	projectId := c.Param("id")
 	projectObjID, err := primitive.ObjectIDFromHex(projectId)
 	if err != nil {
@@ -114,7 +123,7 @@ func GetProject(c *gin.Context) {
 	defer cancel()
 	db := config.GetDB()
 	var project models.Project
-	err = db.Collection("projects").FindOne(ctx, bson.M{"_id": projectObjID, "adminId": adminId}).Decode(&project)
+	err = db.Collection("projects").FindOne(ctx, bson.M{"_id": projectObjID, "adminId": adminObjID}).Decode(&project)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found or not authorized"})
 		return
@@ -164,6 +173,11 @@ func ToggleProjectCompleted(c *gin.Context) {
 // Worker toggles isCompleted for a project
 func WorkerToggleProjectCompleted(c *gin.Context) {
 	workerId := c.GetString("worker_id")
+	workerObjID, err := primitive.ObjectIDFromHex(workerId)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid worker ID"})
+		return
+	}
 	projectId := c.Param("id")
 	if workerId == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -185,7 +199,7 @@ func WorkerToggleProjectCompleted(c *gin.Context) {
 	defer cancel()
 	db := config.GetDB()
 	res, err := db.Collection("projects").UpdateOne(ctx,
-		bson.M{"_id": objID, "workerId": workerId},
+		bson.M{"_id": objID, "workerId": workerObjID},
 		bson.M{"$set": bson.M{"isCompleted": req.IsCompleted}},
 	)
 	if err != nil || res.MatchedCount == 0 {
