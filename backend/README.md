@@ -1,41 +1,23 @@
-# Interior App Backend
+# Interior Project Management Backend
 
-This is the backend API for the Interior App, built with Go (Gin) and MongoDB. It supports admin and worker authentication, worker management, project (order) submission, and admin password management.
+This is the backend API for the Interior Project Management System, built with Go, Gin, and MongoDB. It provides authentication and project management endpoints for both admin and worker roles.
 
 ## Features
-- Admin and Worker authentication (JWT)
-- Admin can create, delete, and list workers
-- Workers can submit project orders (HTML + client info)
-- Admin can view all projects/orders under their workers
-- Admin can change their password
+- JWT-based authentication for admin and workers
+- Project CRUD operations
+- Toggle project completion status (`isCompleted`) for both admin and worker
+- Role-based access control
+- MongoDB Atlas integration
+- CORS enabled for frontend/mobile clients
+- Ready for deployment on Railway (or any cloud platform)
 
----
-
-## Setup
-
-1. **Clone the repository**
-2. **Install Go dependencies**
-   ```sh
-   go mod tidy
-   ```
-3. **Set environment variables** (or edit `config/db.go` for MongoDB URI)
-   - `MONGODB_URI` (optional, defaults to local)
-   - `JWT_SECRET` (optional, defaults to hardcoded string)
-4. **Run the server**
-   ```sh
-   go run main.go
-   ```
-   The server runs on `http://localhost:8080`
-
----
-
-## API Endpoints
+## API Documentation
 
 ### Authentication
 
 #### Admin Login
 - **POST** `/api/admin/login`
-- **Request:**
+- **Request Body:**
   ```json
   { "username": "admin1", "password": "yourpassword" }
   ```
@@ -46,7 +28,7 @@ This is the backend API for the Interior App, built with Go (Gin) and MongoDB. I
 
 #### Worker Login
 - **POST** `/api/worker/login`
-- **Request:**
+- **Request Body:**
   ```json
   { "username": "worker1", "password": "yourpassword" }
   ```
@@ -57,12 +39,12 @@ This is the backend API for the Interior App, built with Go (Gin) and MongoDB. I
 
 ---
 
-### Worker Management (Admin only, requires Bearer token)
+### Admin Endpoints (require Bearer token)
 
 #### Create Worker
-- **POST** `/api/workers`
+- **POST** `/api/admin/workers`
 - **Headers:** `Authorization: Bearer <ADMIN_JWT>`
-- **Request:**
+- **Request Body:**
   ```json
   { "username": "worker1", "password": "pass123", "name": "Worker Name" }
   ```
@@ -72,7 +54,7 @@ This is the backend API for the Interior App, built with Go (Gin) and MongoDB. I
   ```
 
 #### Delete Worker
-- **DELETE** `/api/workers/:id`
+- **DELETE** `/api/admin/workers/:id`
 - **Headers:** `Authorization: Bearer <ADMIN_JWT>`
 - **Response:**
   ```json
@@ -80,7 +62,7 @@ This is the backend API for the Interior App, built with Go (Gin) and MongoDB. I
   ```
 
 #### List Workers
-- **GET** `/api/workers`
+- **GET** `/api/admin/workers`
 - **Headers:** `Authorization: Bearer <ADMIN_JWT>`
 - **Response:**
   ```json
@@ -89,52 +71,40 @@ This is the backend API for the Interior App, built with Go (Gin) and MongoDB. I
   ]
   ```
 
----
-
-### Project (Order) Management
-
-#### Worker Submits Project
-- **POST** `/api/projects`
-- **Headers:** `Authorization: Bearer <WORKER_JWT>`
-- **Request:**
-  ```json
-  {
-    "clientName": "Client Name",
-    "phone": "1234567890",
-    "address": "Client Address",
-    "html": "<html>...</html>",
-    "rawData": { /* optional, original measurement data */ }
-  }
-  ```
-- **Response:**
-  ```json
-  { "message": "Project saved" }
-  ```
-
-#### Admin Lists All Projects
-- **GET** `/api/projects`
+#### List Projects
+- **GET** `/api/admin/projects`
 - **Headers:** `Authorization: Bearer <ADMIN_JWT>`
 - **Response:**
   ```json
   [
-    { "id": "...", "clientName": "...", "html": "...", ... }
+    { "id": "...", "clientName": "...", "isCompleted": false, ... }
   ]
   ```
 
-#### Admin Gets Project Details
-- **GET** `/api/projects/:id`
+#### Get Project by ID
+- **GET** `/api/admin/projects/:id`
 - **Headers:** `Authorization: Bearer <ADMIN_JWT>`
 - **Response:**
   ```json
-  { "id": "...", "clientName": "...", "html": "...", ... }
+  { "id": "...", "clientName": "...", "isCompleted": false, ... }
   ```
 
----
+#### Toggle Project Completion
+- **PUT** `/api/admin/projects/:id/completed`
+- **Headers:** `Authorization: Bearer <ADMIN_JWT>`
+- **Request Body:**
+  ```json
+  { "isCompleted": true }
+  ```
+- **Response:**
+  ```json
+  { "success": true }
+  ```
 
-### Admin Password Change
+#### Change Admin Password
 - **PUT** `/api/admin/password`
 - **Headers:** `Authorization: Bearer <ADMIN_JWT>`
-- **Request:**
+- **Request Body:**
   ```json
   { "old_password": "oldpass", "new_password": "newpass" }
   ```
@@ -145,18 +115,54 @@ This is the backend API for the Interior App, built with Go (Gin) and MongoDB. I
 
 ---
 
+### Worker Endpoints (require Bearer token)
+
+#### Create Project
+- **POST** `/api/worker/projects`
+- **Headers:** `Authorization: Bearer <WORKER_JWT>`
+- **Request Body:**
+  ```json
+  {
+    "clientName": "Client Name",
+    "phone": "1234567890",
+    "address": "Client Address",
+    "html": "<html>...</html>",
+    "rawData": { /* optional, original measurement data */ },
+    "projectId": "optional-custom-id"
+  }
+  ```
+- **Response:**
+  ```json
+  { "message": "Project saved" }
+  ```
+
+#### Toggle Project Completion
+- **PUT** `/api/worker/projects/:id/completed`
+- **Headers:** `Authorization: Bearer <WORKER_JWT>`
+- **Request Body:**
+  ```json
+  { "isCompleted": true }
+  ```
+- **Response:**
+  ```json
+  { "success": true }
+  ```
+
+---
+
+### Health Check
+- **GET** `/api/health`
+- **Response:**
+  ```json
+  { "status": "ok" }
+  ```
+
+---
+
 ## Error Responses
 All error responses are JSON, e.g.:
 ```json
 { "error": "Error message here" }
 ```
-
----
-
-## Notes
-- Only you (the owner) can create new admins (directly in DB or via a protected script).
-- All passwords are securely hashed (bcrypt).
-- Use the JWT token from login in the `Authorization` header for all protected endpoints.
-- The HTML for projects is generated on the frontend and stored as-is in MongoDB.
 
 ---
