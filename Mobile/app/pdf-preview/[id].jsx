@@ -516,7 +516,6 @@ export default function PDFPreview() {
                     phone: project.phone,
                     address: project.address,
                     html: htmlContent,
-                    rawData: project
                   })
                 });
                 if (response.ok) {
