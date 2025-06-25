@@ -61,6 +61,11 @@
   border: 1px solid #ddd;
   text-align: center;
 }
+.cell-right {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: right;
+}
 
 /* Table and layout helpers (optional, for better appearance) */
 table {

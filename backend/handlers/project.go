@@ -129,6 +129,15 @@ func CreateProject(c *gin.Context) {
 	reCellCenter := regexp.MustCompile(`style=["']\s*padding: 8px;\s*border: 1px solid #ddd;\s*text-align: center;?\s*["']`)
 	html = reCellCenter.ReplaceAllString(html, "class='cell-center'")
 
+	// Replace repeated inline style for right-aligned cells with a single class
+	html = strings.ReplaceAll(html, "style='padding: 8px; border: 1px solid #ddd; text-align: right'", "class='cell-right'")
+	html = strings.ReplaceAll(html, "style=\"padding: 8px; border: 1px solid #ddd; text-align: right\"", "class='cell-right'")
+	html = strings.ReplaceAll(html, "style='padding: 8px; border: 1px solid #ddd; text-align: right;'", "class='cell-right'")
+	html = strings.ReplaceAll(html, "style=\"padding: 8px; border: 1px solid #ddd; text-align: right;\"", "class='cell-right'")
+	// Regex for extra whitespace or attribute order
+	reCellRight := regexp.MustCompile(`style=["']\s*padding: 8px;\s*border: 1px solid #ddd;\s*text-align: right;?\s*["']`)
+	html = reCellRight.ReplaceAllString(html, "class='cell-right'")
+
 	update := bson.M{
 		"$set": bson.M{
 			"html":      html,
