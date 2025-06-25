@@ -11,6 +11,7 @@ import {
   View
 } from 'react-native';
 import { INTERIOR_SCHEMAS } from './interiorSchemas';
+import DynamicFields from './DynamicFields';
 
 export default function MeasurementForm({ onSave, onCancel, editingMeasurement }) {
   const [formData, setFormData] = useState({
@@ -75,42 +76,6 @@ export default function MeasurementForm({ onSave, onCancel, editingMeasurement }
     onSave({ ...cleanedFormData, ...calc, id: editingMeasurement?.id });
   };
 
-  const renderField = (field) => {
-    if (field.type === 'text' || field.type === 'number') {
-      return (
-        <View key={field.name} style={styles.fieldContainer}>
-          <Text style={styles.label}>{field.label}{field.required ? ' *' : ''}</Text>
-          <TextInput
-            style={styles.input}
-            value={formData[field.name]?.toString() || ''}
-            onChangeText={text => updateField(field.name, text)}
-            placeholder={field.label}
-            keyboardType={field.type === 'number' ? 'numeric' : 'default'}
-          />
-        </View>
-      );
-    }
-    if (field.type === 'picker') {
-      return (
-        <View key={field.name} style={styles.fieldContainer}>
-          <Text style={styles.label}>{field.label}</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={formData[field.name] || field.options[0]}
-              onValueChange={value => updateField(field.name, value)}
-              style={styles.picker}
-            >
-              {field.options.map(opt => (
-                <Picker.Item key={opt} label={opt} value={opt} />
-              ))}
-            </Picker>
-          </View>
-        </View>
-      );
-    }
-    return null;
-  };
-
   const schema = INTERIOR_SCHEMAS[formData.interiorType];
 
   return (
@@ -145,7 +110,7 @@ export default function MeasurementForm({ onSave, onCancel, editingMeasurement }
         {/* Dynamic Fields */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Measurement Details</Text>
-          {schema.fields.map(renderField)}
+          <DynamicFields schema={schema} formData={formData} updateField={updateField} />
         </View>
         {/* Save Button */}
         <TouchableOpacity
