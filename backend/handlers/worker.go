@@ -19,6 +19,7 @@ func CreateWorker(c *gin.Context) {
 		Username string `json:"username"`
 		Password string `json:"password"`
 		Name     string `json:"name"`
+		Phone    string `json:"phone"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
@@ -48,6 +49,7 @@ func CreateWorker(c *gin.Context) {
 		PasswordHash: hash,
 		AdminID:      adminObjID,
 		Name:         req.Name,
+		Phone : req.Phone,
 		CreatedAt:    time.Now(),
 	}
 	_, err = db.Collection("workers").InsertOne(ctx, worker)

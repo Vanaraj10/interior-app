@@ -19,6 +19,7 @@ type Worker struct {
 	PasswordHash string             `bson:"passwordHash" json:"-"`
 	AdminID      primitive.ObjectID `bson:"adminId" json:"adminId"`
 	Name         string             `bson:"name" json:"name"`
+	Phone        string             `bson:"phone" json:"phone"`
 	CreatedAt    time.Time          `bson:"createdAt" json:"createdAt"`
 }
 

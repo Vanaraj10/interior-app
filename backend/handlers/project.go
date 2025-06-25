@@ -43,7 +43,6 @@ func CreateProject(c *gin.Context) {
 	defer cancel()
 	db := config.GetDB()
 
-	// Use projectId if provided, else fallback to unique key (clientName+phone+address)
 	filter := bson.M{
 		"workerId": workerObjID,
 		"adminId":  adminObjID,
@@ -207,4 +206,28 @@ func WorkerToggleProjectCompleted(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true})
+}
+
+// Worker lists all projects assigned to them
+func ListWorkerProjects(c *gin.Context) {
+	workerId := c.GetString("worker_id")
+	workerObjID, err := primitive.ObjectIDFromHex(workerId)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid worker ID"})
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	db := config.GetDB()
+	cursor, err := db.Collection("projects").Find(ctx, bson.M{"workerId": workerObjID})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch projects"})
+		return
+	}
+	var projects []models.Project
+	if err := cursor.All(ctx, &projects); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse projects"})
+		return
+	}
+	c.JSON(http.StatusOK, projects)
 }
