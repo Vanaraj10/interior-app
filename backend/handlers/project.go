@@ -120,6 +120,10 @@ func CreateProject(c *gin.Context) {
 		return ""
 	})
 
+	// Replace repeated inline style with a single class
+	html = strings.ReplaceAll(html, "style='padding: 8px; border: 1px solid #ddd; text-align: center'", "class='cell-center'")
+	html = strings.ReplaceAll(html, "style=\"padding: 8px; border: 1px solid #ddd; text-align: center\"", "class='cell-center'")
+
 	update := bson.M{
 		"$set": bson.M{
 			"html":      html,

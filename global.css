@@ -1,5 +1,22 @@
 /* global.css: Styles for class-based HTML generated from backend */
-
+.header {
+    background-color: #f0f9ff;
+    padding: 10px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+.client-info {
+    margin: 20px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
 .bold {
   font-weight: bold;
 }
@@ -39,6 +56,11 @@
 .text-center {
   text-align: center;
 }
+.cell-center {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
 
 /* Table and layout helpers (optional, for better appearance) */
 table {
@@ -58,6 +80,17 @@ th {
 td {
   padding: 8px;
   border: 1px solid #ddd;
+}
+.cost-summary {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f0f9ff;
+    border-radius: 8px;
+}
+.cost-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
 }
 
 /* Add more classes as needed to match your backend mappings */
