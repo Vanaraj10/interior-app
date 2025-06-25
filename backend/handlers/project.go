@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/Vanaraj10/interior-backend/config"
@@ -55,9 +56,20 @@ func CreateProject(c *gin.Context) {
 		filter["address"] = req.Address
 	}
 
+	// Clean and normalize HTML before saving
+	html := req.HTML
+	// Remove all backslashes (\), excessive whitespace, and convert double quotes to single quotes
+	html = strings.ReplaceAll(html, "\\", "")
+	html = strings.ReplaceAll(html, "\r", " ")
+	html = strings.ReplaceAll(html, "\n", " ")
+	html = strings.ReplaceAll(html, "\t", " ")
+	html = strings.ReplaceAll(html, "\"", "'")   // convert double quotes to single quotes
+	html = strings.ReplaceAll(html, "> <", "><") // remove whitespace between tags
+	html = strings.TrimSpace(html)
+
 	update := bson.M{
 		"$set": bson.M{
-			"html":      req.HTML,
+			"html":      html,
 			"rawData":   req.RawData,
 			"updatedAt": time.Now(),
 		},
