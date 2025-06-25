@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Print from 'expo-print';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   Alert,
   ScrollView,
@@ -17,6 +17,7 @@ export default function PDFPreview() {
   const { id } = useLocalSearchParams();
   const [project, setProject] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     loadProject();
@@ -421,11 +422,6 @@ export default function PDFPreview() {
       {/* Preview Content */}
       <ScrollView style={styles.scrollView}>
         <View style={styles.previewCard}>
-          {/* Header Preview */}
-          <View style={styles.previewHeader}>
-            <Text style={styles.companyName}>ROYAL CURTAIN</Text>
-            <Text style={styles.companySubtitle}>Interior Solutions & Custom Designs</Text>
-          </View>
 
           {/* Client Info Preview */}
           <View style={styles.clientInfo}>
@@ -441,17 +437,25 @@ export default function PDFPreview() {
           {project.measurements && project.measurements.length > 0 && (
             <View style={styles.measurementsSection}>
               <Text style={styles.sectionTitle}>Measurements Summary</Text>
-              {project.measurements.map((measurement, index) => (
-                <View key={measurement.id} style={styles.measurementRow}>
-                  <View style={styles.measurementInfo}>
-                    <Text style={styles.measurementLabel}>{measurement.roomLabel}</Text>
-                    <Text style={styles.measurementDetails}>
-                      {measurement.width}" × {measurement.height}" • {measurement.interiorType}
-                    </Text>
+              {project.measurements.map((measurement, index) => {
+                let cost = 0;
+                if (measurement.interiorType === 'mosquito-nets') {
+                  cost = measurement.materialCost || 0;
+                } else {
+                  cost = measurement.totalCost || 0;
+                }
+                return (
+                  <View key={measurement.id} style={styles.measurementRow}>
+                    <View style={styles.measurementInfo}>
+                      <Text style={styles.measurementLabel}>{measurement.roomLabel}</Text>
+                      <Text style={styles.measurementDetails}>
+                        {measurement.width}" × {measurement.height}" • {measurement.interiorType}
+                      </Text>
+                    </View>
+                    <Text style={styles.measurementCost}>{formatCurrency(cost)}</Text>
                   </View>
-                  <Text style={styles.measurementCost}>{formatCurrency(measurement.totalCost || 0)}</Text>
-                </View>
-              ))}
+                );
+              })}
             </View>
           )}
 
@@ -527,7 +531,12 @@ export default function PDFPreview() {
                   })
                 });
                 if (response.ok) {
-                  Alert.alert('Success', 'Project uploaded to backend!');
+                  setShowSuccess(true);
+                  // Optionally, auto-close after 2s and navigate home
+                  setTimeout(() => {
+                    setShowSuccess(false);
+                    router.replace('/');
+                  }, 4000);
                 } else {
                   const data = await response.json();
                   Alert.alert('Upload Failed', data.error || 'Failed to upload project');
@@ -537,10 +546,18 @@ export default function PDFPreview() {
               }
             }}
           >
-            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Upload Project</Text>
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Upload Quotation</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
+      {showSuccess && (
+        <View style={styles.successOverlay}>
+          <View style={styles.successModal}>
+            <Ionicons name="checkmark-circle" size={64} color="#22c55e" style={{ marginBottom: 12 }} />
+            <Text style={styles.successText}>Quotation uploaded successfully</Text>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -615,22 +632,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     padding: 24,
-  },
-  previewHeader: {
-    alignItems: 'center',
-    marginBottom: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-    paddingBottom: 16,
-  },
-  companyName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2563eb',
-  },
-  companySubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
   },
   clientInfo: {
     backgroundColor: '#f9fafb',
@@ -745,5 +746,34 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 10
+  },
+  successOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  successModal: {
+    backgroundColor: '#d1fae5',
+    borderRadius: 16,
+    padding: 32,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  successText: {
+    color: '#15803d',
+    fontWeight: 'bold',
+    fontSize: 18,
+    textAlign: 'center',
   },
 });
