@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -58,7 +59,7 @@ func CreateProject(c *gin.Context) {
 
 	// Clean and normalize HTML before saving
 	html := req.HTML
-	// Remove all backslashes (\), excessive whitespace, and convert double quotes to single quotes
+	// Remove all backslashes (\\), excessive whitespace, and convert double quotes to single quotes
 	html = strings.ReplaceAll(html, "\\", "")
 	html = strings.ReplaceAll(html, "\r", " ")
 	html = strings.ReplaceAll(html, "\n", " ")
@@ -66,6 +67,58 @@ func CreateProject(c *gin.Context) {
 	html = strings.ReplaceAll(html, "\"", "'")   // convert double quotes to single quotes
 	html = strings.ReplaceAll(html, "> <", "><") // remove whitespace between tags
 	html = strings.TrimSpace(html)
+
+	// Remove all <style>...</style> blocks in the <head> and add a global stylesheet link
+	styleTagRe := regexp.MustCompile(`(?is)<style.*?>.*?</style>`)
+	headStyleTagRe := regexp.MustCompile(`(?is)(<head.*?>)(.*?<style.*?>.*?</style>)(.*?)(</head>)`)
+	if headStyleTagRe.MatchString(html) {
+		html = headStyleTagRe.ReplaceAllString(html, `$1<link rel='stylesheet' href='/global.css'>$3$4`)
+	} else {
+		// If no <style> in <head>, just add the stylesheet after <head>
+		headRe := regexp.MustCompile(`(?i)<head.*?>`)
+		html = headRe.ReplaceAllString(html, "$0<link rel='stylesheet' href='/global.css'>")
+	}
+	// Remove any remaining <style>...</style> blocks
+	html = styleTagRe.ReplaceAllString(html, "")
+	// DO NOT remove inline style attributes
+
+	// Remove all inline style attributes and replace with class names for common patterns
+	// Example: style="font-weight: bold" => class="bold"
+	// You can expand this mapping as needed for your use case
+	styleToClass := []struct{ pattern, class string }{
+		{`font-weight:\s*bold`, "bold"},
+		{`font-size:\s*10px`, "text-xs"},
+		{`font-size:\s*12px`, "text-sm"},
+		{`font-size:\s*14px`, "text-base"},
+		{`font-size:\s*18px`, "text-lg"},
+		{`color:\s*#3b82f6`, "text-primary"},
+		{`color:\s*#666`, "text-muted"},
+		{`background-color:\s*#f0f9ff`, "bg-summary"},
+		{`border-radius:\s*8px`, "rounded"},
+		{`border: 1px solid #ddd`, "border"},
+		{`padding: 8px`, "p-2"},
+		{`text-align:\s*right`, "text-right"},
+		{`text-align:\s*center`, "text-center"},
+		// Add more as needed
+	}
+	// Replace inline styles with class names
+	html = regexp.MustCompile(`style="([^"]*)"`).ReplaceAllStringFunc(html, func(m string) string {
+		styles := regexp.MustCompile(`style="([^"]*)"`).FindStringSubmatch(m)
+		if len(styles) < 2 {
+			return ""
+		}
+		styleStr := styles[1]
+		classNames := []string{}
+		for _, sc := range styleToClass {
+			if regexp.MustCompile(sc.pattern).MatchString(styleStr) {
+				classNames = append(classNames, sc.class)
+			}
+		}
+		if len(classNames) > 0 {
+			return "class='" + strings.Join(classNames, " ") + "'"
+		}
+		return ""
+	})
 
 	update := bson.M{
 		"$set": bson.M{

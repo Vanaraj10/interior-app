@@ -1,0 +1,63 @@
+/* global.css: Styles for class-based HTML generated from backend */
+
+.bold {
+  font-weight: bold;
+}
+.text-xs {
+  font-size: 10px;
+}
+.text-sm {
+  font-size: 12px;
+}
+.text-base {
+  font-size: 14px;
+}
+.text-lg {
+  font-size: 18px;
+}
+.text-primary {
+  color: #3b82f6;
+}
+.text-muted {
+  color: #666;
+}
+.bg-summary {
+  background-color: #f0f9ff;
+}
+.rounded {
+  border-radius: 8px;
+}
+.border {
+  border: 1px solid #ddd;
+}
+.p-2 {
+  padding: 8px;
+}
+.text-right {
+  text-align: right;
+}
+.text-center {
+  text-align: center;
+}
+
+/* Table and layout helpers (optional, for better appearance) */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+th {
+  background-color: #3b82f6;
+  color: white;
+  padding: 10px 8px;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid #ddd;
+}
+td {
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+/* Add more classes as needed to match your backend mappings */
