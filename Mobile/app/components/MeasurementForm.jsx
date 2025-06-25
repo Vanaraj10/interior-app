@@ -147,18 +147,6 @@ export default function MeasurementForm({ onSave, onCancel, editingMeasurement }
           <Text style={styles.sectionTitle}>Measurement Details</Text>
           {schema.fields.map(renderField)}
         </View>
-        {/* Calculations */}
-        {calculatedData && calculatedData.totalCost > 0 && (
-          <View style={styles.calculationSection}>
-            <Text style={styles.calculationTitle}>Calculated Values</Text>
-            {Object.entries(calculatedData).map(([key, value]) => (
-              <View key={key} style={styles.calculationRow}>
-                <Text style={styles.calculationLabel}>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</Text>
-                <Text style={styles.calculationValue}>{typeof value === 'number' ? value.toLocaleString('en-IN', { maximumFractionDigits: 2 }) : value}</Text>
-              </View>
-            ))}
-          </View>
-        )}
         {/* Save Button */}
         <TouchableOpacity
           style={styles.saveButton}

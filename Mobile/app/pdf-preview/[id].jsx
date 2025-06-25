@@ -12,6 +12,34 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { PDF_ROW_GENERATORS } from '../components/pdfGenerators';
+
+const INTERIOR_TYPES = [
+  {
+    key: 'curtains',
+    label: 'CURTAINS',
+    generator: PDF_ROW_GENERATORS.curtains,
+    columns: [
+      'S.No', 'Room Label', 'Width', 'Height', 'Pieces', 'Meters', 'Type', 'Cloth Price', 'Stitching Price', 'Total Price'
+    ],
+  },
+  {
+    key: 'mosquito-nets',
+    label: 'MOSQUITO NETS',
+    generator: PDF_ROW_GENERATORS['mosquito-nets'],
+    columns: [
+      'S.No', 'Room Label', 'Width (in/ft)', 'Height (in/ft)', 'Material Type', 'Rate/Sqft (₹)', 'Total Sqft', 'Material Cost', 'Description'
+    ],
+  },
+  {
+    key: 'wallpapers',
+    label: 'WALLPAPERS',
+    generator: PDF_ROW_GENERATORS.wallpapers,
+    columns: [
+      'S.No', 'Room Label', 'Width', 'Height', 'Pieces', 'Meters', 'Type', 'Material Price', 'Installation Price', 'Total Price'
+    ],
+  },
+];
 
 export default function PDFPreview() {
   const { id } = useLocalSearchParams();
@@ -47,51 +75,23 @@ export default function PDFPreview() {
 
   const generatePDFContent = () => {
     if (!project) return '';
-
-    const curtainMeasurements = project.measurements?.filter(m => m.interiorType === 'curtains') || [];
-    const netMeasurements = project.measurements?.filter(m => m.interiorType === 'mosquito-nets') || [];
-    const wallpaperMeasurements = project.measurements?.filter(m => m.interiorType === 'wallpapers') || [];
-
-    const generateMeasurementRows = (measurements) => {
-      return measurements.map((m, index) => `
-        <tr>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${index + 1}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${m.roomLabel}</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.width}"</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.height}"</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">
-            ${m.parts === 'One Part' ? `<span style='display:inline-block;border:2px solid #2563eb;border-radius:999px;padding:2px 8px;color:#2563eb;font-weight:bold;'>${m.pieces?.toFixed(1)} pieces</span>` : `${m.pieces?.toFixed(1)} pieces`}
-          </td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.totalMeters?.toFixed(2)}m</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.curtainType || 'N/A'}</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
-            <div style="font-weight: bold;">${formatCurrency(m.clothCost || 0)}</div>
-            <div style="font-size: 10px; color: #666;">${m.totalMeters?.toFixed(2)}m × ₹${m.clothRatePerMeter}</div>
-          </td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
-            <div style="font-weight: bold;">${formatCurrency(m.stitchingCost || 0)}</div>
-            <div style="font-size: 10px; color: #666;">${m.pieces?.toFixed(1)} × ₹${m.stitchingCostPerPiece}</div>
-          </td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(m.totalCost || 0)}</td>
-        </tr>
-      `).join('');
-    };
-
-    const generateMosquitoNetRows = (measurements) => {
-      return measurements.map((m, index) => `
-        <tr>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${index + 1}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${m.roomLabel}</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.width}" (${m.widthFeet}ft)</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.height}" (${m.heightFeet}ft)</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.materialType || ''}</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₹${m.materialRatePerSqft || 0}</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.totalSqft || 0}</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(m.materialCost || 0)}</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${m.customDescription || ''}</td>
-        </tr>
-      `).join('');
-    };
+    let htmlSections = '';
+    INTERIOR_TYPES.forEach(type => {
+      const measurements = project.measurements?.filter(m => m.interiorType === type.key) || [];
+      if (measurements.length > 0) {
+        htmlSections += `
+          <div class="section-title">${type.label}</div>
+          <table>
+            <thead>
+              <tr>${type.columns.map(col => `<th>${col}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+              ${type.generator(measurements, formatCurrency)}
+            </tbody>
+          </table>
+        `;
+      }
+    });
 
     return `
       <!DOCTYPE html>
@@ -218,75 +218,9 @@ export default function PDFPreview() {
           </div>
         </div>
 
-        ${curtainMeasurements.length > 0 ? `
-        <div class="section-title">CURTAINS</div>
-        <table>
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Room Label</th>
-              <th>Width</th>
-              <th>Height</th>
-              <th>Pieces</th>
-              <th>Meters</th>
-              <th>Type</th>
-              <th>Cloth Price</th>
-              <th>Stitching Price</th>
-              <th>Total Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${generateMeasurementRows(curtainMeasurements)}
-          </tbody>
-        </table>
-        ` : ''}
+        ${htmlSections}
 
-        ${netMeasurements.length > 0 ? `
-        <div class="section-title">MOSQUITO NETS</div>
-        <table>
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Room Label</th>
-              <th>Width (in/ft)</th>
-              <th>Height (in/ft)</th>
-              <th>Material Type</th>
-              <th>Rate/Sqft (₹)</th>
-              <th>Total Sqft</th>
-              <th>Material Cost</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${generateMosquitoNetRows(netMeasurements)}
-          </tbody>
-        </table>
-        ` : ''}
-
-        ${wallpaperMeasurements.length > 0 ? `
-        <div class="section-title">WALLPAPERS</div>
-        <table>
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Room Label</th>
-              <th>Width</th>
-              <th>Height</th>
-              <th>Pieces</th>
-              <th>Meters</th>
-              <th>Type</th>
-              <th>Material Price</th>
-              <th>Installation Price</th>
-              <th>Total Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${generateMeasurementRows(wallpaperMeasurements)}
-          </tbody>
-        </table>
-        ` : ''}
-
-        ${curtainMeasurements.length > 0 ? `
+        ${project.measurements?.filter(m => m.interiorType === 'curtains').length > 0 ? `
         <div class="section-title">ROD INSTALLATION</div>
         <table>
           <thead>
@@ -299,7 +233,7 @@ export default function PDFPreview() {
             </tr>
           </thead>
           <tbody>
-            ${curtainMeasurements.map(m => {
+            ${project.measurements.filter(m => m.interiorType === 'curtains').map(m => {
               const width = m.width || 0;
               const rate = m.rodRatePerLength || 200;
               const length = width / 12;
