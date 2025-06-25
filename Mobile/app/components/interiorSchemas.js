@@ -56,11 +56,11 @@ export const INTERIOR_SCHEMAS = {
       { name: 'customDescription', label: 'Custom Description', type: 'text', required: false },
     ],
     calculate: (data) => {
-      // Convert inches to feet and round up
+      // Convert inches to feet and round to 1 decimal place
       const widthInches = parseFloat(data.width) || 0;
       const heightInches = parseFloat(data.height) || 0;
-      const widthFeet = Math.ceil(widthInches / 12);
-      const heightFeet = Math.ceil(heightInches / 12);
+      const widthFeet = Math.round((widthInches / 12) * 10) / 10; // e.g., 4.67 -> 4.7
+      const heightFeet = Math.round((heightInches / 12) * 10) / 10;
       const totalSqft = widthFeet * heightFeet;
       const materialRate = parseFloat(data.materialRatePerSqft) || 0;
       const materialCost = totalSqft * materialRate;
