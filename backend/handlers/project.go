@@ -120,9 +120,14 @@ func CreateProject(c *gin.Context) {
 		return ""
 	})
 
-	// Replace repeated inline style with a single class
+	// Replace repeated inline style with a single class (handle both single and double quotes, and whitespace)
 	html = strings.ReplaceAll(html, "style='padding: 8px; border: 1px solid #ddd; text-align: center'", "class='cell-center'")
 	html = strings.ReplaceAll(html, "style=\"padding: 8px; border: 1px solid #ddd; text-align: center\"", "class='cell-center'")
+	html = strings.ReplaceAll(html, "style='padding: 8px; border: 1px solid #ddd; text-align: center;'", "class='cell-center'")
+	html = strings.ReplaceAll(html, "style=\"padding: 8px; border: 1px solid #ddd; text-align: center;\"", "class='cell-center'")
+	// Regex for extra whitespace or attribute order
+	reCellCenter := regexp.MustCompile(`style=["']\s*padding: 8px;\s*border: 1px solid #ddd;\s*text-align: center;?\s*["']`)
+	html = reCellCenter.ReplaceAllString(html, "class='cell-center'")
 
 	update := bson.M{
 		"$set": bson.M{
