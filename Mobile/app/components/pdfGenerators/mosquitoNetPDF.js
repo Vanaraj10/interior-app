@@ -14,3 +14,17 @@ export function generateMosquitoNetRows(measurements, formatCurrency) {
     </tr>
   `).join('');
 }
+
+generateMosquitoNetRows.totals = (measurements, formatCurrency) => {
+  const totals = measurements.reduce((acc, m) => {
+    acc.totalSqft += m.totalSqft || 0;
+    acc.totalMaterialCost += m.materialCost || 0;
+    return acc;
+  }, { totalSqft: 0, totalMaterialCost: 0 });
+  return `<tr style="background:#f0f9ff;font-weight:bold;">
+    <td colspan="6" style="text-align:right;">TOTAL</td>
+    <td style="padding:8px;border:1px solid #ddd;text-align:center;">${totals.totalSqft.toFixed(2)}</td>
+    <td style="padding:8px;border:1px solid #ddd;text-align:right;">${formatCurrency(totals.totalMaterialCost)}</td>
+    <td></td>
+  </tr>`;
+};

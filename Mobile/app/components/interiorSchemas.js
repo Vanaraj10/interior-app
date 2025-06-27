@@ -11,6 +11,9 @@ export const INTERIOR_SCHEMAS = {
       { name: 'stitchingCostPerPiece', label: 'Stitching Cost/Piece (₹)', type: 'number', required: true },
       { name: 'rodRatePerLength', label: 'Rod Rate per Length (₹)', type: 'number', required: true },
       { name: 'parts', label: 'Parts', type: 'picker', options: ['Two Parts', 'One Part'], required: false },
+      { name: 'hasLining', label: 'Add Lining', type: 'checkbox', required: false },
+      { name: 'liningType', label: 'Lining Type', type: 'picker', options: ['Blackout lining', 'Pure blackout lining', 'Satin'], required: false, showIf: (data) => !!data.hasLining },
+      { name: 'liningCostPerMeter', label: 'Lining Cost per Meter (₹)', type: 'number', required: false, showIf: (data) => !!data.hasLining },
     ],
     calculate: (data) => {
       // Pieces calculation
@@ -42,7 +45,29 @@ export const INTERIOR_SCHEMAS = {
       const stitchingCost = pieces * stitchingRate;
       const totalCost = clothCost + stitchingCost;
       const parts = data.parts || 'Two Parts';
-      return { pieces, totalMeters, clothCost, stitchingCost, totalCost, parts };
+      // Lining calculation
+      let totalLiningMeters = 0;
+      let totalLiningCost = 0;
+      let liningType = data.liningType || '';
+      if (data.hasLining) {
+        totalLiningMeters = ((parseFloat(data.height) + 1) * roundedPieces) / 39;
+        const liningCostPerMeter = parseFloat(data.liningCostPerMeter) || 0;
+        totalLiningCost = totalLiningMeters * liningCostPerMeter;
+        liningType = data.liningType;
+      }
+      return {
+        pieces,
+        totalMeters,
+        clothCost,
+        stitchingCost,
+        totalCost,
+        parts,
+        hasLining: !!data.hasLining,
+        liningType,
+        totalLiningMeters,
+        liningCostPerMeter: data.liningCostPerMeter || 0,
+        totalLiningCost,
+      };
     }
   },
   'mosquito-nets': {

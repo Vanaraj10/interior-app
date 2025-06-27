@@ -99,12 +99,21 @@ export default function Home() {
     </View>
   );
 
+  // Logout handler
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('token');
+    router.replace('/login');
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Vanaraj Interiors</Text>
-        <Text style={styles.headerSubtitle}>Professional Quote Generator</Text>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Ionicons name="log-out-outline" size={20} color="white" />
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Projects List */}
@@ -150,6 +159,9 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingBottom: 20,
     paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   headerTitle: {
     color: 'white',
@@ -160,6 +172,21 @@ const styles = StyleSheet.create({
     color: '#93c5fd',
     fontSize: 14,
     marginTop: 4,
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ef4444',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    marginLeft: 12,
+  },
+  logoutText: {
+    color: 'white',
+    fontWeight: 'bold',
+    marginLeft: 6,
+    fontSize: 14,
   },
   scrollView: {
     flex: 1,

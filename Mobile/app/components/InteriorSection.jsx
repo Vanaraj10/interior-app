@@ -94,6 +94,11 @@ export default function InteriorSection({
               <Text style={styles.measurementSpecs}>
                 Cloth: {formatCurrency(measurement.clothCost || 0)} | Stitching: {formatCurrency(measurement.stitchingCost || 0)}
               </Text>
+              {measurement.hasLining ? (
+                <Text style={styles.measurementSpecs}>
+                  Lining: {measurement.liningType} | {measurement.totalLiningMeters?.toFixed(2)}m × ₹{measurement.liningCostPerMeter || 0} = {formatCurrency(measurement.totalLiningCost || 0)}
+                </Text>
+              ) : null}
             </View>
             <Text style={styles.measurementCost}>{formatCurrency(measurement.totalCost || 0)}</Text>
           </View>

@@ -20,7 +20,7 @@ const INTERIOR_TYPES = [
     label: 'CURTAINS',
     generator: PDF_ROW_GENERATORS.curtains,
     columns: [
-      'S.No', 'Room Label', 'Width', 'Height', 'Pieces', 'Meters', 'Type', 'Cloth Price', 'Stitching Price', 'Total Price'
+      'S.No', 'Room Label', 'Width', 'Height', 'Pieces', 'Meters', 'Type', 'Cloth Price', 'Stitching Price', 'Lining', 'Total Price'
     ],
   },
   {
@@ -95,6 +95,7 @@ export default function PDFPreview() {
             </thead>
             <tbody>
               ${type.generator(measurements, formatCurrency)}
+              ${type.generator.totals ? type.generator.totals(measurements, formatCurrency) : ''}
             </tbody>
           </table>
         `;

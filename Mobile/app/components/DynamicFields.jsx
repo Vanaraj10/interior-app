@@ -1,11 +1,13 @@
 import { Picker } from '@react-native-picker/picker';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Switch } from 'react-native';
 
 export default function DynamicFields({ schema, formData, updateField }) {
   if (!schema) return null;
   return (
     <>
       {schema.fields.map(field => {
+        // Conditional display logic
+        if (typeof field.showIf === 'function' && !field.showIf(formData)) return null;
         if (field.type === 'text' || field.type === 'number') {
           return (
             <View key={field.name} style={styles.fieldContainer}>
@@ -34,6 +36,19 @@ export default function DynamicFields({ schema, formData, updateField }) {
                     <Picker.Item key={opt} label={opt} value={opt} />
                   ))}
                 </Picker>
+              </View>
+            </View>
+          );
+        }
+        if (field.type === 'checkbox') {
+          return (
+            <View key={field.name} style={styles.fieldContainer}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Switch
+                  value={!!formData[field.name]}
+                  onValueChange={val => updateField(field.name, val)}
+                />
+                <Text style={[styles.label, {marginLeft: 8}]}>{field.label}</Text>
               </View>
             </View>
           );
