@@ -1,3 +1,33 @@
+// Package handlers provides a set of functions to manage and manipulate project data,
+// including creating, listing, retrieving, updating, and deleting projects. These functions
+// interact with a MongoDB database and utilize Gin for HTTP request handling.
+//
+// CreateProject creates or updates a project for a worker or an admin. It sanitizes and cleans
+// incoming HTML by removing backslashes, style tags, redundant whitespaces, and transforming
+// inline styles into CSS classes. The function inserts or updates a project document in the
+// "projects" collection based on a filter condition that matches worker and admin IDs.
+//
+// ListProjects retrieves all projects associated with a given admin. It fetches from the
+// "projects" collection and returns a JSON response containing the array of matching projects.
+//
+// GetProject retrieves a specific project by its ID for a given admin. It ensures that the
+// requesting admin has access to the project, returning an error if it is not found or if the
+// user is not authorized.
+//
+// ToggleProjectCompleted toggles the completion status of a project for the admin. It updates
+// the matching document in the "projects" collection, setting the "isCompleted" field to the
+// requested boolean value.
+//
+// WorkerToggleProjectCompleted toggles the completion status of a project for the worker. It
+// similarly updates the "isCompleted" field in the "projects" collection, ensuring the worker
+// is associated with the updated project.
+//
+// ListWorkerProjects retrieves all projects assigned to a specific worker. It queries the
+// "projects" collection for projects matching the worker's ID and returns them as JSON.
+//
+// DeleteProject removes a specific project for the authenticated admin from the "projects"
+// collection. It ensures that only the admin who owns the project can delete it and returns
+// an appropriate response if the project cannot be found or the user is not authorized.
 package handlers
 
 import (

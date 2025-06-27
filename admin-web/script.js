@@ -420,8 +420,7 @@ async function deleteProject(projectId, clientName) {
                 'Authorization': `Bearer ${authToken}`,
             },
         });
-        
-        if (response.ok) {
+          if (response.ok) {
             showToast('Project deleted successfully', 'success');
             await loadProjects();
             updateDashboardStats();
@@ -432,8 +431,17 @@ async function deleteProject(projectId, clientName) {
                 currentProject = null;
             }
         } else {
-            const data = await response.json();
-            showToast(data.error || 'Failed to delete project', 'error');
+            let errorMessage = 'Failed to delete project';
+            try {
+                const data = await response.json();
+                errorMessage = data.error || errorMessage;
+            } catch (parseError) {
+                // If response is not JSON (like 404 HTML page), use status text
+                errorMessage = `Server error: ${response.status} ${response.statusText}`;
+                console.error('Delete project response:', response.status, response.statusText);
+                console.error('Response URL:', response.url);
+            }
+            showToast(errorMessage, 'error');
         }
     } catch (error) {
         console.error('Error deleting project:', error);
