@@ -479,6 +479,10 @@ export default function PDFPreview() {
                     setShowSuccess(false);
                     router.replace('/');
                   }, 4000);
+                } else if (response.status === 401) {
+                  // Token expired or unauthorized
+                  Alert.alert('Session Expired', 'Please login again.');
+                  router.replace('/login');
                 } else {
                   const data = await response.json();
                   Alert.alert('Upload Failed', data.error || 'Failed to upload project');

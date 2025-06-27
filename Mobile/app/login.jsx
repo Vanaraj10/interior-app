@@ -21,7 +21,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (!username || !password) {
-      Alert.alert('Error', 'Please enter phone and password');
+      Alert.alert('Error', 'Please enter username and password');
       return;
     }
     setLoading(true);
@@ -51,7 +51,7 @@ export default function Login() {
       <Text style={styles.title}>Worker Login</Text>
       <TextInput
         style={styles.input}
-        placeholder="Phone"
+        placeholder="Username"
         value={username}
         onChangeText={setUsername}
       />
