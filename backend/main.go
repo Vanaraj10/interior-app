@@ -34,7 +34,6 @@ func main() {
 
 	r.POST("/api/admin/login", handlers.AdminLogin)
 	r.POST("/api/worker/login", handlers.WorkerLogin)
-
 	adminGroup := r.Group("/api/admin").Use(middleware.AdminAuthMiddleware())
 	{
 		adminGroup.POST("/workers", handlers.CreateWorker)
@@ -43,6 +42,7 @@ func main() {
 		adminGroup.GET("/projects", handlers.ListProjects)
 		adminGroup.GET("/projects/:id", handlers.GetProject)
 		adminGroup.PUT("/projects/:id/completed", handlers.ToggleProjectCompleted)
+		adminGroup.DELETE("/projects/:id", handlers.DeleteProject)
 		adminGroup.PUT("/password", handlers.ChangeAdminPassword)
 	}
 

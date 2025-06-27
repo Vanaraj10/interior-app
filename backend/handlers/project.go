@@ -314,3 +314,44 @@ func ListWorkerProjects(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, projects)
 }
+
+// Admin deletes a project
+func DeleteProject(c *gin.Context) {
+	adminId := c.GetString("admin_id")
+	projectId := c.Param("id")
+
+	adminObjID, err := primitive.ObjectIDFromHex(adminId)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin ID"})
+		return
+	}
+
+	projectObjID, err := primitive.ObjectIDFromHex(projectId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	db := config.GetDB()
+
+	// Delete the project, ensuring it belongs to the admin
+	res, err := db.Collection("projects").DeleteOne(ctx, bson.M{
+		"_id":     projectObjID,
+		"adminId": adminObjID,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete project"})
+		return
+	}
+
+	if res.DeletedCount == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found or not authorized"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Project deleted successfully"})
+}

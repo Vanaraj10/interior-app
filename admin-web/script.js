@@ -233,6 +233,9 @@ function renderProjectsTable() {
                         <button class="btn-small btn-toggle" onclick="toggleProjectStatus('${project.id}', ${!project.isCompleted})">
                             <i class="fas fa-toggle-${project.isCompleted ? 'on' : 'off'}"></i>
                         </button>
+                        <button class="btn-small btn-delete" onclick="deleteProject('${project.id}', '${project.clientName}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
                     </div>
                 </td>
             </tr>
@@ -396,6 +399,44 @@ async function toggleProjectStatus(projectId, newStatus) {
         }
     } catch (error) {
         console.error('Error toggling project status:', error);
+        showToast('Network error. Please try again.', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Admin deletes a project
+async function deleteProject(projectId, clientName) {
+    if (!confirm(`Are you sure you want to delete the project for "${clientName}"? This action cannot be undone.`)) {
+        return;
+    }
+    
+    showLoading(true);
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/admin/projects/${projectId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+            },
+        });
+        
+        if (response.ok) {
+            showToast('Project deleted successfully', 'success');
+            await loadProjects();
+            updateDashboardStats();
+            
+            // Close project modal if the deleted project was being viewed
+            if (currentProject && currentProject.id === projectId) {
+                closeModal('projectViewModal');
+                currentProject = null;
+            }
+        } else {
+            const data = await response.json();
+            showToast(data.error || 'Failed to delete project', 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting project:', error);
         showToast('Network error. Please try again.', 'error');
     } finally {
         showLoading(false);
@@ -596,6 +637,9 @@ function filterProjects() {
                         </button>
                         <button class="btn-small btn-toggle" onclick="toggleProjectStatus('${project.id}', ${!project.isCompleted})">
                             <i class="fas fa-toggle-${project.isCompleted ? 'on' : 'off'}"></i>
+                        </button>
+                        <button class="btn-small btn-delete" onclick="deleteProject('${project.id}', '${project.clientName}')">
+                            <i class="fas fa-trash"></i> Delete
                         </button>
                     </div>
                 </td>

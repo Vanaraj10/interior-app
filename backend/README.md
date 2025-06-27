@@ -101,6 +101,14 @@ This is the backend API for the Interior Project Management System, built with G
   { "success": true }
   ```
 
+#### Delete Project
+- **DELETE** `/api/admin/projects/:id`
+- **Headers:** `Authorization: Bearer <ADMIN_JWT>`
+- **Response:**
+  ```json
+  { "message": "Project deleted successfully" }
+  ```
+
 #### Change Admin Password
 - **PUT** `/api/admin/password`
 - **Headers:** `Authorization: Bearer <ADMIN_JWT>`
