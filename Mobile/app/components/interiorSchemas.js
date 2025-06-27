@@ -78,20 +78,40 @@ export const INTERIOR_SCHEMAS = {
       { name: 'roomLabel', label: 'Room/Location Label', type: 'text', required: true },
       { name: 'width', label: 'Width (inches)', type: 'number', required: true },
       { name: 'height', label: 'Height (inches)', type: 'number', required: true },
-      { name: 'clothRatePerMeter', label: 'Material Rate/Meter (₹)', type: 'number', required: true },
-      { name: 'stitchingCostPerPiece', label: 'Installation Cost/Piece (₹)', type: 'number', required: true },
+      { name: 'costPerRoll', label: 'Cost per Roll (₹)', type: 'number', required: true },
+      { name: 'implementationCostPerRoll', label: 'Implementation Cost per Roll (₹)', type: 'number', required: true },
     ],
     calculate: (data) => {
       const width = parseFloat(data.width) || 0;
       const height = parseFloat(data.height) || 0;
-      const pieces = Math.ceil((width * height) / 100);
-      const totalMeters = (width * height) / 1500;
-      const clothRate = parseFloat(data.clothRatePerMeter) || 0;
-      const stitchingRate = parseFloat(data.stitchingCostPerPiece) || 0;
-      const clothCost = totalMeters * clothRate;
-      const stitchingCost = pieces * stitchingRate;
-      const totalCost = clothCost + stitchingCost;
-      return { pieces, totalMeters, clothCost, stitchingCost, totalCost };
+      const costPerRoll = parseFloat(data.costPerRoll) || 0;
+      const implementationCostPerRoll = parseFloat(data.implementationCostPerRoll) || 0;
+      // Step 1: Square inches
+      const squareInches = width * height;
+      // Step 2: Square feet
+      const squareFeet = squareInches / 144;
+      // Step 3: Rolls needed
+      let rolls = squareFeet / 57;
+      const decimal = rolls - Math.floor(rolls);
+      if (decimal >= 0.3) {
+        rolls = Math.ceil(rolls);
+      } else {
+        rolls = Math.max(1, Math.floor(rolls));
+      }
+      // Step 4: Total cost
+      const totalMaterialCost = rolls * costPerRoll;
+      const totalImplementationCost = rolls * implementationCostPerRoll;
+      const totalCost = totalMaterialCost + totalImplementationCost;
+      return {
+        squareInches,
+        squareFeet,
+        rolls,
+        costPerRoll,
+        implementationCostPerRoll,
+        totalMaterialCost,
+        totalImplementationCost,
+        totalCost,
+      };
     }
   }
 };

@@ -36,7 +36,15 @@ const INTERIOR_TYPES = [
     label: 'WALLPAPERS',
     generator: PDF_ROW_GENERATORS.wallpapers,
     columns: [
-      'S.No', 'Room Label', 'Width', 'Height', 'Pieces', 'Meters', 'Type', 'Material Price', 'Installation Price', 'Total Price'
+      'S.No',
+      'Room Label',
+      'Width (in)',
+      'Height (in)',
+      'Area (sqft)',
+      'Rolls',
+      'Material Cost',
+      'Implementation Cost',
+      'Total Cost',
     ],
   },
 ];

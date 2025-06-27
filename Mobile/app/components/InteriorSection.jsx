@@ -101,6 +101,23 @@ export default function InteriorSection({
       );
     }
     if (measurement.interiorType === 'wallpapers') {
+      // Extract and calculate all required wallpaper fields
+      const width = parseFloat(measurement.width) || 0;
+      const height = parseFloat(measurement.height) || 0;
+      const costPerRoll = parseFloat(measurement.costPerRoll) || 0;
+      const implementationCostPerRoll = parseFloat(measurement.implementationCostPerRoll) || 0;
+      const squareInches = width * height;
+      const squareFeet = squareInches / 144;
+      let rolls = squareFeet / 57;
+      const decimal = rolls - Math.floor(rolls);
+      if (decimal >= 0.3) {
+        rolls = Math.ceil(rolls);
+      } else {
+        rolls = Math.max(1, Math.floor(rolls));
+      }
+      const totalMaterialCost = rolls * costPerRoll;
+      const totalImplementationCost = rolls * implementationCostPerRoll;
+      const totalCost = totalMaterialCost + totalImplementationCost;
       return (
         <View style={styles.measurementItem}>
           <View style={styles.measurementHeader}>
@@ -123,13 +140,19 @@ export default function InteriorSection({
           <View style={styles.measurementDetails}>
             <View style={styles.measurementInfo}>
               <Text style={styles.measurementDimensions}>
-                {measurement.width}" × {measurement.height}" • Wallpaper
+                {width}" × {height}" • Wallpaper
               </Text>
               <Text style={styles.measurementSpecs}>
-                {measurement.totalMeters?.toFixed(2)}m | Material: {formatCurrency(measurement.clothCost || 0)} | Install: {formatCurrency(measurement.stitchingCost || 0)}
+                Area: {squareFeet.toFixed(2)} sqft | Rolls: {rolls}
+              </Text>
+              <Text style={styles.measurementSpecs}>
+                Cost/Roll: {formatCurrency(costPerRoll)} | Impl/Roll: {formatCurrency(implementationCostPerRoll)}
+              </Text>
+              <Text style={styles.measurementSpecs}>
+                Material: {formatCurrency(totalMaterialCost)} | Install: {formatCurrency(totalImplementationCost)}
               </Text>
             </View>
-            <Text style={styles.measurementCost}>{formatCurrency(measurement.totalCost || 0)}</Text>
+            <Text style={styles.measurementCost}>{formatCurrency(totalCost)}</Text>
           </View>
         </View>
       );

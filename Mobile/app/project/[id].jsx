@@ -127,7 +127,37 @@ export default function ProjectDetails() {
     // Calculate totals for each type
     const curtainTotal = curtainMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
     const netTotal = netMeasurements.reduce((sum, m) => sum + (m.materialCost || m.totalCost || 0), 0);
-    const wallpaperTotal = wallpaperMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
+    // Wallpaper calculation as per requirements (do NOT use m.totalCost, recalculate here)
+    let wallpaperTotal = 0;
+    let totalWallpaperRolls = 0;
+    let totalWallpaperMaterialCost = 0;
+    let totalWallpaperImplementationCost = 0;
+    wallpaperMeasurements.forEach(m => {
+      const width = parseFloat(m.width) || 0;
+      const height = parseFloat(m.height) || 0;
+      const costPerRoll = parseFloat(m.costPerRoll) || 0;
+      const implementationCostPerRoll = parseFloat(m.implementationCostPerRoll) || 0;
+      // Step 1: Square inches
+      const squareInches = width * height;
+      // Step 2: Square feet
+      const squareFeet = squareInches / 144;
+      // Step 3: Rolls needed
+      let rolls = squareFeet / 57;
+      const decimal = rolls - Math.floor(rolls);
+      if (decimal >= 0.3) {
+        rolls = Math.ceil(rolls);
+      } else {
+        rolls = Math.max(1, Math.floor(rolls));
+      }
+      // Step 4: Total cost
+      const totalMaterialCost = rolls * costPerRoll;
+      const totalImplementationCost = rolls * implementationCostPerRoll;
+      const totalCost = totalMaterialCost + totalImplementationCost;
+      wallpaperTotal += totalCost;
+      totalWallpaperRolls += rolls;
+      totalWallpaperMaterialCost += totalMaterialCost;
+      totalWallpaperImplementationCost += totalImplementationCost;
+    });
 
     // Calculate rod cost for curtains only, using each measurement's rodRatePerLength
     let rodLength = 0;
@@ -150,7 +180,10 @@ export default function ProjectDetails() {
       wallpaperTotal,
       rodCost,
       rodLength,
-      grandTotal
+      grandTotal,
+      totalWallpaperRolls,
+      totalWallpaperMaterialCost,
+      totalWallpaperImplementationCost
     };
   };
 
