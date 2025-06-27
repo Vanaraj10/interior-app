@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         initDashboard();
     } else {
+        // If user is on login page but has a valid token, redirect to dashboard
+        if (authToken) {
+            window.location.href = 'dashboard.html';
+            return;
+        }
         initLogin();
     }
 });
@@ -701,6 +706,15 @@ document.addEventListener('click', function(event) {
 });
 
 // Password toggle functionality
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+    } else {
+        input.type = 'password';
+    }
+}
+
 function togglePasswordWithIcon(inputId, icon) {
     const input = document.getElementById(inputId);
     if (input.type === 'password') {
