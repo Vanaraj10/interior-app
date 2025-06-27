@@ -76,13 +76,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 16,
+    color: 'black', // Explicitly set input text color to black
+    backgroundColor: 'white',
   },
   pickerContainer: {
     borderWidth: 1,
     borderColor: '#d1d5db',
     borderRadius: 8,
+    backgroundColor: 'white', // Ensure dropdown background is white
+    overflow: 'hidden',
   },
   picker: {
     height: 50,
+    color: 'black', // Explicitly set dropdown text color to black
+    backgroundColor: 'white',
   },
 });

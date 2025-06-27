@@ -109,7 +109,7 @@ export default function Home() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Vanaraj Interiors</Text>
+        <Text style={styles.headerTitle}>Interiors</Text>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color="white" />
           <Text style={styles.logoutText}>Logout</Text>
