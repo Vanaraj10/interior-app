@@ -31,7 +31,20 @@ function initLogin() {
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
+    const passwordInput = document.getElementById("password");
+  const toggleBtn = document.getElementById("togglePassword");
+
+  if (passwordInput && toggleBtn) {
+    toggleBtn.addEventListener("click", function () {
+      const isHidden = passwordInput.type === "password";
+      passwordInput.type = isHidden ? "text" : "password";
+
+      toggleBtn.classList.toggle("fa-eye");
+      toggleBtn.classList.toggle("fa-eye-slash");
+    });
+  }
 }
+
 
 async function handleLogin(e) {
     e.preventDefault();

@@ -5,62 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Interior Management</title>
     <link rel="stylesheet" href="./style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+        rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+   
 </head>
 <body class="dashboard-page">
     <!-- Header -->
-    <header class="dashboard-header">
-        <div class="header-content">
-            <div class="header-left">
-                <h1>Interior Admin</h1>
-            </div>
-            <div class="header-right">
-                <div class="admin-info">
-                    <span id="adminUsername">Admin</span>
-                    <div class="dropdown">
-                        <button class="dropdown-btn" onclick="toggleDropdown()">
-                            <i class="fas fa-user-circle"></i>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="dropdown-content" id="userDropdown">
-                            <a href="#" onclick="showChangePassword()">
-                                <i class="fas fa-key"></i> Change Password
-                            </a>
-                            <a href="#" onclick="logout()">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<header class="dashboard-header">
+  <div class="header-content">
+    <div class="header-left">
+      <h1>Interior Admin</h1>
+    </div>
+
+    <div class="header-right">
+      <div class="admin-info">
+        <span id="adminUsername">Admin</span>
+        <div class="dropdown">
+          <button class="dropdown-btn" onclick="toggleDropdown()">
+            <i class="fas fa-user-circle"></i>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-content" id="userDropdown">
+            <a href="#" onclick="showChangePassword()">
+              <i class="fas fa-key"></i> Change Password
+            </a>
+            <a href="#" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </div>
         </div>
-    </header>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- 👇 Add this just before </body> -->
+<script>
+  function toggleDropdown() {
+    const dropdown = document.getElementById("userDropdown");
+    dropdown.classList.toggle("show");
+  }
+
+  window.addEventListener("click", function (e) {
+    const dropdown = document.getElementById("userDropdown");
+    const button = document.querySelector(".dropdown-btn");
+
+    if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove("show");
+    }
+  });
+</script>
+
 
     <!-- Sidebar -->
     <aside class="sidebar">
-        <nav class="sidebar-nav">
-            <a href="#" class="nav-item active" onclick="showSection('dashboard')">
-                <i class="fas fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="#" class="nav-item" onclick="showSection('projects')">
-                <i class="fas fa-project-diagram"></i>
-                <span>Projects</span>
-            </a>
-            <a href="#" class="nav-item" onclick="showSection('workers')">
-                <i class="fas fa-users"></i>
-                <span>Workers</span>
-            </a>
-        </nav>
-    </aside>
+  <nav class="sidebar-nav">
+    <a href="#dashboard-section" class="nav-item active">
+      <i class="fas fa-tachometer-alt"></i>
+      <span>Dashboard</span>
+    </a>
+    <a href="#projects-section" class="nav-item">
+      <i class="fas fa-project-diagram"></i>
+      <span>Projects</span>
+    </a>
+    <a href="#workers-section" class="nav-item">
+      <i class="fas fa-users"></i>
+      <span>Workers</span>
+    </a>
+  </nav>
+</aside>
 
     <!-- Main Content -->
     <main class="main-content">
         <!-- Dashboard Overview Section -->
         <section id="dashboard-section" class="content-section active">
             <div class="section-header">
-                <h2>Dashboard Overview</h2>
+                <h2 class="section-heading">Dashboard Overview</h2>
                 <button class="refresh-btn" onclick="refreshData()">
                     <i class="fas fa-sync-alt"></i> Refresh
                 </button>
@@ -105,7 +129,7 @@
                 </div>
             </div>
 
-            <div class="recent-projects">
+             <div class="recent-projects">
                 <h3>Recent Projects</h3>
                 <div class="projects-list" id="recentProjectsList">
                     <!-- Recent projects will be loaded here -->

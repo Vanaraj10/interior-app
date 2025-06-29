@@ -3,104 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <title>Login & Change Password</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Open Sans', sans-serif;
-      background: url('https://i.postimg.cc/hvP8b3nX/Kerry-Joyce.jpg') no-repeat center center fixed;
-      background-size: cover;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+  <link rel="stylesheet" href="./style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+        rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
-    .login-container {
-      background-color: rgba(255, 255, 255, 0.95);
-      padding: 50px;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-      width: 450px;
-      max-width: 90%;
-    }
 
-    h2 {
-      text-align: center;
-      margin-bottom: 25px;
-      font-size: 28px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    label {
-      display: block;
-      margin-top: 20px;
-      margin-bottom: 5px;
-      font-weight: 600;
-      color: #444;
-    }
-
-    input[type="text"],
-    input[type="password"] {
-      width: 100%;
-      padding: 10px 12px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-
-    .links {
-      display: flex;
-      justify-content: space-between;
-      margin: 20px 0 10px;
-    }
-
-    .links a {
-      font-size: 14px;
-      color: #007BFF;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #007BFF;
-      border: none;
-      color: white;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    .hidden {
-      display: none;
-    }
-  </style>
 </head>
 <body>
+
+  <div class="login-page">
+  <div class="wrapper">
   <div class="login-container">
-    <!-- Login Form -->
-    <form id="loginForm">
-      <h2>Login</h2>
-      <label for="username">Username:</label>
-      <input type="text" id="username" required>
+    <h2 class="login-title">Login</h2>
+      <div class="avatar">
+        <i class="fa fa-user"></i>
+      </div>
+      <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required autocomplete="username">
 
-      <label for="password">Password:</label>
-      <input type="password" id="password" required>
-
-      <label>
-        <input type="checkbox" onclick="togglePasswordWithIcon('password')"> Show Password
-      </label>
-
-      <button type="submit">Login</button>
-    </form>
+        <label for="password">Password:</label>
+        <div class="password-wrapper">
+  <input type="password" id="password" name="password" required>
+  <i id="togglePassword" class="fa-solid fa-eye toggle-password"></i>
+</div>
+        <button type="submit">Login</button>
+      </form>
+    </div>
   </div>
+</body>
+
+  <script src="script.js"></script>
+</body>
+
+
 
   <script src="script.js"></script>
 </body>
