@@ -2,19 +2,19 @@
 
 /* Root Variables */
 :root {
-  --bg-main:       #444f97;
-  --bg-card:       #3b3f5c;
-  --sidebar-bg:    #313349;
-  --text-primary:  #eee6e6;
-  --text-secondary:#fbfcff;
-  --accent-blue:   #4772bd;
-  --hover-blue:    #424c5d;
+  --bg-main:       #3d4887;
+  --bg-card:       #323859;
+  --sidebar-bg:    #424868;
+  --text-primary:  #FFFFFF;
+  --text-secondary:#B0B3C5;
+  --accent-blue:   #4C8BF5;
+  --hover-blue:    #5A9BFF;
   --success:       #23daa3;
   --warning:       #db891e;
   --danger:        #e64545;
-  --info:          #4dcaff;
+  --info:          #5DCFFF;
   --border-color:  #2E3247;
-  --card-background: #373a52;
+  --card-background: #23263A;
   
 
 }
@@ -39,6 +39,7 @@ body {
   color: var(--text-primary);
   font-family: 'Inter', 'Poppins', sans-serif;
 }
+
 body::before {
   background: rgba(255, 255, 255, 0.2); /* brighter overlay */
   backdrop-filter: blur(2px);
@@ -48,33 +49,35 @@ body::before {
 .login-page {
   height: 100vh;
   width: 100vw;
+  background: url('https://i.postimg.cc/hj3hWJRD/Adena-Material-Works.jpg') no-repeat center center / cover;
+  padding: 1rem;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url('https://i.postimg.cc/hj3hWJRD/Adena-Material-Works.jpg') no-repeat center center / cover;
-  padding: 1rem;
 }
 
 .login-container {
-  width: 340px;
-  height: auto;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  width: 9cm;
+  height: 12cm;
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent for glass effect */
+  border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 0 25px rgba(76, 139, 245, 0.7);
+   gap: 1rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 10px rgba(76, 139, 245, 0.6),
+    0 0 20px rgba(76, 139, 245, 0.5),
+    0 0 40px rgba(76, 139, 245, 0.3);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-.login-title {
-  display: block;
-  text-align: center;
-  font-size: 26px;
-  font-weight: 700; /* Bold */
-  color: #f0f0f0;
-  margin: 0 auto 1rem auto;
+  align-items: center;
+  justify-content: center;
+  animation: glowFade 2s ease-in-out infinite alternate;
 }
 .avatar {
   display: flex;
@@ -91,17 +94,6 @@ body::before {
   border-radius: 50%;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
-
-
-.wrapper {
-  max-width: 960px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  padding: 2rem;
-}
-
-
 
 form {
   width: 100%;
@@ -142,13 +134,17 @@ button:hover {
   background: #eee;
 }
 
-.toggle-password {
-  color: #333;
-}
-
-
 .password-wrapper {
   position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 2.5rem; /* Leaves space for the icon */
+  padding-left: 1rem;
+  font-size: 1rem;
+  border-radius: 12px;
 }
 
 .toggle-password {
@@ -156,18 +152,33 @@ button:hover {
   top: 50%;
   right: 1rem;
   transform: translateY(-50%);
-  color: #4C8BF5;
-  font-size: 1rem;
   cursor: pointer;
+  color: #277cd2;
+  font-size: 1.1rem;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .login-container {
     width: 90%;
     padding: 1.5rem;
+    border-radius: 12px;
+  }
+
+  .login-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .login-container input,
+  .login-container button {
+    font-size: 1rem;
+    padding: 0.6rem;
+  }
+
+  .toggle-password {
+    right: 0.75rem;
+    font-size: 1rem;
   }
 }
-
 
 
 /* Dashboard Page Styles */
@@ -187,6 +198,13 @@ button:hover {
   background-color: var(--bg-main);
   overflow-y: auto;
 }
+.content-section {
+  display: none;
+}
+.content-section.active {
+  display: block;
+}
+
 
 .dashboard-wrapper {
   display: grid;
