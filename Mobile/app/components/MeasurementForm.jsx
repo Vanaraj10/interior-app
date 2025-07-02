@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { INTERIOR_SCHEMAS } from "./interiorSchemas";
 import DynamicFields from "./DynamicFields";
+import { COLORS } from "../styles/colors";
 
 export default function MeasurementForm({
   onSave,
@@ -129,13 +130,13 @@ export default function MeasurementForm({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f3f4f6",
+    backgroundColor: COLORS.background,
   },
   header: {
-    backgroundColor: "#2563eb",
-    paddingTop: 15, // reduced from 48
-    paddingBottom: 15, // reduced from 24
-    paddingHorizontal: 12, // reduced from 16
+    backgroundColor: COLORS.primary,
+    paddingTop: 40,
+    paddingBottom: 15,
+    paddingHorizontal: 12,
   },
   headerContent: {
     flexDirection: "row",
@@ -145,8 +146,8 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   headerTitle: {
-    color: "white",
-    fontSize: 20, // reduced from 20
+    color: COLORS.textInverse,
+    fontSize: 20,
     fontWeight: "bold",
   },
   scrollView: {
@@ -155,9 +156,9 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
   },
   section: {
-    backgroundColor: "white",
+    backgroundColor: COLORS.surface,
     borderRadius: 8,
-    shadowColor: "#000",
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#1f2937",
+    color: COLORS.textPrimary,
     marginBottom: 16,
   },
   fieldContainer: {
@@ -185,29 +186,33 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#374151",
+    color: COLORS.textSecondary,
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    borderColor: COLORS.inputBorder,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 16,
+    backgroundColor: COLORS.inputBackground,
+    color: COLORS.inputText,
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    borderColor: COLORS.inputBorder,
     borderRadius: 8,
+    backgroundColor: COLORS.inputBackground,
   },
   picker: {
     height: 50,
+    color: COLORS.inputText,
   },
   calculationSection: {
-    backgroundColor: "#f0f9ff",
+    backgroundColor: COLORS.background,
     borderRadius: 8,
-    shadowColor: "#000",
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -215,12 +220,12 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: "#3b82f6",
+    borderColor: COLORS.primaryLight,
   },
   calculationTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#1e40af",
+    color: COLORS.primary,
     marginBottom: 16,
   },
   calculationGrid: {
@@ -233,34 +238,35 @@ const styles = StyleSheet.create({
   },
   calculationLabel: {
     fontSize: 14,
-    color: "#374151",
+    color: COLORS.textSecondary,
   },
   calculationValue: {
     fontSize: 14,
     fontWeight: "500",
+    color: COLORS.textPrimary,
   },
   totalRow: {
     borderTopWidth: 1,
-    borderTopColor: "#3b82f6",
+    borderTopColor: COLORS.primaryLight,
     paddingTop: 8,
     marginTop: 8,
   },
   totalLabel: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#1e40af",
+    color: COLORS.primary,
   },
   totalValue: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#2563eb",
+    color: COLORS.primaryLight,
   },
   saveButton: {
-    backgroundColor: "#2563eb",
+    backgroundColor: COLORS.primary,
     borderRadius: 8,
     paddingVertical: 16,
     alignItems: "center",
-    shadowColor: "#000",
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -268,26 +274,26 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   saveButtonText: {
-    color: "white",
+    color: COLORS.textInverse,
     fontSize: 16,
     fontWeight: "bold",
   },
   readOnlyContainer: {
-    backgroundColor: "#f3f4f6",
+    backgroundColor: COLORS.gray100,
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    borderColor: COLORS.border,
   },
   readOnlyText: {
     fontSize: 16,
-    color: "#374151",
+    color: COLORS.textSecondary,
     fontWeight: "500",
   },
   helpText: {
     fontSize: 12,
-    color: "#6b7280",
+    color: COLORS.textMuted,
     marginTop: 4,
   },
 });

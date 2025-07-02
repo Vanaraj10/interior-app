@@ -1,5 +1,6 @@
 import { Picker } from '@react-native-picker/picker';
 import { View, Text, TextInput, StyleSheet, Switch } from 'react-native';
+import { COLORS } from '../styles/colors';
 
 export default function DynamicFields({ schema, formData, updateField }) {
   if (!schema) return null;
@@ -66,29 +67,29 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: COLORS.textSecondary,
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: COLORS.inputBorder,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 16,
-    color: 'black', // Explicitly set input text color to black
-    backgroundColor: 'white',
+    color: COLORS.inputText,
+    backgroundColor: COLORS.inputBackground,
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: COLORS.inputBorder,
     borderRadius: 8,
-    backgroundColor: 'white', // Ensure dropdown background is white
+    backgroundColor: COLORS.inputBackground,
     overflow: 'hidden',
   },
   picker: {
     height: 50,
-    color: 'black', // Explicitly set dropdown text color to black
-    backgroundColor: 'white',
+    color: COLORS.inputText,
+    backgroundColor: COLORS.inputBackground,
   },
 });

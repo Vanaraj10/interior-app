@@ -11,6 +11,7 @@ import {
   Alert,
 } from "react-native";
 import { INTERIOR_SCHEMAS } from "../components/interiorSchemas";
+import { COLORS } from "../styles/colors";
 
 export default function InteriorMeasurements() {
   const { id, type } = useLocalSearchParams();
@@ -526,17 +527,17 @@ export default function InteriorMeasurements() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.background,
   },
   header: {
-    backgroundColor: "#2563eb",
+    backgroundColor: COLORS.primary,
     paddingTop: 48,
     paddingBottom: 16,
     paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
     elevation: 4,
-    shadowColor: "#000",
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -549,17 +550,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    color: "white",
+    color: COLORS.textInverse,
     fontSize: 20,
     fontWeight: "bold",
   },
   headerSubtitle: {
-    color: "#93c5fd",
+    color: COLORS.accentLight,
     fontSize: 14,
     marginTop: 2,
   },
   pdfHeaderButton: {
-    backgroundColor: "#059669",
+    backgroundColor: COLORS.secondary,
     padding: 10,
     borderRadius: 8,
     marginLeft: 12,
@@ -573,20 +574,19 @@ const styles = StyleSheet.create({
     minWidth: "100%",
   },
   table: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
     borderRadius: 12,
     elevation: 3,
-    shadowColor: "#000",
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
-  },
-  tableHeader: {
+    borderColor: COLORS.border,
+  },  tableHeader: {
     flexDirection: "row",
-    backgroundColor: "#1e40af",
+    backgroundColor: COLORS.primary,
     paddingVertical: 12,
     paddingHorizontal: 4,
   },
@@ -596,10 +596,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 4,
     borderRightWidth: 1,
-    borderRightColor: "#3b82f6",
+    borderRightColor: COLORS.primaryLight,
   },
   headerText: {
-    color: "white",
+    color: COLORS.textInverse,
     fontWeight: "bold",
     fontSize: 12,
     textAlign: "center",
@@ -608,20 +608,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     minHeight: 60,
     borderBottomWidth: 1,
-    borderBottomColor: "#e2e8f0",
+    borderBottomColor: COLORS.border,
   },
   summaryRow: {
     flexDirection: "row",
     minHeight: 50,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: COLORS.gray100,
     borderTopWidth: 2,
-    borderTopColor: "#1e40af",
+    borderTopColor: COLORS.primary,
   },
   evenRow: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.background,
   },
   oddRow: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.surface,
   },
   tableCell: {
     paddingVertical: 8,
@@ -629,32 +629,32 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRightWidth: 1,
-    borderRightColor: "#e2e8f0",
+    borderRightColor: COLORS.border,
   },
   cellText: {
     fontSize: 12,
-    color: "#374151",
+    color: COLORS.textSecondary,
     textAlign: "center",
     fontWeight: "500",
   },
   costText: {
-    color: "#059669",
+    color: COLORS.success,
     fontWeight: "600",
   },
   totalCostText: {
-    color: "#dc2626",
+    color: COLORS.error,
     fontWeight: "bold",
     fontSize: 13,
   },
   summaryText: {
     fontSize: 12,
-    color: "#475569",
+    color: COLORS.textSecondary,
     textAlign: "center",
     fontWeight: "600",
   },
   summaryTotalText: {
     fontSize: 13,
-    color: "#dc2626",
+    color: COLORS.error,
     textAlign: "center",
     fontWeight: "bold",
   },
@@ -800,19 +800,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#2563eb",
+    backgroundColor: COLORS.primary,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 12,
     margin: 16,
     elevation: 4,
-    shadowColor: "#2563eb",
+    shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-  },
-  addButtonText: {
-    color: "white",
+  },  addButtonText: {
+    color: COLORS.textInverse,
     fontWeight: "bold",
     fontSize: 16,
     marginLeft: 8,
@@ -823,7 +822,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.background,
   },
 
   // Remove unused styles

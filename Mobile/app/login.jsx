@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { COLORS } from './styles/colors';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -74,28 +75,29 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.background,
     padding: 24,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 32,
-    color: '#2563eb',
+    color: COLORS.primary,
   },
   input: {
     width: '100%',
     maxWidth: 320,
-    backgroundColor: 'white',
+    backgroundColor: COLORS.inputBackground,
     borderRadius: 8,
     padding: 14,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#cbd5e1',
+    borderColor: COLORS.inputBorder,
     fontSize: 16,
+    color: COLORS.inputText,
   },
   button: {
-    backgroundColor: '#2563eb',
+    backgroundColor: COLORS.primary,
     paddingVertical: 14,
     paddingHorizontal: 32,
     borderRadius: 8,
@@ -105,7 +107,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: 'white',
+    color: COLORS.textInverse,
     fontWeight: 'bold',
     fontSize: 16,
   },
