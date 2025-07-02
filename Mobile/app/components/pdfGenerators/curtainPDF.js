@@ -1,15 +1,5 @@
 // Generates HTML rows for curtain measurements
 export function generateCurtainRows(measurements, formatCurrency) {
-  const curtainTotals = measurements.reduce((acc, m) => {
-    acc.totalMeters += m.totalMeters || 0;
-    acc.totalLiningMeters += m.totalLiningMeters || 0;
-    acc.totalClothCost += m.clothCost || 0;
-    acc.totalStitchingCost += m.stitchingCost || 0;
-    acc.totalLiningCost += m.totalLiningCost || 0;
-    acc.totalCost += m.totalCost || 0;
-    return acc;
-  }, { totalMeters: 0, totalLiningMeters: 0, totalClothCost: 0, totalStitchingCost: 0, totalLiningCost: 0, totalCost: 0 });
-
   return measurements.map((m, index) => `
     <tr>
       <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${index + 1}</td>

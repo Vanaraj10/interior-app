@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Print from 'expo-print';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   Alert,
   ScrollView,
@@ -54,12 +54,7 @@ export default function PDFPreview() {
   const [project, setProject] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-
-  useEffect(() => {
-    loadProject();
-  }, [id]);
-
-  const loadProject = async () => {
+  const loadProject = useCallback(async () => {
     try {
       const projectsData = await AsyncStorage.getItem('projects');
       if (projectsData) {
@@ -75,7 +70,11 @@ export default function PDFPreview() {
     } catch (error) {
       console.error('Error loading project:', error);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    loadProject();
+  }, [loadProject]);
 
   const formatCurrency = (amount) => {
     return `₹${amount.toLocaleString('en-IN')}`;
@@ -388,8 +387,7 @@ export default function PDFPreview() {
                 return (
                   <View key={measurement.id} style={styles.measurementRow}>
                     <View style={styles.measurementInfo}>
-                      <Text style={styles.measurementLabel}>{measurement.roomLabel}</Text>
-                      <Text style={styles.measurementDetails}>
+                      <Text style={styles.measurementLabel}>{measurement.roomLabel}</Text>                      <Text style={styles.measurementDetails}>
                         {measurement.width}" × {measurement.height}" • {measurement.interiorType}
                       </Text>
                     </View>
@@ -485,8 +483,7 @@ export default function PDFPreview() {
                 } else {
                   const data = await response.json();
                   Alert.alert('Upload Failed', data.error || 'Failed to upload project');
-                }
-              } catch (error) {
+                }              } catch (_error) {
                 Alert.alert('Error', 'Could not upload project');
               }
             }}

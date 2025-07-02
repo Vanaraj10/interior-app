@@ -1,12 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Picker } from "@react-native-picker/picker";
 import { useEffect, useState } from "react";
 import {
   Alert,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -19,11 +17,9 @@ export default function MeasurementForm({
   onCancel,
   editingMeasurement,
   forceInteriorType,
-}) {
-  const [formData, setFormData] = useState({
+}) {  const [formData, setFormData] = useState({
     interiorType: forceInteriorType || "curtains",
   });
-  const [calculatedData, setCalculatedData] = useState({});
 
   useEffect(() => {
     if (editingMeasurement) {
@@ -42,13 +38,8 @@ export default function MeasurementForm({
         return { ...prev, ...defaults };
       });
     }
-  }, [editingMeasurement, forceInteriorType]);
-
-  useEffect(() => {
-    const schema = INTERIOR_SCHEMAS[formData.interiorType];
-    if (schema && typeof schema.calculate === "function") {
-      setCalculatedData(schema.calculate(formData));
-    }
+  }, [editingMeasurement, forceInteriorType]);  useEffect(() => {
+    // Calculation is handled in the component that uses this form
   }, [formData]);
 
   const updateField = (field, value) => {

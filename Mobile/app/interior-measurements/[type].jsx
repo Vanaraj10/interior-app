@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, router, useFocusEffect } from "expo-router";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -107,12 +107,10 @@ export default function InteriorMeasurements() {
           style={styles.backButton}
         >
           <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <View style={styles.headerInfo}>
+        </TouchableOpacity>        <View style={styles.headerInfo}>
           <Text style={styles.headerTitle}>{project.clientName}</Text>
           <Text style={styles.headerSubtitle}>
-            {getInteriorTypeLabel()} • {measurements.length}{" "}
-            {measurements.length === 1 ? "measurement" : "measurements"}
+            {getInteriorTypeLabel()} • {measurements.length} {measurements.length === 1 ? "measurement" : "measurements"}
           </Text>
         </View>
         <TouchableOpacity onPress={generatePDF} style={styles.pdfHeaderButton}>
@@ -132,11 +130,9 @@ export default function InteriorMeasurements() {
               <Text style={styles.emptyMessage}>No measurements yet</Text>
               <Text style={styles.emptySubMessage}>
                 Add your first measurement to get started
-              </Text>
-              <View style={styles.emptyHint}>
+              </Text>              <View style={styles.emptyHint}>
                 <Text style={styles.emptyHintText}>
-                  💡 Tip: Use the button below to add your first{" "}
-                  {getInteriorTypeLabel().toLowerCase()} measurement
+                  💡 Tip: Use the button below to add your first {getInteriorTypeLabel().toLowerCase()} measurement
                 </Text>
               </View>
             </View>
@@ -237,8 +233,7 @@ export default function InteriorMeasurements() {
                       <Text style={styles.cellText} numberOfLines={2}>
                         {m.roomLabel || "Untitled"}
                       </Text>
-                    </View>
-                    <View style={[styles.tableCell, styles.dimensionColumn]}>
+                    </View>                    <View style={[styles.tableCell, styles.dimensionColumn]}>
                       <Text style={styles.cellText}>{m.width || "-"}"</Text>
                     </View>
                     <View style={[styles.tableCell, styles.dimensionColumn]}>

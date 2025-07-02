@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   Alert,
   RefreshControl,
@@ -16,10 +16,6 @@ import { COLORS } from "./styles/colors";
 export default function Home() {
   const [projects, setProjects] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-
-  useEffect(() => {
-    loadProjects();
-  }, []);
 
   const loadProjects = useCallback(async () => {
     try {
@@ -309,13 +305,11 @@ const styles = StyleSheet.create({
     gap: 8,
     flexShrink: 1,
     minWidth: 0,
-  },
-  viewButton: {
+  },  viewButton: {
     backgroundColor: COLORS.primaryLight,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 4,
-    minWidth: 56,
     alignItems: "center",
     flexShrink: 1,
     minWidth: 0,
@@ -325,7 +319,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 4,
-    minWidth: 56,
     alignItems: "center",
     flexShrink: 1,
     minWidth: 0,
@@ -335,7 +328,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 4,
-    minWidth: 56,
     alignItems: "center",
     flexShrink: 1,
     minWidth: 0,

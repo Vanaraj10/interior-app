@@ -35,8 +35,7 @@ export default function InteriorSection({
             </View>
           </View>
           <View style={styles.measurementDetails}>
-            <View style={styles.measurementInfo}>
-              <Text style={styles.measurementDimensions}>
+            <View style={styles.measurementInfo}>              <Text style={styles.measurementDimensions}>
                 {measurement.width}" ({Number(measurement.widthFeet).toFixed(1)}ft) × {measurement.height}" ({Number(measurement.heightFeet).toFixed(1)}ft)
               </Text>
               <Text style={styles.measurementSpecs}>
@@ -77,9 +76,8 @@ export default function InteriorSection({
             </View>
           </View>
           <View style={styles.measurementDetails}>
-            <View style={styles.measurementInfo}>
-              <Text style={styles.measurementDimensions}>
-                {measurement.width}" × {measurement.height}" {measurement.curtainType && `• ${measurement.curtainType}`}
+            <View style={styles.measurementInfo}>              <Text style={styles.measurementDimensions}>
+                {measurement.width}" × {measurement.height}"{measurement.curtainType ? ` • ${measurement.curtainType}` : ''}
               </Text>
               <View style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
                 {measurement.parts === 'One Part' ? (
@@ -143,8 +141,7 @@ export default function InteriorSection({
             </View>
           </View>
           <View style={styles.measurementDetails}>
-            <View style={styles.measurementInfo}>
-              <Text style={styles.measurementDimensions}>
+            <View style={styles.measurementInfo}>              <Text style={styles.measurementDimensions}>
                 {width}" × {height}" • Wallpaper
               </Text>
               <Text style={styles.measurementSpecs}>

@@ -39,8 +39,7 @@ export default function Login() {
         router.replace('/');
       } else {
         Alert.alert('Login Failed', data.error || data.message || 'Invalid credentials');
-      }
-    } catch (error) {
+      }    } catch (_error) {
       Alert.alert('Error', 'Could not connect to server');
     } finally {
       setLoading(false);

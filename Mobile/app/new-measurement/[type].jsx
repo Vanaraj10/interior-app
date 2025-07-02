@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import MeasurementForm from '../components/MeasurementForm';
 import { COLORS } from '../styles/colors';
@@ -8,14 +8,7 @@ import { COLORS } from '../styles/colors';
 export default function NewMeasurement() {
   const { id, type, editId } = useLocalSearchParams();
   const [editingMeasurement, setEditingMeasurement] = useState(null);
-
-  useEffect(() => {
-    if (editId) {
-      loadMeasurement();
-    }
-  }, [editId]);
-
-  const loadMeasurement = async () => {
+  const loadMeasurement = useCallback(async () => {
     try {
       const projectsData = await AsyncStorage.getItem('projects');
       if (projectsData) {
@@ -31,7 +24,13 @@ export default function NewMeasurement() {
     } catch (error) {
       console.error('Error loading measurement:', error);
     }
-  };
+  }, [id, editId]);
+
+  useEffect(() => {
+    if (editId) {
+      loadMeasurement();
+    }
+  }, [editId, loadMeasurement]);
 
   const calculateProjectTotals = (projectData) => {
     const measurements = projectData.measurements || [];

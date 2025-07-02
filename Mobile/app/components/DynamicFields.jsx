@@ -1,7 +1,6 @@
 import { Picker } from '@react-native-picker/picker';
 import { View, Text, TextInput, StyleSheet, Switch } from 'react-native';
 import { COLORS } from '../styles/colors';
-import { useState } from 'react';
 
 export default function DynamicFields({ schema, formData, updateField }) {
   if (!schema) return null;
