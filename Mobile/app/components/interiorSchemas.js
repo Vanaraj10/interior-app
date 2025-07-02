@@ -40,12 +40,10 @@ export const INTERIOR_SCHEMAS = {
       const totalMeters = ((height + 15) * roundedPieces) / 39;
       // Costs
       const clothRate = parseFloat(data.clothRatePerMeter) || 0;
-      const stitchingRate = parseFloat(data.stitchingCostPerPiece) || 0;
-      const clothCost = totalMeters * clothRate;
+      const stitchingRate = parseFloat(data.stitchingCostPerPiece) || 0;      const clothCost = totalMeters * clothRate;
       const stitchingCost = pieces * stitchingRate;
-      const totalCost = clothCost + stitchingCost;
-      const parts = data.parts || 'Two Parts';
-      // Lining calculation
+      let totalCost = clothCost + stitchingCost;
+      const parts = data.parts || 'Two Parts';      // Lining calculation
       let totalLiningMeters = 0;
       let totalLiningCost = 0;
       let liningType = data.liningType || '';
@@ -54,6 +52,8 @@ export const INTERIOR_SCHEMAS = {
         const liningCostPerMeter = parseFloat(data.liningCostPerMeter) || 0;
         totalLiningCost = totalLiningMeters * liningCostPerMeter;
         liningType = data.liningType;
+        // Add lining cost to total cost
+        totalCost += totalLiningCost;
       }
       return {
         pieces,
@@ -85,8 +85,7 @@ export const INTERIOR_SCHEMAS = {
       const widthInches = parseFloat(data.width) || 0;
       const heightInches = parseFloat(data.height) || 0;
       const widthFeet = Math.round((widthInches / 12) * 10) / 10; // e.g., 4.67 -> 4.7
-      const heightFeet = Math.round((heightInches / 12) * 10) / 10;
-      const totalSqft = widthFeet * heightFeet;
+      const heightFeet = Math.round((heightInches / 12) * 10) / 10;      const totalSqft = widthFeet * heightFeet;
       const materialRate = parseFloat(data.materialRatePerSqft) || 0;
       const materialCost = totalSqft * materialRate;
       return {
@@ -94,6 +93,7 @@ export const INTERIOR_SCHEMAS = {
         heightFeet,
         totalSqft,
         materialCost,
+        totalCost: materialCost, // Add totalCost for consistency with other interior types
       };
     }
   },

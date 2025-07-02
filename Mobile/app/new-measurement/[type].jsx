@@ -38,11 +38,9 @@ export default function NewMeasurement() {
     // Group measurements by interior type
     const curtainMeasurements = measurements.filter(m => m.interiorType === 'curtains');
     const netMeasurements = measurements.filter(m => m.interiorType === 'mosquito-nets');
-    const wallpaperMeasurements = measurements.filter(m => m.interiorType === 'wallpapers');
-
-    // Calculate totals for each type
+    const wallpaperMeasurements = measurements.filter(m => m.interiorType === 'wallpapers');    // Calculate totals for each type
     const curtainTotal = curtainMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
-    const netTotal = netMeasurements.reduce((sum, m) => sum + (m.materialCost || m.totalCost || 0), 0);
+    const netTotal = netMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
     
     // Wallpaper calculation
     let wallpaperTotal = 0;
@@ -72,14 +70,12 @@ export default function NewMeasurement() {
       totalWallpaperRolls += rolls;
       totalWallpaperMaterialCost += totalMaterialCost;
       totalWallpaperImplementationCost += totalImplementationCost;
-    });
-
-    // Calculate rod cost for curtains only
+    });    // Calculate rod cost for curtains only
     let rodLength = 0;
     let rodCost = 0;
     curtainMeasurements.forEach(m => {
       const width = m.width || 0;
-      const rate = m.rodRatePerLength || 200;
+      const rate = m.rodRatePerLength || 0; // Use the actual rate from measurement, don't default to 200
       const length = width / 12;
       rodLength += length;
       rodCost += length * rate;

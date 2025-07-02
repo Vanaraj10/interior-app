@@ -241,10 +241,9 @@ export default function PDFPreview() {
               <th>Total Rod Cost</th>
             </tr>
           </thead>
-          <tbody>
-            ${project.measurements.filter(m => m.interiorType === 'curtains').map(m => {
+          <tbody>            ${project.measurements.filter(m => m.interiorType === 'curtains').map(m => {
               const width = m.width || 0;
-              const rate = m.rodRatePerLength || 200;
+              const rate = m.rodRatePerLength || 0; // Use actual rate from measurement
               const length = width / 12;
               const cost = length * rate;
               return `<tr>
@@ -380,10 +379,9 @@ export default function PDFPreview() {
           {project.measurements && project.measurements.length > 0 && (
             <View style={styles.measurementsSection}>
               <Text style={styles.sectionTitle}>Measurements Summary</Text>
-              {project.measurements.map((measurement, index) => {
-                let cost = 0;
+              {project.measurements.map((measurement, index) => {                let cost = 0;
                 if (measurement.interiorType === 'mosquito-nets') {
-                  cost = measurement.materialCost || 0;
+                  cost = measurement.totalCost || measurement.materialCost || 0; // Use totalCost first, fallback to materialCost
                 } else {
                   cost = measurement.totalCost || 0;
                 }
