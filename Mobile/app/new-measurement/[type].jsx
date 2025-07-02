@@ -3,6 +3,7 @@ import { useLocalSearchParams, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import MeasurementForm from '../components/MeasurementForm';
+import { COLORS } from '../styles/colors';
 
 export default function NewMeasurement() {
   const { id, type, editId } = useLocalSearchParams();
@@ -150,6 +151,6 @@ export default function NewMeasurement() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.background,
   },
 });

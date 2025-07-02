@@ -83,14 +83,14 @@ export default function NewProject() {
         {/* Client Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Client Information</Text>
-          
-          <View style={styles.fieldContainer}>
+            <View style={styles.fieldContainer}>
             <Text style={styles.label}>Client Name *</Text>
             <TextInput
               style={styles.input}
               value={formData.clientName}
               onChangeText={(text) => updateField('clientName', text)}
               placeholder="Enter client name"
+              placeholderTextColor={COLORS.inputPlaceholder}
             />
           </View>
 
@@ -101,6 +101,7 @@ export default function NewProject() {
               value={formData.phone}
               onChangeText={(text) => updateField('phone', text)}
               placeholder="Enter phone number"
+              placeholderTextColor={COLORS.inputPlaceholder}
               keyboardType="phone-pad"
             />
           </View>
@@ -112,6 +113,7 @@ export default function NewProject() {
               value={formData.address}
               onChangeText={(text) => updateField('address', text)}
               placeholder="Enter complete address"
+              placeholderTextColor={COLORS.inputPlaceholder}
               multiline
               textAlignVertical="top"
             />

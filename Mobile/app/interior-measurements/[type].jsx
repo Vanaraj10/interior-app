@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useLocalSearchParams, router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useLocalSearchParams, router, useFocusEffect } from "expo-router";
+import { useEffect, useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -18,11 +18,7 @@ export default function InteriorMeasurements() {
   const [project, setProject] = useState(null);
   const [measurements, setMeasurements] = useState([]);
 
-  useEffect(() => {
-    loadProject();
-  }, [id]);
-
-  const loadProject = async () => {
+  const loadProject = useCallback(async () => {
     try {
       const projectsData = await AsyncStorage.getItem("projects");
       if (projectsData) {
@@ -43,7 +39,14 @@ export default function InteriorMeasurements() {
     } catch (error) {
       console.error("Error loading project:", error);
     }
-  };
+  }, [id, type]);
+
+  // Use useFocusEffect to reload data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadProject();
+    }, [loadProject])
+  );
 
   const deleteMeasurement = async (measurementId) => {
     Alert.alert(

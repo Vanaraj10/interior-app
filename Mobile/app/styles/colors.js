@@ -42,13 +42,15 @@ export const COLORS = {
   // Border Colors
   border: "#D4D4D8", // Default Border
   borderLight: "#E4E4E7", // Light Border
-  borderDark: "#A1A1AA", // Dark Border
-  // Input Colors (Specifically for Android compatibility)
+  borderDark: "#A1A1AA", // Dark Border  // Input Colors (Specifically for Android compatibility)
   inputBackground: "#FAFAFA",
   inputBorder: "#A1A1AA",
   inputBorderFocus: "#3282B8",
   inputText: "#27272A",
-  inputPlaceholder: "#71717A",
+  inputPlaceholder: "#52525B", // Darker placeholder for better visibility in APK builds
+  
+  // Alternative darker placeholder for problematic Android builds
+  inputPlaceholderDark: "#3F3F46", // Even darker for maximum contrast
   // Shadow Colors
   shadow: "rgba(30, 41, 59, 0.08)",
   shadowDark: "rgba(30, 41, 59, 0.15)",

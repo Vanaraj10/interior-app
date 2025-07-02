@@ -1,6 +1,7 @@
 import { Picker } from '@react-native-picker/picker';
 import { View, Text, TextInput, StyleSheet, Switch } from 'react-native';
 import { COLORS } from '../styles/colors';
+import { useState } from 'react';
 
 export default function DynamicFields({ schema, formData, updateField }) {
   if (!schema) return null;
@@ -8,8 +9,7 @@ export default function DynamicFields({ schema, formData, updateField }) {
     <>
       {schema.fields.map(field => {
         // Conditional display logic
-        if (typeof field.showIf === 'function' && !field.showIf(formData)) return null;
-        if (field.type === 'text' || field.type === 'number') {
+        if (typeof field.showIf === 'function' && !field.showIf(formData)) return null;        if (field.type === 'text' || field.type === 'number') {
           return (
             <View key={field.name} style={styles.fieldContainer}>
               <Text style={styles.label}>{field.label}{field.required ? ' *' : ''}</Text>
@@ -18,6 +18,7 @@ export default function DynamicFields({ schema, formData, updateField }) {
                 value={formData[field.name]?.toString() || ''}
                 onChangeText={text => updateField(field.name, text)}
                 placeholder={field.label}
+                placeholderTextColor={COLORS.inputPlaceholder}
                 keyboardType={field.type === 'number' ? 'numeric' : 'default'}
               />
             </View>
@@ -44,10 +45,12 @@ export default function DynamicFields({ schema, formData, updateField }) {
         if (field.type === 'checkbox') {
           return (
             <View key={field.name} style={styles.fieldContainer}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Switch
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>                <Switch
                   value={!!formData[field.name]}
                   onValueChange={val => updateField(field.name, val)}
+                  trackColor={{ false: COLORS.gray300, true: COLORS.primaryLight }}
+                  thumbColor={formData[field.name] ? COLORS.primary : COLORS.gray500}
+                  ios_backgroundColor={COLORS.gray300}
                 />
                 <Text style={[styles.label, {marginLeft: 8}]}>{field.label}</Text>
               </View>
@@ -69,8 +72,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.textSecondary,
     marginBottom: 8,
-  },
-  input: {
+  },  input: {
     borderWidth: 1,
     borderColor: COLORS.inputBorder,
     borderRadius: 8,
@@ -79,6 +81,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.inputText,
     backgroundColor: COLORS.inputBackground,
+  },
+  inputFocused: {
+    borderColor: COLORS.inputBorderFocus,
+    borderWidth: 2,
   },
   pickerContainer: {
     borderWidth: 1,

@@ -49,16 +49,17 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Worker Login</Text>
-      <TextInput
+      <Text style={styles.title}>Worker Login</Text>      <TextInput
         style={styles.input}
         placeholder="Username"
+        placeholderTextColor={COLORS.inputPlaceholder}
         value={username}
         onChangeText={setUsername}
       />
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor={COLORS.inputPlaceholder}
         secureTextEntry
         value={password}
         onChangeText={setPassword}

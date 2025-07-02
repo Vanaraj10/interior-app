@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import { useEffect, useState, useCallback } from 'react';
 import {
   Alert,
   StyleSheet,
@@ -21,12 +21,11 @@ export default function ProjectDetails() {
     { key: 'mosquito-nets', label: INTERIOR_SCHEMAS['mosquito-nets'].label, icon: 'bug' },
     { key: 'wallpapers', label: INTERIOR_SCHEMAS.wallpapers.label, icon: 'image' },
   ];
-
   useEffect(() => {
     loadProject();
   }, [id]);
 
-  const loadProject = async () => {
+  const loadProject = useCallback(async () => {
     try {
       const projectsData = await AsyncStorage.getItem('projects');
       if (projectsData) {
@@ -42,7 +41,14 @@ export default function ProjectDetails() {
     } catch (error) {
       console.error('Error loading project:', error);
     }
-  };
+  }, [id]);
+
+  // Use useFocusEffect to reload data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadProject();
+    }, [loadProject])
+  );
 
   const generatePDF = () => {
     router.push(`/pdf-preview/${id}`);
@@ -66,14 +72,10 @@ export default function ProjectDetails() {
           <Text style={styles.headerTitle}>{project.clientName}</Text>
           <Text style={styles.headerSubtitle}>Project Dashboard</Text>
         </View>
-        <TouchableOpacity style={styles.pdfHeaderButton} onPress={generatePDF}>
-          <Ionicons name="document-text" size={20} color="white" />
-        </TouchableOpacity>
       </View>
       
       {/* Interior Type Cards */}
       <View style={styles.cardsContainer}>
-        <Text style={styles.sectionTitle}>Interior Categories</Text>
         <View style={styles.interiorTypesGrid}>
           {INTERIOR_TYPES.map((type, index) => (
             <TouchableOpacity

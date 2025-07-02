@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useEffect, useState, useCallback } from "react";
 import {
   Alert,
   RefreshControl,
@@ -21,7 +21,7 @@ export default function Home() {
     loadProjects();
   }, []);
 
-  const loadProjects = async () => {
+  const loadProjects = useCallback(async () => {
     try {
       const projectsData = await AsyncStorage.getItem("projects");
       if (projectsData) {
@@ -30,7 +30,14 @@ export default function Home() {
     } catch (error) {
       console.error("Error loading projects:", error);
     }
-  };
+  }, []);
+
+  // Use useFocusEffect to reload data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadProjects();
+    }, [loadProjects])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);
