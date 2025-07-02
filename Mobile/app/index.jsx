@@ -89,6 +89,12 @@ export default function Home() {
             <Text style={styles.buttonText}>View</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            style={styles.pdfButton}
+            onPress={() => router.push(`/pdf-preview/${project.id}`)}
+          >
+            <Text style={styles.buttonText}>PDF</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => deleteProject(project.id)}
           >
@@ -289,6 +295,16 @@ const styles = StyleSheet.create({
   },
   viewButton: {
     backgroundColor: '#3b82f6',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 4,
+    minWidth: 56,
+    alignItems: 'center',
+    flexShrink: 1,
+    minWidth: 0,
+  },
+  pdfButton: {
+    backgroundColor: '#4caf50',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 4,

@@ -44,10 +44,6 @@ export default function ProjectDetails() {
     }
   };
 
-  const generatePDF = () => {
-    router.push(`/pdf-preview/${id}`);
-  };
-
   if (!project) {
     return (
       <View style={styles.loadingContainer}>
@@ -82,12 +78,6 @@ export default function ProjectDetails() {
           </TouchableOpacity>
         ))}
       </View>
-
-      {/* Generate PDF Button */}
-      <TouchableOpacity style={styles.pdfButton} onPress={generatePDF}>
-        <Ionicons name="document-text" size={24} color="white" />
-        <Text style={styles.pdfButtonText}>Generate PDF</Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -151,27 +141,5 @@ const styles = StyleSheet.create({
     color: '#2563eb', 
     fontWeight: 'bold',
     textAlign: 'center'
-  },
-  pdfButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#059669',
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    marginHorizontal: 32,
-    marginBottom: 32,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  pdfButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 10,
   },
 });

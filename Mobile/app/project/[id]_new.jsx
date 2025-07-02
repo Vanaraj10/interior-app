@@ -44,13 +44,9 @@ export default function ProjectDetails() {
     }
   };
 
-  const generatePDF = () => {
-    router.push(`/pdf-preview/${id}`);
-  };
-
   if (!project) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={styles.centered}>
         <Text>Loading...</Text>
       </View>
     );
@@ -63,44 +59,42 @@ export default function ProjectDetails() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{project.clientName}</Text>
+        <View style={styles.headerInfo}>
+          <Text style={styles.headerTitle}>{project.clientName}</Text>
+          <Text style={styles.headerSubtitle}>{project.phone}</Text>
+        </View>
       </View>
 
-      {/* Project Title */}
-      <Text style={styles.projectTitle}>Select Interior Type</Text>
-      
+      {/* Project Info */}
+      <View style={styles.projectInfo}>
+        <Text style={styles.projectTitle}>Select Interior Type</Text>
+        <Text style={styles.projectSubtitle}>Choose what you want to measure</Text>
+      </View>
+
       {/* Interior Type Cards */}
       <View style={styles.interiorTypesContainer}>
         {INTERIOR_TYPES.map(type => (
           <TouchableOpacity
             key={type.key}
             style={styles.interiorTypeCard}
-            onPress={() => router.push({ pathname: '/interior-measurements/[type]', params: { id, type: type.key } })}
+            onPress={() => router.push({ 
+              pathname: '/interior-measurements/[type]', 
+              params: { id, type: type.key } 
+            })}
           >
-            <Ionicons name={type.icon} size={56} color={'#2563eb'} />
+            <Ionicons name={type.icon} size={48} color={'#2563eb'} />
             <Text style={styles.interiorTypeLabel}>{type.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
-
-      {/* Generate PDF Button */}
-      <TouchableOpacity style={styles.pdfButton} onPress={generatePDF}>
-        <Ionicons name="document-text" size={24} color="white" />
-        <Text style={styles.pdfButtonText}>Generate PDF</Text>
-      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#f3f4f6' 
-  },
-  loadingContainer: {
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center'
+  container: {
+    flex: 1,
+    backgroundColor: '#f3f4f6',
   },
   header: {
     backgroundColor: '#2563eb',
@@ -113,65 +107,62 @@ const styles = StyleSheet.create({
   backButton: {
     marginRight: 16,
   },
+  headerInfo: {
+    flex: 1,
+  },
   headerTitle: {
     color: 'white',
     fontSize: 20,
     fontWeight: 'bold',
   },
-  projectTitle: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    color: '#1f2937', 
-    textAlign: 'center',
-    marginVertical: 32 
+  headerSubtitle: {
+    color: '#93c5fd',
+    fontSize: 14,
   },
-  interiorTypesContainer: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-around', 
-    paddingHorizontal: 16,
+  projectInfo: {
+    padding: 24,
+    alignItems: 'center',
+  },
+  projectTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1f2937',
+    marginBottom: 8,
+  },
+  projectSubtitle: {
+    fontSize: 16,
+    color: '#6b7280',
+  },
+  interiorTypesContainer: {
     flex: 1,
-    alignItems: 'center'
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingHorizontal: 16,
+    paddingTop: 32,
   },
-  interiorTypeCard: { 
-    flex: 1, 
-    alignItems: 'center', 
-    backgroundColor: '#fff', 
-    borderRadius: 16, 
-    marginHorizontal: 8, 
-    paddingVertical: 40, 
-    elevation: 3,
+  interiorTypeCard: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    marginHorizontal: 8,
+    paddingVertical: 32,
+    elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  interiorTypeLabel: { 
-    marginTop: 18, 
-    fontSize: 18, 
-    color: '#2563eb', 
-    fontWeight: 'bold',
-    textAlign: 'center'
-  },
-  pdfButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#059669',
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    marginHorizontal: 32,
-    marginBottom: 32,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
     shadowRadius: 8,
   },
-  pdfButtonText: {
-    color: 'white',
+  interiorTypeLabel: {
+    marginTop: 16,
     fontSize: 18,
+    color: '#2563eb',
     fontWeight: 'bold',
-    marginLeft: 10,
+    textAlign: 'center',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
