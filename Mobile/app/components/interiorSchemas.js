@@ -116,7 +116,7 @@ export const INTERIOR_SCHEMAS = {
       // Step 2: Square feet
       const squareFeet = squareInches / 144;
       // Step 3: Rolls needed
-      let rolls = squareFeet / 57;
+      let rolls = squareFeet / 50;
       const decimal = rolls - Math.floor(rolls);
       if (decimal >= 0.3) {
         rolls = Math.ceil(rolls);

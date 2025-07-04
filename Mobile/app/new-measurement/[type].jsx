@@ -55,7 +55,7 @@ export default function NewMeasurement() {
       
       const squareInches = width * height;
       const squareFeet = squareInches / 144;
-      let rolls = squareFeet / 57;
+      let rolls = squareFeet / 50;
       const decimal = rolls - Math.floor(rolls);
       if (decimal >= 0.3) {
         rolls = Math.ceil(rolls);

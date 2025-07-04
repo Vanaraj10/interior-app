@@ -107,15 +107,14 @@ export default function InteriorMeasurements() {
           style={styles.backButton}
         >
           <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>        <View style={styles.headerInfo}>
+        </TouchableOpacity>{" "}
+        <View style={styles.headerInfo}>
           <Text style={styles.headerTitle}>{project.clientName}</Text>
           <Text style={styles.headerSubtitle}>
-            {getInteriorTypeLabel()} • {measurements.length} {measurements.length === 1 ? "measurement" : "measurements"}
+            {getInteriorTypeLabel()} • {measurements.length}{" "}
+            {measurements.length === 1 ? "measurement" : "measurements"}
           </Text>
         </View>
-        <TouchableOpacity onPress={generatePDF} style={styles.pdfHeaderButton}>
-          <Ionicons name="document-text" size={20} color="white" />
-        </TouchableOpacity>
       </View>
       {/* Measurements Table */}
       <ScrollView
@@ -130,9 +129,11 @@ export default function InteriorMeasurements() {
               <Text style={styles.emptyMessage}>No measurements yet</Text>
               <Text style={styles.emptySubMessage}>
                 Add your first measurement to get started
-              </Text>              <View style={styles.emptyHint}>
+              </Text>{" "}
+              <View style={styles.emptyHint}>
                 <Text style={styles.emptyHintText}>
-                  💡 Tip: Use the button below to add your first {getInteriorTypeLabel().toLowerCase()} measurement
+                  💡 Tip: Use the button below to add your first{" "}
+                  {getInteriorTypeLabel().toLowerCase()} measurement
                 </Text>
               </View>
             </View>
@@ -233,7 +234,8 @@ export default function InteriorMeasurements() {
                       <Text style={styles.cellText} numberOfLines={2}>
                         {m.roomLabel || "Untitled"}
                       </Text>
-                    </View>                    <View style={[styles.tableCell, styles.dimensionColumn]}>
+                    </View>{" "}
+                    <View style={[styles.tableCell, styles.dimensionColumn]}>
                       <Text style={styles.cellText}>{m.width || "-"}"</Text>
                     </View>
                     <View style={[styles.tableCell, styles.dimensionColumn]}>
@@ -245,7 +247,8 @@ export default function InteriorMeasurements() {
                           <Text style={styles.cellText} numberOfLines={2}>
                             {m.curtainType || "-"}
                           </Text>
-                        </View>{" "}                        <View style={[styles.tableCell, styles.smallColumn]}>
+                        </View>{" "}
+                        <View style={[styles.tableCell, styles.smallColumn]}>
                           <View
                             style={
                               m.parts === "One Part" ||
@@ -278,7 +281,6 @@ export default function InteriorMeasurements() {
                         </View>
                       </>
                     )}
-
                     {type === "mosquito-nets" && (
                       <>
                         <View style={[styles.tableCell, styles.typeColumn]}>
@@ -308,12 +310,15 @@ export default function InteriorMeasurements() {
                               144
                             ).toFixed(1)}
                           </Text>
-                        </View>                        <View style={[styles.tableCell, styles.smallColumn]}>
+                        </View>{" "}
+                        <View style={[styles.tableCell, styles.smallColumn]}>
                           <Text style={styles.cellText}>
                             {(() => {
-                              const squareInches = (parseFloat(m.width) || 0) * (parseFloat(m.height) || 0);
+                              const squareInches =
+                                (parseFloat(m.width) || 0) *
+                                (parseFloat(m.height) || 0);
                               const squareFeet = squareInches / 144;
-                              let rolls = squareFeet / 57;
+                              let rolls = squareFeet / 50;
                               const decimal = rolls - Math.floor(rolls);
                               if (decimal >= 0.3) {
                                 rolls = Math.ceil(rolls);
@@ -325,7 +330,8 @@ export default function InteriorMeasurements() {
                           </Text>
                         </View>
                       </>
-                    )}                    <View style={[styles.tableCell, styles.totalColumn]}>
+                    )}{" "}
+                    <View style={[styles.tableCell, styles.totalColumn]}>
                       <Text style={[styles.cellText, styles.totalCostText]}>
                         ₹
                         {(() => {
@@ -333,24 +339,30 @@ export default function InteriorMeasurements() {
                           if (m.totalCost) {
                             return m.totalCost.toLocaleString("en-IN");
                           } else if (type === "wallpapers") {
-                            const squareInches = (parseFloat(m.width) || 0) * (parseFloat(m.height) || 0);
+                            const squareInches =
+                              (parseFloat(m.width) || 0) *
+                              (parseFloat(m.height) || 0);
                             const squareFeet = squareInches / 144;
-                            let rolls = squareFeet / 57;
+                            let rolls = squareFeet / 50;
                             const decimal = rolls - Math.floor(rolls);
                             if (decimal >= 0.3) {
                               rolls = Math.ceil(rolls);
                             } else {
                               rolls = Math.max(1, Math.floor(rolls));
                             }
-                            const totalCost = (rolls * (parseFloat(m.costPerRoll) || 0)) + (rolls * (parseFloat(m.implementationCostPerRoll) || 0));
+                            const totalCost =
+                              rolls * (parseFloat(m.costPerRoll) || 0) +
+                              rolls *
+                                (parseFloat(m.implementationCostPerRoll) || 0);
                             return totalCost.toLocaleString("en-IN");
                           } else {
-                            return (m.materialCost || 0).toLocaleString("en-IN");
+                            return (m.materialCost || 0).toLocaleString(
+                              "en-IN"
+                            );
                           }
                         })()}
                       </Text>
                     </View>
-
                     <View style={[styles.tableCell, styles.actionColumn]}>
                       <View style={styles.actionContainer}>
                         <TouchableOpacity
@@ -393,12 +405,15 @@ export default function InteriorMeasurements() {
                       <>
                         <View style={[styles.tableCell, styles.typeColumn]}>
                           <Text style={styles.summaryText}>-</Text>
-                        </View>                        <View style={[styles.tableCell, styles.smallColumn]}>
+                        </View>{" "}
+                        <View style={[styles.tableCell, styles.smallColumn]}>
                           <Text style={styles.summaryText}>
-                            {measurements.reduce(
-                              (sum, m) => sum + (parseFloat(m.pieces) || 0),
-                              0
-                            ).toFixed(1)}
+                            {measurements
+                              .reduce(
+                                (sum, m) => sum + (parseFloat(m.pieces) || 0),
+                                0
+                              )
+                              .toFixed(1)}
                           </Text>
                         </View>
                         <View style={[styles.tableCell, styles.mediumColumn]}>
@@ -414,7 +429,6 @@ export default function InteriorMeasurements() {
                         </View>
                       </>
                     )}
-
                     {type === "mosquito-nets" && (
                       <>
                         <View style={[styles.tableCell, styles.typeColumn]}>
@@ -450,12 +464,15 @@ export default function InteriorMeasurements() {
                               }, 0)
                               .toFixed(1)}
                           </Text>
-                        </View>                        <View style={[styles.tableCell, styles.smallColumn]}>
+                        </View>{" "}
+                        <View style={[styles.tableCell, styles.smallColumn]}>
                           <Text style={styles.summaryText}>
                             {measurements.reduce((sum, m) => {
-                              const squareInches = (parseFloat(m.width) || 0) * (parseFloat(m.height) || 0);
+                              const squareInches =
+                                (parseFloat(m.width) || 0) *
+                                (parseFloat(m.height) || 0);
                               const squareFeet = squareInches / 144;
-                              let rolls = squareFeet / 57;
+                              let rolls = squareFeet / 50;
                               const decimal = rolls - Math.floor(rolls);
                               if (decimal >= 0.3) {
                                 rolls = Math.ceil(rolls);
@@ -467,7 +484,8 @@ export default function InteriorMeasurements() {
                           </Text>
                         </View>
                       </>
-                    )}                    <View style={[styles.tableCell, styles.totalColumn]}>
+                    )}{" "}
+                    <View style={[styles.tableCell, styles.totalColumn]}>
                       <Text style={styles.summaryTotalText}>
                         ₹
                         {measurements
@@ -476,16 +494,22 @@ export default function InteriorMeasurements() {
                             if (m.totalCost) {
                               return sum + m.totalCost;
                             } else if (type === "wallpapers") {
-                              const squareInches = (parseFloat(m.width) || 0) * (parseFloat(m.height) || 0);
+                              const squareInches =
+                                (parseFloat(m.width) || 0) *
+                                (parseFloat(m.height) || 0);
                               const squareFeet = squareInches / 144;
-                              let rolls = squareFeet / 57;
+                              let rolls = squareFeet / 50;
                               const decimal = rolls - Math.floor(rolls);
                               if (decimal >= 0.3) {
                                 rolls = Math.ceil(rolls);
                               } else {
                                 rolls = Math.max(1, Math.floor(rolls));
                               }
-                              const totalCost = (rolls * (parseFloat(m.costPerRoll) || 0)) + (rolls * (parseFloat(m.implementationCostPerRoll) || 0));
+                              const totalCost =
+                                rolls * (parseFloat(m.costPerRoll) || 0) +
+                                rolls *
+                                  (parseFloat(m.implementationCostPerRoll) ||
+                                    0);
                               return sum + totalCost;
                             } else {
                               return sum + (m.materialCost || 0);
@@ -494,7 +518,6 @@ export default function InteriorMeasurements() {
                           .toLocaleString("en-IN")}
                       </Text>
                     </View>
-
                     <View style={[styles.tableCell, styles.actionColumn]}>
                       <Text style={styles.summaryText}>-</Text>
                     </View>
@@ -582,7 +605,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderWidth: 1,
     borderColor: COLORS.border,
-  },  tableHeader: {
+  },
+  tableHeader: {
     flexDirection: "row",
     backgroundColor: COLORS.primary,
     paddingVertical: 12,
@@ -808,7 +832,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-  },  addButtonText: {
+  },
+  addButtonText: {
     color: COLORS.textInverse,
     fontWeight: "bold",
     fontSize: 16,
