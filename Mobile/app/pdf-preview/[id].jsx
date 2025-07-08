@@ -456,7 +456,7 @@ export default function PDFPreview() {
                   .replace(/\"/g, '"') // Replace any escaped quotes with normal quotes
                   .trim();
                 // Use backend API: POST /api/projects (worker JWT)
-                const response = await fetch('https://interior-app-production.up.railway.app/api/worker/projects', {
+                const response = await fetch('https://interior-app.onrender.com/api/worker/projects', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
