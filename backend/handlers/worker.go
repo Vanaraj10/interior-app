@@ -1,15 +1,11 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
-	"time"
 
 	"github.com/Vanaraj10/interior-backend/config"
 	"github.com/Vanaraj10/interior-backend/models"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -25,34 +21,23 @@ func CreateWorker(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	// TODO: Auth middleware to get adminId from JWT
-	adminId := c.GetString("admin_id")
-	adminObjID, err := primitive.ObjectIDFromHex(adminId)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin ID"})
-		return
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	adminId := c.GetInt("admin_id")
 	db := config.GetDB()
 	// Check if username exists
-	count, _ := db.Collection("workers").CountDocuments(ctx, bson.M{"username": req.Username})
+	var count int
+	err := db.QueryRow(`SELECT COUNT(*) FROM workers WHERE username = @p1`, req.Username).Scan(&count)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check username"})
+		return
+	}
 	if count > 0 {
 		c.JSON(http.StatusConflict, gin.H{"error": "Username already exists"})
 		return
 	}
 	// Hash password
 	hash, _ := HashPassword(req.Password)
-	worker := models.Worker{
-		ID:           primitive.NewObjectID(),
-		Username:     req.Username,
-		PasswordHash: hash,
-		AdminID:      adminObjID,
-		Name:         req.Name,
-		Phone : req.Phone,
-		CreatedAt:    time.Now(),
-	}
-	_, err = db.Collection("workers").InsertOne(ctx, worker)
+	_, err = db.Exec(`INSERT INTO workers (username, password_hash, admin_id, name, phone, created_at) VALUES (@p1, @p2, @p3, @p4, @p5, GETDATE())`,
+		req.Username, hash, adminId, req.Name, req.Phone)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create worker"})
 		return
@@ -63,18 +48,15 @@ func CreateWorker(c *gin.Context) {
 // Admin deletes a worker
 func DeleteWorker(c *gin.Context) {
 	workerId := c.Param("id")
-	adminId := c.GetString("admin_id")
-	workerObjID, err := primitive.ObjectIDFromHex(workerId)
-	adminObjID, err2 := primitive.ObjectIDFromHex(adminId)
-	if err != nil || err2 != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid worker or admin ID"})
+	adminId := c.GetInt("admin_id")
+	db := config.GetDB()
+	res, err := db.Exec(`DELETE FROM workers WHERE id = @p1 AND admin_id = @p2`, workerId, adminId)
+	n, _ := res.RowsAffected()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete worker"})
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	db := config.GetDB()
-	res, err := db.Collection("workers").DeleteOne(ctx, bson.M{"_id": workerObjID, "adminId": adminObjID})
-	if err != nil || res.DeletedCount == 0 {
+	if n == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Worker not found or not authorized"})
 		return
 	}
@@ -83,24 +65,21 @@ func DeleteWorker(c *gin.Context) {
 
 // Admin lists all workers
 func ListWorkers(c *gin.Context) {
-	adminId := c.GetString("admin_id")
-	adminObjID, err := primitive.ObjectIDFromHex(adminId)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin ID"})
-		return
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	adminId := c.GetInt("admin_id")
 	db := config.GetDB()
-	cursor, err := db.Collection("workers").Find(ctx, bson.M{"adminId": adminObjID})
+	rows, err := db.Query(`SELECT id, username, password_hash, admin_id, name, phone, created_at FROM workers WHERE admin_id = @p1`, adminId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch workers"})
 		return
 	}
+	defer rows.Close()
 	var workers []models.Worker
-	if err := cursor.All(ctx, &workers); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse workers"})
-		return
+	for rows.Next() {
+		var w models.Worker
+		err := rows.Scan(&w.ID, &w.Username, &w.PasswordHash, &w.AdminID, &w.Name, &w.Phone, &w.CreatedAt)
+		if err == nil {
+			workers = append(workers, w)
+		}
 	}
 	c.JSON(http.StatusOK, workers)
 }

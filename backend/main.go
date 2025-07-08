@@ -14,7 +14,7 @@ import (
 
 func main() {
 	godotenv.Load()
-	config.ConnectMongoDB() // Connect to MongoDB at startup
+	config.ConnectAzureSQL() // Connect to Azure SQL at startup
 
 	r := gin.Default()
 

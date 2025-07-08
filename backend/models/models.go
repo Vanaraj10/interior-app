@@ -2,36 +2,35 @@ package models
 
 import (
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Admin struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Username     string             `bson:"username" json:"username"`
-	PasswordHash string             `bson:"passwordHash" json:"-"`
-	CreatedAt    time.Time          `bson:"createdAt" json:"createdAt"`
+	ID           int       `db:"id" json:"id"`
+	Username     string    `db:"username" json:"username"`
+	PasswordHash string    `db:"password_hash" json:"-"`
+	CreatedAt    time.Time `db:"created_at" json:"createdAt"`
 }
 
 type Worker struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Username     string             `bson:"username" json:"username"`
-	PasswordHash string             `bson:"passwordHash" json:"-"`
-	AdminID      primitive.ObjectID `bson:"adminId" json:"adminId"`
-	Name         string             `bson:"name" json:"name"`
-	Phone        string             `bson:"phone" json:"phone"`
-	CreatedAt    time.Time          `bson:"createdAt" json:"createdAt"`
+	ID           int       `db:"id" json:"id"`
+	Username     string    `db:"username" json:"username"`
+	PasswordHash string    `db:"password_hash" json:"-"`
+	AdminID      int       `db:"admin_id" json:"adminId"`
+	Name         string    `db:"name" json:"name"`
+	Phone        string    `db:"phone" json:"phone"`
+	CreatedAt    time.Time `db:"created_at" json:"createdAt"`
 }
 
 type Project struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	WorkerID    primitive.ObjectID `bson:"workerId" json:"workerId"`
-	AdminID     primitive.ObjectID `bson:"adminId" json:"adminId"`
-	ClientName  string             `bson:"clientName" json:"clientName"`
-	Phone       string             `bson:"phone" json:"phone"`
-	Address     string             `bson:"address" json:"address"`
-	CreatedAt   time.Time          `bson:"createdAt" json:"createdAt"`
-	HTML        string             `bson:"html" json:"html"`
-	RawData     interface{}        `bson:"rawData,omitempty" json:"rawData,omitempty"`
-	IsCompleted bool               `bson:"isCompleted" json:"isCompleted"`
+	ID          int       `db:"id" json:"id"`
+	ClientName  string    `db:"client_name" json:"clientName"`
+	Phone       string    `db:"phone" json:"phone"`
+	Address     string    `db:"address" json:"address"`
+	HTML        string    `db:"html" json:"html"`
+	RawData     string    `db:"raw_data" json:"rawData"`
+	WorkerID    int       `db:"worker_id" json:"workerId"`
+	AdminID     int       `db:"admin_id" json:"adminId"`
+	IsCompleted bool      `db:"is_completed" json:"isCompleted"`
+	CreatedAt   time.Time `db:"created_at" json:"createdAt"`
+	UpdatedAt   time.Time `db:"updated_at" json:"updatedAt"`
 }
