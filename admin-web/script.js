@@ -5,7 +5,7 @@ let workers = [];
 let projects = [];
 
 // API Configuration
-const API_BASE_URL = 'https://interior-app-production.up.railway.app/api';
+const API_BASE_URL = 'https://interior-app.onrender.com/api';
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
