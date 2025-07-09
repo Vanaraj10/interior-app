@@ -11,6 +11,9 @@ export const INTERIOR_SCHEMAS = {
       { name: 'stitchingCostPerPiece', label: 'Stitching Cost/Piece (₹)', type: 'number', required: true },
       { name: 'rodRatePerLength', label: 'Rod Rate per Length (₹)', type: 'number', required: true },
       { name: 'parts', label: 'Parts', type: 'picker', options: ['Two Parts', 'One Part'], required: false },
+      { name: 'hasLining', label: 'Add Lining', type: 'checkbox', required: false },
+      { name: 'liningType', label: 'Lining Type', type: 'picker', options: ['Blackout lining', 'Pure blackout lining', 'Satin'], required: false, showIf: (data) => !!data.hasLining },
+      { name: 'liningCostPerMeter', label: 'Lining Cost per Meter (₹)', type: 'number', required: false, showIf: (data) => !!data.hasLining },
     ],
     calculate: (data) => {
       // Pieces calculation
@@ -37,12 +40,34 @@ export const INTERIOR_SCHEMAS = {
       const totalMeters = ((height + 15) * roundedPieces) / 39;
       // Costs
       const clothRate = parseFloat(data.clothRatePerMeter) || 0;
-      const stitchingRate = parseFloat(data.stitchingCostPerPiece) || 0;
-      const clothCost = totalMeters * clothRate;
+      const stitchingRate = parseFloat(data.stitchingCostPerPiece) || 0;      const clothCost = totalMeters * clothRate;
       const stitchingCost = pieces * stitchingRate;
-      const totalCost = clothCost + stitchingCost;
-      const parts = data.parts || 'Two Parts';
-      return { pieces, totalMeters, clothCost, stitchingCost, totalCost, parts };
+      let totalCost = clothCost + stitchingCost;
+      const parts = data.parts || 'Two Parts';      // Lining calculation
+      let totalLiningMeters = 0;
+      let totalLiningCost = 0;
+      let liningType = data.liningType || '';
+      if (data.hasLining) {
+        totalLiningMeters = ((parseFloat(data.height) + 1) * roundedPieces) / 39;
+        const liningCostPerMeter = parseFloat(data.liningCostPerMeter) || 0;
+        totalLiningCost = totalLiningMeters * liningCostPerMeter;
+        liningType = data.liningType;
+        // Add lining cost to total cost
+        totalCost += totalLiningCost;
+      }
+      return {
+        pieces,
+        totalMeters,
+        clothCost,
+        stitchingCost,
+        totalCost,
+        parts,
+        hasLining: !!data.hasLining,
+        liningType,
+        totalLiningMeters,
+        liningCostPerMeter: data.liningCostPerMeter || 0,
+        totalLiningCost,
+      };
     }
   },
   'mosquito-nets': {
@@ -60,8 +85,7 @@ export const INTERIOR_SCHEMAS = {
       const widthInches = parseFloat(data.width) || 0;
       const heightInches = parseFloat(data.height) || 0;
       const widthFeet = Math.round((widthInches / 12) * 10) / 10; // e.g., 4.67 -> 4.7
-      const heightFeet = Math.round((heightInches / 12) * 10) / 10;
-      const totalSqft = widthFeet * heightFeet;
+      const heightFeet = Math.round((heightInches / 12) * 10) / 10;      const totalSqft = widthFeet * heightFeet;
       const materialRate = parseFloat(data.materialRatePerSqft) || 0;
       const materialCost = totalSqft * materialRate;
       return {
@@ -69,6 +93,7 @@ export const INTERIOR_SCHEMAS = {
         heightFeet,
         totalSqft,
         materialCost,
+        totalCost: materialCost, // Add totalCost for consistency with other interior types
       };
     }
   },
@@ -91,7 +116,7 @@ export const INTERIOR_SCHEMAS = {
       // Step 2: Square feet
       const squareFeet = squareInches / 144;
       // Step 3: Rolls needed
-      let rolls = squareFeet / 57;
+      let rolls = squareFeet / 50;
       const decimal = rolls - Math.floor(rolls);
       if (decimal >= 0.3) {
         rolls = Math.ceil(rolls);

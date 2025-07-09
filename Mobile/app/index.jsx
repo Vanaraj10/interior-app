@@ -1,7 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router, useFocusEffect } from "expo-router";
+import { useState, useCallback } from "react";
 import {
   Alert,
   RefreshControl,
@@ -9,27 +9,31 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
-} from 'react-native';
+  View,
+} from "react-native";
+import { COLORS } from "./styles/colors";
 
 export default function Home() {
   const [projects, setProjects] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
-  const loadProjects = async () => {
+  const loadProjects = useCallback(async () => {
     try {
-      const projectsData = await AsyncStorage.getItem('projects');
+      const projectsData = await AsyncStorage.getItem("projects");
       if (projectsData) {
         setProjects(JSON.parse(projectsData));
       }
     } catch (error) {
-      console.error('Error loading projects:', error);
+      console.error("Error loading projects:", error);
     }
-  };
+  }, []);
+
+  // Use useFocusEffect to reload data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadProjects();
+    }, [loadProjects])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -39,20 +43,25 @@ export default function Home() {
 
   const deleteProject = async (projectId) => {
     Alert.alert(
-      'Delete Project',
-      'Are you sure you want to delete this project?',
+      "Delete Project",
+      "Are you sure you want to delete this project?",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Delete',
-          style: 'destructive',
+          text: "Delete",
+          style: "destructive",
           onPress: async () => {
             try {
-              const updatedProjects = projects.filter(p => p.id !== projectId);
-              await AsyncStorage.setItem('projects', JSON.stringify(updatedProjects));
+              const updatedProjects = projects.filter(
+                (p) => p.id !== projectId
+              );
+              await AsyncStorage.setItem(
+                "projects",
+                JSON.stringify(updatedProjects)
+              );
               setProjects(updatedProjects);
             } catch (error) {
-              console.error('Error deleting project:', error);
+              console.error("Error deleting project:", error);
             }
           },
         },
@@ -61,7 +70,7 @@ export default function Home() {
   };
 
   const formatCurrency = (amount) => {
-    return `₹${amount.toLocaleString('en-IN')}`;
+    return `₹${amount.toLocaleString("en-IN")}`;
   };
 
   const ProjectCard = ({ project }) => (
@@ -76,7 +85,7 @@ export default function Home() {
           {new Date(project.createdDate).toLocaleDateString()}
         </Text>
       </View>
-      
+
       <View style={styles.projectFooter}>
         <Text style={styles.grandTotal}>
           {formatCurrency(project.grandTotal || 0)}
@@ -89,6 +98,12 @@ export default function Home() {
             <Text style={styles.buttonText}>View</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            style={styles.pdfButton}
+            onPress={() => router.push(`/pdf-preview/${project.id}`)}
+          >
+            <Text style={styles.buttonText}>PDF</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.deleteButton}
             onPress={() => deleteProject(project.id)}
           >
@@ -99,12 +114,21 @@ export default function Home() {
     </View>
   );
 
+  // Logout handler
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem("token");
+    router.replace("/login");
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Vanaraj Interiors</Text>
-        <Text style={styles.headerSubtitle}>Professional Quote Generator</Text>
+        <Text style={styles.headerTitle}>Interiors</Text>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Ionicons name="log-out-outline" size={20} color="white" />
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Projects List */}
@@ -117,7 +141,11 @@ export default function Home() {
         <View style={styles.listContainer}>
           {projects.length === 0 ? (
             <View style={styles.emptyState}>
-              <Ionicons name="document-text-outline" size={64} color="#9CA3AF" />
+              <Ionicons
+                name="document-text-outline"
+                size={64}
+                color="#9CA3AF"
+              />
               <Text style={styles.emptyTitle}>No projects yet</Text>
               <Text style={styles.emptySubtitle}>Create your first quote!</Text>
             </View>
@@ -132,7 +160,7 @@ export default function Home() {
       {/* Floating Action Button */}
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => router.push('/new-project')}
+        onPress={() => router.push("/new-project")}
       >
         <Ionicons name="add" size={28} color="white" />
       </TouchableOpacity>
@@ -143,23 +171,41 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.background,
   },
   header: {
-    backgroundColor: '#2563eb',
+    backgroundColor: COLORS.primary,
     paddingTop: 48,
     paddingBottom: 20,
     paddingHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   headerTitle: {
-    color: 'white',
+    color: COLORS.textInverse,
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   headerSubtitle: {
-    color: '#93c5fd',
+    color: COLORS.accentLight,
     fontSize: 14,
     marginTop: 4,
+  },
+  logoutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: COLORS.error,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    marginLeft: 12,
+  },
+  logoutText: {
+    color: COLORS.textInverse,
+    fontWeight: "bold",
+    marginLeft: 6,
+    fontSize: 14,
   },
   scrollView: {
     flex: 1,
@@ -169,24 +215,24 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 80,
   },
   emptyTitle: {
-    color: '#6b7280',
+    color: COLORS.textSecondary,
     fontSize: 18,
     marginTop: 16,
   },
   emptySubtitle: {
-    color: '#9ca3af',
+    color: COLORS.textMuted,
     fontSize: 14,
     marginTop: 8,
   },
   projectCard: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.surface,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -198,9 +244,9 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   projectHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 8,
     minWidth: 0,
   },
@@ -210,95 +256,101 @@ const styles = StyleSheet.create({
   },
   clientName: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1f2937',
+    fontWeight: "bold",
+    color: COLORS.textPrimary,
     flexShrink: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
     minWidth: 0,
   },
   phone: {
     fontSize: 14,
-    color: '#6b7280',
+    color: COLORS.textSecondary,
     flexShrink: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
     minWidth: 0,
   },
   address: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: COLORS.textMuted,
     marginTop: 4,
     flexShrink: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
     minWidth: 0,
   },
   date: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: COLORS.textMuted,
     flexShrink: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
     minWidth: 0,
-    textAlign: 'right',
+    textAlign: "right",
     maxWidth: 100,
   },
   projectFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 12,
   },
   grandTotal: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#059669',
+    fontWeight: "600",
+    color: COLORS.success,
     flexShrink: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
     minWidth: 0,
   },
   buttonGroup: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
     flexShrink: 1,
     minWidth: 0,
-  },
-  viewButton: {
-    backgroundColor: '#3b82f6',
+  },  viewButton: {
+    backgroundColor: COLORS.primaryLight,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 4,
-    minWidth: 56,
-    alignItems: 'center',
+    alignItems: "center",
+    flexShrink: 1,
+    minWidth: 0,
+  },
+  pdfButton: {
+    backgroundColor: COLORS.secondary,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 4,
+    alignItems: "center",
     flexShrink: 1,
     minWidth: 0,
   },
   deleteButton: {
-    backgroundColor: '#ef4444',
+    backgroundColor: COLORS.error,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 4,
-    minWidth: 56,
-    alignItems: 'center',
+    alignItems: "center",
     flexShrink: 1,
     minWidth: 0,
   },
   buttonText: {
-    color: 'white',
+    color: COLORS.textInverse,
     fontSize: 12,
-    textAlign: 'center',
+    textAlign: "center",
     flexShrink: 1,
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
     minWidth: 0,
   },
   fab: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 24,
     right: 24,
-    backgroundColor: '#2563eb',
+    backgroundColor: COLORS.primary,
     width: 56,
     height: 56,
     borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

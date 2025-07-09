@@ -35,15 +35,14 @@ export default function InteriorSection({
             </View>
           </View>
           <View style={styles.measurementDetails}>
-            <View style={styles.measurementInfo}>
-              <Text style={styles.measurementDimensions}>
-                {measurement.width}" ({measurement.widthFeet}ft) × {measurement.height}" ({measurement.heightFeet}ft)
+            <View style={styles.measurementInfo}>              <Text style={styles.measurementDimensions}>
+                {measurement.width}" ({Number(measurement.widthFeet).toFixed(1)}ft) × {measurement.height}" ({Number(measurement.heightFeet).toFixed(1)}ft)
               </Text>
               <Text style={styles.measurementSpecs}>
                 Material: {measurement.materialType || '-'} | Rate: ₹{measurement.materialRatePerSqft || 0}/sqft
               </Text>
               <Text style={styles.measurementSpecs}>
-                Total Sqft: {measurement.totalSqft || 0} | Material Cost: {formatCurrency(measurement.materialCost || 0)}
+                Total Sqft: {Number(measurement.totalSqft).toFixed(1)} | Material Cost: {formatCurrency(measurement.materialCost || 0)}
               </Text>
               {measurement.customDescription ? (
                 <Text style={styles.measurementSpecs}>
@@ -77,23 +76,27 @@ export default function InteriorSection({
             </View>
           </View>
           <View style={styles.measurementDetails}>
-            <View style={styles.measurementInfo}>
-              <Text style={styles.measurementDimensions}>
-                {measurement.width}" × {measurement.height}" {measurement.curtainType && `• ${measurement.curtainType}`}
+            <View style={styles.measurementInfo}>              <Text style={styles.measurementDimensions}>
+                {measurement.width}" × {measurement.height}"{measurement.curtainType ? ` • ${measurement.curtainType}` : ''}
               </Text>
               <View style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
                 {measurement.parts === 'One Part' ? (
                   <View style={{borderWidth: 2, borderColor: '#2563eb', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, marginRight: 4}}>
-                    <Text style={{color: '#2563eb', fontWeight: 'bold'}}>{measurement.pieces?.toFixed(1)} pieces</Text>
+                    <Text style={{color: '#2563eb', fontWeight: 'bold'}}>{Number(measurement.pieces).toFixed(1)} pieces</Text>
                   </View>
                 ) : (
-                  <Text style={styles.measurementSpecs}>{measurement.pieces?.toFixed(1)} Pieces </Text>
+                  <Text style={styles.measurementSpecs}>{Number(measurement.pieces).toFixed(1)} Pieces </Text>
                 )}
-                <Text style={styles.measurementSpecs}>• {measurement.totalMeters?.toFixed(2)}m Cloth</Text>
+                <Text style={styles.measurementSpecs}>• {Number(measurement.totalMeters).toFixed(1)}m Cloth</Text>
               </View>
               <Text style={styles.measurementSpecs}>
                 Cloth: {formatCurrency(measurement.clothCost || 0)} | Stitching: {formatCurrency(measurement.stitchingCost || 0)}
               </Text>
+              {measurement.hasLining ? (
+                <Text style={styles.measurementSpecs}>
+                  Lining: {measurement.liningType} | {Number(measurement.totalLiningMeters).toFixed(1)}m × ₹{measurement.liningCostPerMeter || 0} = {formatCurrency(measurement.totalLiningCost || 0)}
+                </Text>
+              ) : null}
             </View>
             <Text style={styles.measurementCost}>{formatCurrency(measurement.totalCost || 0)}</Text>
           </View>
@@ -108,7 +111,7 @@ export default function InteriorSection({
       const implementationCostPerRoll = parseFloat(measurement.implementationCostPerRoll) || 0;
       const squareInches = width * height;
       const squareFeet = squareInches / 144;
-      let rolls = squareFeet / 57;
+      let rolls = squareFeet / 50;
       const decimal = rolls - Math.floor(rolls);
       if (decimal >= 0.3) {
         rolls = Math.ceil(rolls);
@@ -138,12 +141,11 @@ export default function InteriorSection({
             </View>
           </View>
           <View style={styles.measurementDetails}>
-            <View style={styles.measurementInfo}>
-              <Text style={styles.measurementDimensions}>
+            <View style={styles.measurementInfo}>              <Text style={styles.measurementDimensions}>
                 {width}" × {height}" • Wallpaper
               </Text>
               <Text style={styles.measurementSpecs}>
-                Area: {squareFeet.toFixed(2)} sqft | Rolls: {rolls}
+                Area: {squareFeet.toFixed(1)} sqft | Rolls: {rolls}
               </Text>
               <Text style={styles.measurementSpecs}>
                 Cost/Roll: {formatCurrency(costPerRoll)} | Impl/Roll: {formatCurrency(implementationCostPerRoll)}

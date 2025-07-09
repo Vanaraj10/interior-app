@@ -1,41 +1,26 @@
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import { useState, useCallback } from 'react';
 import {
   Alert,
-  Modal,
-  RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
-import InteriorSection from '../components/InteriorSection';
-import MeasurementForm from '../components/MeasurementForm';
 import { INTERIOR_SCHEMAS } from '../components/interiorSchemas';
 
 export default function ProjectDetails() {
   const { id } = useLocalSearchParams();
   const [project, setProject] = useState(null);
-  const [showMeasurementForm, setShowMeasurementForm] = useState(false);
-  const [editingMeasurement, setEditingMeasurement] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [selectedTab, setSelectedTab] = useState('curtains');
 
-  // Define INTERIOR_TYPES for the tab bar
+  // Define INTERIOR_TYPES for the cards
   const INTERIOR_TYPES = [
     { key: 'curtains', label: INTERIOR_SCHEMAS.curtains.label, icon: 'logo-windows' },
     { key: 'mosquito-nets', label: INTERIOR_SCHEMAS['mosquito-nets'].label, icon: 'bug' },
     { key: 'wallpapers', label: INTERIOR_SCHEMAS.wallpapers.label, icon: 'image' },
-  ];
-
-  useEffect(() => {
-    loadProject();
-  }, [id]);
-
-  const loadProject = async () => {
+  ];  const loadProject = useCallback(async () => {
     try {
       const projectsData = await AsyncStorage.getItem('projects');
       if (projectsData) {
@@ -51,468 +36,254 @@ export default function ProjectDetails() {
     } catch (error) {
       console.error('Error loading project:', error);
     }
-  };
+  }, [id]);
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadProject();
-    setRefreshing(false);
-  };
-
-  const saveMeasurement = async (measurementData) => {
-    try {
-      const projectsData = await AsyncStorage.getItem('projects');
-      const projects = JSON.parse(projectsData);
-      const projectIndex = projects.findIndex(p => p.id === id);
-      if (projectIndex !== -1) {
-        if (editingMeasurement) {
-          // Update existing measurement
-          const measurementIndex = projects[projectIndex].measurements.findIndex(
-            m => m.id === editingMeasurement.id
-          );
-          if (measurementIndex !== -1) {
-            projects[projectIndex].measurements[measurementIndex] = measurementData;
-          }
-        } else {
-          // Add new measurement
-          projects[projectIndex].measurements = projects[projectIndex].measurements || [];
-          projects[projectIndex].measurements.push({
-            ...measurementData,
-            id: Date.now().toString()
-          });
-        }
-        // Remove any measurements with missing or invalid id (defensive)
-        projects[projectIndex].measurements = projects[projectIndex].measurements.filter(m => m.id);
-        // Recalculate grand total
-        projects[projectIndex] = calculateProjectTotals(projects[projectIndex]);
-        await AsyncStorage.setItem('projects', JSON.stringify(projects));
-        setProject(projects[projectIndex]);
-        setShowMeasurementForm(false);
-        setEditingMeasurement(null);
-      }
-    } catch (error) {
-      console.error('Error saving measurement:', error);
-      Alert.alert('Error', 'Failed to save measurement');
-    }
-  };
-
-  const deleteMeasurement = async (measurementId) => {
-    try {
-      const projectsData = await AsyncStorage.getItem('projects');
-      const projects = JSON.parse(projectsData);
-      const projectIndex = projects.findIndex(p => p.id === id);
-      if (projectIndex !== -1) {
-        projects[projectIndex].measurements = projects[projectIndex].measurements.filter(
-          m => m.id !== measurementId
-        );
-        // Recalculate grand total
-        projects[projectIndex] = calculateProjectTotals(projects[projectIndex]);
-        await AsyncStorage.setItem('projects', JSON.stringify(projects));
-        setProject(projects[projectIndex]);
-      }
-    } catch (error) {
-      console.error('Error deleting measurement:', error);
-      Alert.alert('Error', 'Failed to delete measurement');
-    }
-  };
-
-  const calculateProjectTotals = (projectData) => {
-    const measurements = projectData.measurements || [];
-
-    // Group measurements by interior type
-    const curtainMeasurements = measurements.filter(m => m.interiorType === 'curtains');
-    const netMeasurements = measurements.filter(m => m.interiorType === 'mosquito-nets');
-    const wallpaperMeasurements = measurements.filter(m => m.interiorType === 'wallpapers');
-
-    // Calculate totals for each type
-    const curtainTotal = curtainMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
-    const netTotal = netMeasurements.reduce((sum, m) => sum + (m.materialCost || m.totalCost || 0), 0);
-    // Wallpaper calculation as per requirements (do NOT use m.totalCost, recalculate here)
-    let wallpaperTotal = 0;
-    let totalWallpaperRolls = 0;
-    let totalWallpaperMaterialCost = 0;
-    let totalWallpaperImplementationCost = 0;
-    wallpaperMeasurements.forEach(m => {
-      const width = parseFloat(m.width) || 0;
-      const height = parseFloat(m.height) || 0;
-      const costPerRoll = parseFloat(m.costPerRoll) || 0;
-      const implementationCostPerRoll = parseFloat(m.implementationCostPerRoll) || 0;
-      // Step 1: Square inches
-      const squareInches = width * height;
-      // Step 2: Square feet
-      const squareFeet = squareInches / 144;
-      // Step 3: Rolls needed
-      let rolls = squareFeet / 57;
-      const decimal = rolls - Math.floor(rolls);
-      if (decimal >= 0.3) {
-        rolls = Math.ceil(rolls);
-      } else {
-        rolls = Math.max(1, Math.floor(rolls));
-      }
-      // Step 4: Total cost
-      const totalMaterialCost = rolls * costPerRoll;
-      const totalImplementationCost = rolls * implementationCostPerRoll;
-      const totalCost = totalMaterialCost + totalImplementationCost;
-      wallpaperTotal += totalCost;
-      totalWallpaperRolls += rolls;
-      totalWallpaperMaterialCost += totalMaterialCost;
-      totalWallpaperImplementationCost += totalImplementationCost;
-    });
-
-    // Calculate rod cost for curtains only, using each measurement's rodRatePerLength
-    let rodLength = 0;
-    let rodCost = 0;
-    curtainMeasurements.forEach(m => {
-      const width = m.width || 0;
-      const rate = m.rodRatePerLength || 200;
-      const length = width / 12;
-      rodLength += length;
-      rodCost += length * rate;
-    });
-
-    const subtotal = curtainTotal + netTotal + wallpaperTotal;
-    const grandTotal = subtotal + rodCost;
-
-    return {
-      ...projectData,
-      curtainTotal,
-      netTotal,
-      wallpaperTotal,
-      rodCost,
-      rodLength,
-      grandTotal,
-      totalWallpaperRolls,
-      totalWallpaperMaterialCost,
-      totalWallpaperImplementationCost
-    };
-  };
-
-  const editMeasurement = (measurement) => {
-    setEditingMeasurement(measurement);
-    setShowMeasurementForm(true);
-  };
+  // Use useFocusEffect to reload data when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      loadProject();
+    }, [loadProject])
+  );
 
   const generatePDF = () => {
     router.push(`/pdf-preview/${id}`);
   };
 
-  const formatCurrency = (amount) => {
-    return `₹${amount.toLocaleString('en-IN')}`;
-  };
-
   if (!project) {
     return (
-      <View className="flex-1 justify-center items-center">
+      <View style={styles.loadingContainer}>
         <Text>Loading...</Text>
       </View>
     );
   }
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* Header with Gradient */}
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="white" />
+        </TouchableOpacity>
         <View style={styles.headerContent}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-          <View style={styles.headerInfo}>
-            <Text style={styles.headerTitle}>{project.clientName}</Text>
-            <Text style={styles.headerSubtitle}>{project.phone}</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.pdfButton}
-            onPress={generatePDF}
-          >
-            <Text style={styles.pdfButtonText}>PDF</Text>
-          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{project.clientName}</Text>
+          <Text style={styles.headerSubtitle}>Project Dashboard</Text>
+        </View>
+      </View>
+      
+      {/* Interior Type Cards */}
+      <View style={styles.cardsContainer}>
+        <View style={styles.interiorTypesGrid}>
+          {INTERIOR_TYPES.map((type, index) => (
+            <TouchableOpacity
+              key={type.key}
+              style={[styles.interiorTypeCard, { 
+                transform: [{ scale: 1 }] 
+              }]}
+              onPress={() => router.push({ pathname: '/interior-measurements/[type]', params: { id, type: type.key } })}
+              activeOpacity={0.8}
+            >
+              <View style={styles.cardIconContainer}>
+                <Ionicons name={type.icon} size={48} color="white" />
+              </View>
+              <Text style={styles.interiorTypeLabel}>{type.label}</Text>
+              <View style={styles.cardArrow}>
+                <Ionicons name="arrow-forward" size={16} color="#6b7280" />
+              </View>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
 
-      {/* Tab Bar */}
-      <View style={styles.tabBar}>
-        {INTERIOR_TYPES.map(type => (
-          <TouchableOpacity
-            key={type.key}
-            style={[styles.tabItem, selectedTab === type.key && styles.tabItemActive]}
-            onPress={() => setSelectedTab(type.key)}
-          >
-            <Ionicons name={type.icon} size={18} color={selectedTab === type.key ? '#2563eb' : '#64748b'} />
-            <Text style={[styles.tabLabel, selectedTab === type.key && styles.tabLabelActive]}>{type.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <ScrollView
-        style={styles.scrollView}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {/* Only show the selected interior section */}
-        {selectedTab === 'curtains' && (
-          <InteriorSection
-            title="Curtains"
-            icon="logo-windows"
-            measurements={project.measurements?.filter(m => m.interiorType === 'curtains') || []}
-            total={project.curtainTotal || 0}
-            onEdit={editMeasurement}
-            onDelete={deleteMeasurement}
-          />
-        )}
-        {selectedTab === 'mosquito-nets' && (
-          <InteriorSection
-            title="Mosquito Nets"
-            icon="bug"
-            measurements={project.measurements?.filter(m => m.interiorType === 'mosquito-nets') || []}
-            total={project.netTotal || 0}
-            onEdit={editMeasurement}
-            onDelete={deleteMeasurement}
-          />
-        )}
-        {selectedTab === 'wallpapers' && (
-          <InteriorSection
-            title="Wallpapers"
-            icon="image"
-            measurements={project.measurements?.filter(m => m.interiorType === 'wallpapers') || []}
-            total={project.wallpaperTotal || 0}
-            onEdit={editMeasurement}
-            onDelete={deleteMeasurement}
-          />
-        )}
-        {/* Rod Installation (show only on curtains tab if any curtains) */}
-        {selectedTab === 'curtains' && project.measurements?.some(m => m.interiorType === 'curtains') && (
-          <View style={styles.rodInstallation}>
-            <Text style={styles.rodTitle}>Rod Installation</Text>
-            <View style={styles.rodDetails}>
-              <Text style={styles.rodText}>
-                Length: {(project.rodLength || 0).toFixed(1)} units
-              </Text>
-              <Text style={styles.rodCost}>
-                {formatCurrency(project.rodCost || 0)}
-              </Text>
+      {/* Quick Actions */}
+      <View style={styles.quickActions}>
+        <TouchableOpacity style={styles.pdfButton} onPress={generatePDF}>
+          <View style={styles.pdfButtonContent}>
+            <Ionicons name="document-text" size={24} color="white" />
+            <View>
+              <Text style={styles.pdfButtonText}>Generate PDF</Text>
+              <Text style={styles.pdfButtonSubtext}>Export complete report</Text>
             </View>
           </View>
-        )}
-        {/* Grand Total (always show) */}
-        <View style={styles.grandTotalContainer}>
-          <View style={styles.grandTotalContent}>
-            <Text style={styles.grandTotalLabel}>Grand Total</Text>
-            <Text style={styles.grandTotalAmount}>
-              {formatCurrency(project.grandTotal || 0)}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.bottomPadding} />
-      </ScrollView>
-      {/* Floating Action Button */}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => setShowMeasurementForm(true)}
-      >
-        <Ionicons name="add" size={28} color="white" />
-      </TouchableOpacity>
-      {/* Measurement Form Modal */}
-      <Modal
-        visible={showMeasurementForm}
-        animationType="slide"
-        presentationStyle="pageSheet"
-      >
-        <MeasurementForm
-          onSave={saveMeasurement}
-          onCancel={() => {
-            setShowMeasurementForm(false);
-            setEditingMeasurement(null);
-          }}
-          editingMeasurement={editingMeasurement}
-        />
-      </Modal>
+          <Ionicons name="download" size={20} color="white" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f3f4f6',
+  container: { 
+    flex: 1, 
+    backgroundColor: '#f8fafc' 
+  },
+  loadingContainer: {
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    backgroundColor: '#f8fafc'
   },
   header: {
     backgroundColor: '#2563eb',
-    paddingTop: 48,
-    paddingBottom:4,
-    paddingHorizontal: 16,
-  },
-  headerContent: {
+    paddingTop: 30,
+    paddingBottom: 10,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    elevation: 8,
+    shadowColor: '#2563eb',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
   backButton: {
-    marginRight: 16,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
-  headerInfo: {
+  headerContent: {
     flex: 1,
+    marginLeft: 16,
   },
   headerTitle: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
   },
   headerSubtitle: {
     color: '#93c5fd',
     fontSize: 14,
+    marginTop: 2,
   },
-  pdfButton: {
+  pdfHeaderButton: {
     backgroundColor: '#059669',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    padding: 12,
+    borderRadius: 24,
+    elevation: 4,
+    shadowColor: '#059669',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
-  pdfButtonText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '500',
+  welcomeSection: {
+    padding: 20,
+    paddingTop: 24,
   },
-  scrollView: {
-    flex: 1,
-  },
-  projectInfo: {
+  welcomeCard: {
     backgroundColor: 'white',
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    padding: 16,
-  },
-  projectInfoTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 8,
-  },
-  projectInfoText: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  projectInfoDate: {
-    fontSize: 12,
-    color: '#9ca3af',
-    marginTop: 8,
-  },
-  rodInstallation: {
-    backgroundColor: 'white',
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    padding: 16,
-  },
-  rodTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 8,
-  },
-  rodDetails: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    borderRadius: 16,
+    padding: 24,
     alignItems: 'center',
-  },
-  rodText: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  rodCost: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1f2937',
-  },
-  grandTotalContainer: {
-    backgroundColor: '#f0f9ff',
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 8,
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#10b981',
+    shadowRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#2563eb',
   },
-  grandTotalContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  grandTotalLabel: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#065f46',
-  },
-  grandTotalAmount: {
+  welcomeTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#059669',
+    color: '#1f2937',
+    marginTop: 12,
+    textAlign: 'center',
   },
-  bottomPadding: {
-    height: 80,
+  welcomeSubtitle: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginTop: 8,
+    textAlign: 'center',
+    lineHeight: 20,
   },
-  fab: {
-    position: 'absolute',
-    bottom: 24,
-    right: 24,
+  cardsContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#374151',
+    marginBottom: 16,
+  },
+  interiorTypesGrid: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  interiorTypeCard: { 
+    backgroundColor: 'white',
+    borderRadius: 20,
+    marginBottom: 16,
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  cardIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     backgroundColor: '#2563eb',
-    width: 56,
-    height: 56,
-    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
+    elevation: 3,
+    shadowColor: '#2563eb',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  interiorTypeLabel: { 
+    flex: 1,
+    marginLeft: 20,
+    fontSize: 18,
+    color: '#1f2937',
+    fontWeight: '600',
+  },
+  cardArrow: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quickActions: {
+    padding: 20,
+    paddingBottom: 32,
+  },
+  pdfButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#059669',
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    elevation: 6,
+    shadowColor: '#059669',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 8,
   },
-  tabBar: {
+  pdfButtonContent: {
     flexDirection: 'row',
-    backgroundColor: '#e0e7ef',
-    borderBottomWidth: 1,
-    borderBottomColor: '#cbd5e1',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    justifyContent: 'space-around',
-  },
-  tabItem: {
-    flex: 1,
     alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginHorizontal: 4,
-    backgroundColor: 'transparent',
+    flex: 1,
   },
-  tabItemActive: {
-    backgroundColor: '#fff',
-    borderBottomWidth: 2,
-    borderBottomColor: '#2563eb',
+  pdfButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 16,
   },
-  tabLabel: {
-    marginLeft: 6,
-    color: '#64748b',
-    fontWeight: '600',
-    fontSize: 15,
-  },
-  tabLabelActive: {
-    color: '#2563eb',
+  pdfButtonSubtext: {
+    color: '#a7f3d0',
+    fontSize: 12,
+    marginLeft: 16,
+    marginTop: 2,
   },
 });

@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { COLORS } from './styles/colors';
 
 export default function NewProject() {
   const [formData, setFormData] = useState({
@@ -82,14 +83,14 @@ export default function NewProject() {
         {/* Client Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Client Information</Text>
-          
-          <View style={styles.fieldContainer}>
+            <View style={styles.fieldContainer}>
             <Text style={styles.label}>Client Name *</Text>
             <TextInput
               style={styles.input}
               value={formData.clientName}
               onChangeText={(text) => updateField('clientName', text)}
               placeholder="Enter client name"
+              placeholderTextColor={COLORS.inputPlaceholder}
             />
           </View>
 
@@ -100,6 +101,7 @@ export default function NewProject() {
               value={formData.phone}
               onChangeText={(text) => updateField('phone', text)}
               placeholder="Enter phone number"
+              placeholderTextColor={COLORS.inputPlaceholder}
               keyboardType="phone-pad"
             />
           </View>
@@ -111,6 +113,7 @@ export default function NewProject() {
               value={formData.address}
               onChangeText={(text) => updateField('address', text)}
               placeholder="Enter complete address"
+              placeholderTextColor={COLORS.inputPlaceholder}
               multiline
               textAlignVertical="top"
             />
@@ -132,10 +135,10 @@ export default function NewProject() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.background,
   },
   header: {
-    backgroundColor: '#2563eb',
+    backgroundColor: COLORS.primary,
     paddingTop: 48,
     paddingBottom: 24,
     paddingHorizontal: 16,
@@ -146,12 +149,12 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   headerTitle: {
-    color: 'white',
+    color: COLORS.textInverse,
     fontSize: 20,
     fontWeight: 'bold',
   },
   headerSubtitle: {
-    color: '#93c5fd',
+    color: COLORS.accentLight,
     fontSize: 14,
   },
   scrollView: {
@@ -160,9 +163,9 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
   },
   section: {
-    backgroundColor: 'white',
+    backgroundColor: COLORS.surface,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -173,7 +176,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: COLORS.textPrimary,
     marginBottom: 16,
   },
   fieldContainer: {
@@ -182,16 +185,18 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: COLORS.textSecondary,
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: COLORS.inputBorder,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 16,
+    backgroundColor: COLORS.inputBackground,
+    color: COLORS.inputText,
   },
   textArea: {
     height: 80,
@@ -199,22 +204,22 @@ const styles = StyleSheet.create({
   },
   helpText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: COLORS.textMuted,
     marginTop: 4,
   },
   createButton: {
-    backgroundColor: '#2563eb',
+    backgroundColor: COLORS.primary,
     borderRadius: 8,
     paddingVertical: 16,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   createButtonText: {
-    color: 'white',
+    color: COLORS.textInverse,
     fontSize: 18,
     fontWeight: '600',
   },

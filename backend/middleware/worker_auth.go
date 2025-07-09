@@ -32,15 +32,15 @@ func WorkerAuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		workerID, ok := claims["user_id"].(string)
-		adminID, ok2 := claims["admin_id"].(string)
+		workerID, ok := claims["user_id"].(float64) // JWT stores numbers as float64
+		adminID, ok2 := claims["admin_id"].(float64)
 		if !ok || !ok2 {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token payload"})
 			c.Abort()
 			return
 		}
-		c.Set("worker_id", workerID)
-		c.Set("admin_id", adminID)
+		c.Set("worker_id", int(workerID)) // Convert to int for handlers
+		c.Set("admin_id", int(adminID))
 		c.Next()
 	}
 }

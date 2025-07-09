@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Print from 'expo-print';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   Alert,
   ScrollView,
@@ -20,7 +20,7 @@ const INTERIOR_TYPES = [
     label: 'CURTAINS',
     generator: PDF_ROW_GENERATORS.curtains,
     columns: [
-      'S.No', 'Room Label', 'Width', 'Height', 'Pieces', 'Meters', 'Type', 'Cloth Price', 'Stitching Price', 'Total Price'
+      'S.No', 'Room Label', 'Width', 'Height', 'Pieces', 'Meters', 'Type', 'Cloth Price', 'Stitching Price', 'Lining', 'Total Price'
     ],
   },
   {
@@ -54,12 +54,7 @@ export default function PDFPreview() {
   const [project, setProject] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-
-  useEffect(() => {
-    loadProject();
-  }, [id]);
-
-  const loadProject = async () => {
+  const loadProject = useCallback(async () => {
     try {
       const projectsData = await AsyncStorage.getItem('projects');
       if (projectsData) {
@@ -75,7 +70,11 @@ export default function PDFPreview() {
     } catch (error) {
       console.error('Error loading project:', error);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    loadProject();
+  }, [loadProject]);
 
   const formatCurrency = (amount) => {
     return `₹${amount.toLocaleString('en-IN')}`;
@@ -95,6 +94,7 @@ export default function PDFPreview() {
             </thead>
             <tbody>
               ${type.generator(measurements, formatCurrency)}
+              ${type.generator.totals ? type.generator.totals(measurements, formatCurrency) : ''}
             </tbody>
           </table>
         `;
@@ -240,10 +240,9 @@ export default function PDFPreview() {
               <th>Total Rod Cost</th>
             </tr>
           </thead>
-          <tbody>
-            ${project.measurements.filter(m => m.interiorType === 'curtains').map(m => {
+          <tbody>            ${project.measurements.filter(m => m.interiorType === 'curtains').map(m => {
               const width = m.width || 0;
-              const rate = m.rodRatePerLength || 200;
+              const rate = m.rodRatePerLength || 0; // Use actual rate from measurement
               const length = width / 12;
               const cost = length * rate;
               return `<tr>
@@ -379,18 +378,16 @@ export default function PDFPreview() {
           {project.measurements && project.measurements.length > 0 && (
             <View style={styles.measurementsSection}>
               <Text style={styles.sectionTitle}>Measurements Summary</Text>
-              {project.measurements.map((measurement, index) => {
-                let cost = 0;
+              {project.measurements.map((measurement, index) => {                let cost = 0;
                 if (measurement.interiorType === 'mosquito-nets') {
-                  cost = measurement.materialCost || 0;
+                  cost = measurement.totalCost || measurement.materialCost || 0; // Use totalCost first, fallback to materialCost
                 } else {
                   cost = measurement.totalCost || 0;
                 }
                 return (
                   <View key={measurement.id} style={styles.measurementRow}>
                     <View style={styles.measurementInfo}>
-                      <Text style={styles.measurementLabel}>{measurement.roomLabel}</Text>
-                      <Text style={styles.measurementDetails}>
+                      <Text style={styles.measurementLabel}>{measurement.roomLabel}</Text>                      <Text style={styles.measurementDetails}>
                         {measurement.width}" × {measurement.height}" • {measurement.interiorType}
                       </Text>
                     </View>
@@ -459,7 +456,7 @@ export default function PDFPreview() {
                   .replace(/\"/g, '"') // Replace any escaped quotes with normal quotes
                   .trim();
                 // Use backend API: POST /api/projects (worker JWT)
-                const response = await fetch('https://interior-app-production.up.railway.app/api/worker/projects', {
+                const response = await fetch('https://interior-app.onrender.com/api/worker/projects', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -486,8 +483,7 @@ export default function PDFPreview() {
                 } else {
                   const data = await response.json();
                   Alert.alert('Upload Failed', data.error || 'Failed to upload project');
-                }
-              } catch (error) {
+                }              } catch (_error) {
                 Alert.alert('Error', 'Could not upload project');
               }
             }}

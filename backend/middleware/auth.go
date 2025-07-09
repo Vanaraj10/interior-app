@@ -43,13 +43,13 @@ func AdminAuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		adminID, ok := claims["user_id"].(string)
+		adminID, ok := claims["user_id"].(float64) // JWT stores numbers as float64
 		if !ok {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token payload"})
 			c.Abort()
 			return
 		}
-		c.Set("admin_id", adminID)
+		c.Set("admin_id", int(adminID)) // Convert to int for handlers
 		c.Next()
 	}
 }

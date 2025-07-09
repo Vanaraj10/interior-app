@@ -1,92 +1,61 @@
 // Package handlers provides a set of functions to manage and manipulate project data,
 // including creating, listing, retrieving, updating, and deleting projects. These functions
-// interact with a MongoDB database and utilize Gin for HTTP request handling.
+// interact with an Azure SQL database and utilize Gin for HTTP request handling.
 //
 // CreateProject creates or updates a project for a worker or an admin. It sanitizes and cleans
 // incoming HTML by removing backslashes, style tags, redundant whitespaces, and transforming
-// inline styles into CSS classes. The function inserts or updates a project document in the
-// "projects" collection based on a filter condition that matches worker and admin IDs.
+// inline styles into CSS classes. The function inserts or updates a project row in the
+// "projects" table based on a filter condition that matches worker and admin IDs.
 //
 // ListProjects retrieves all projects associated with a given admin. It fetches from the
-// "projects" collection and returns a JSON response containing the array of matching projects.
+// "projects" table and returns a JSON response containing the array of matching projects.
 //
 // GetProject retrieves a specific project by its ID for a given admin. It ensures that the
 // requesting admin has access to the project, returning an error if it is not found or if the
 // user is not authorized.
 //
 // ToggleProjectCompleted toggles the completion status of a project for the admin. It updates
-// the matching document in the "projects" collection, setting the "isCompleted" field to the
+// the matching row in the "projects" table, setting the "is_completed" field to the
 // requested boolean value.
 //
 // WorkerToggleProjectCompleted toggles the completion status of a project for the worker. It
-// similarly updates the "isCompleted" field in the "projects" collection, ensuring the worker
+// similarly updates the "is_completed" field in the "projects" table, ensuring the worker
 // is associated with the updated project.
 //
 // ListWorkerProjects retrieves all projects assigned to a specific worker. It queries the
-// "projects" collection for projects matching the worker's ID and returns them as JSON.
+// "projects" table for projects matching the worker's ID and returns them as JSON.
 //
 // DeleteProject removes a specific project for the authenticated admin from the "projects"
-// collection. It ensures that only the admin who owns the project can delete it and returns
+// table. It ensures that only the admin who owns the project can delete it and returns
 // an appropriate response if the project cannot be found or the user is not authorized.
 package handlers
 
 import (
-	"context"
 	"net/http"
 	"regexp"
 	"strings"
-	"time"
 
 	"github.com/Vanaraj10/interior-backend/config"
 	"github.com/Vanaraj10/interior-backend/models"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Worker submits a project (order)
 func CreateProject(c *gin.Context) {
-	workerId := c.GetString("worker_id")
-	adminId := c.GetString("admin_id")
-	workerObjID, err := primitive.ObjectIDFromHex(workerId)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid worker ID"})
-		return
-	}
-	adminObjID, err2 := primitive.ObjectIDFromHex(adminId)
-	if err2 != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin ID"})
-		return
-	}
+	workerId := c.GetInt("worker_id")
+	adminId := c.GetInt("admin_id")
 	var req struct {
-		ClientName string      `json:"clientName"`
-		Phone      string      `json:"phone"`
-		Address    string      `json:"address"`
-		HTML       string      `json:"html"`
-		RawData    interface{} `json:"rawData"`
-		ProjectID  string      `json:"projectId"`
+		ClientName string `json:"clientName"`
+		Phone      string `json:"phone"`
+		Address    string `json:"address"`
+		HTML       string `json:"html"`
+		RawData    string `json:"rawData"`
+		ProjectID  int    `json:"projectId"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	db := config.GetDB()
-
-	filter := bson.M{
-		"workerId": workerObjID,
-		"adminId":  adminObjID,
-	}
-	if req.ProjectID != "" {
-		filter["rawData.id"] = req.ProjectID
-	} else {
-		filter["clientName"] = req.ClientName
-		filter["phone"] = req.Phone
-		filter["address"] = req.Address
-	}
-
 	// Clean and normalize HTML before saving
 	html := req.HTML
 	// Remove all backslashes (\\), excessive whitespace, and convert double quotes to single quotes
@@ -168,24 +137,16 @@ func CreateProject(c *gin.Context) {
 	reCellRight := regexp.MustCompile(`style=["']\s*padding: 8px;\s*border: 1px solid #ddd;\s*text-align: right;?\s*["']`)
 	html = reCellRight.ReplaceAllString(html, "class='cell-right'")
 
-	update := bson.M{
-		"$set": bson.M{
-			"html":      html,
-			"rawData":   req.RawData,
-			"updatedAt": time.Now(),
-		},
-		"$setOnInsert": bson.M{
-			"clientName":  req.ClientName,
-			"phone":       req.Phone,
-			"address":     req.Address,
-			"createdAt":   time.Now(),
-			"workerId":    workerObjID,
-			"adminId":     adminObjID,
-			"isCompleted": false,
-		},
+	db := config.GetDB()
+	// Upsert logic: if ProjectID is provided, update; else insert new
+	var err error
+	if req.ProjectID > 0 {
+		_, err = db.Exec(`UPDATE projects SET client_name=@p1, phone=@p2, address=@p3, html=@p4, raw_data=@p5, updated_at=GETDATE() WHERE id=@p6 AND worker_id=@p7 AND admin_id=@p8`,
+			req.ClientName, req.Phone, req.Address, html, req.RawData, req.ProjectID, workerId, adminId)
+	} else {
+		_, err = db.Exec(`INSERT INTO projects (client_name, phone, address, html, raw_data, worker_id, admin_id, is_completed, created_at, updated_at) VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7, 0, GETDATE(), GETDATE())`,
+			req.ClientName, req.Phone, req.Address, html, req.RawData, workerId, adminId)
 	}
-	opts := options.Update().SetUpsert(true)
-	_, err = db.Collection("projects").UpdateOne(ctx, filter, update, opts)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save project"})
 		return
@@ -195,62 +156,43 @@ func CreateProject(c *gin.Context) {
 
 // Admin lists all projects for their workers
 func ListProjects(c *gin.Context) {
-	adminId := c.GetString("admin_id")
-	adminObjID, err := primitive.ObjectIDFromHex(adminId)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin ID"})
-		return
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	adminId := c.GetInt("admin_id")
 	db := config.GetDB()
-	cursor, err := db.Collection("projects").Find(ctx, bson.M{"adminId": adminObjID})
+	rows, err := db.Query(`SELECT id, client_name, phone, address, html, raw_data, worker_id, admin_id, is_completed, created_at, updated_at FROM projects WHERE admin_id = @p1`, adminId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch projects"})
 		return
 	}
+	defer rows.Close()
 	var projects []models.Project
-	if err := cursor.All(ctx, &projects); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse projects"})
-		return
+	for rows.Next() {
+		var p models.Project
+		err := rows.Scan(&p.ID, &p.ClientName, &p.Phone, &p.Address, &p.HTML, &p.RawData, &p.WorkerID, &p.AdminID, &p.IsCompleted, &p.CreatedAt, &p.UpdatedAt)
+		if err == nil {
+			projects = append(projects, p)
+		}
 	}
 	c.JSON(http.StatusOK, projects)
 }
 
 // Admin gets a specific project
 func GetProject(c *gin.Context) {
-	adminId := c.GetString("admin_id")
-	adminObjID, err := primitive.ObjectIDFromHex(adminId)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin ID"})
-		return
-	}
+	adminId := c.GetInt("admin_id")
 	projectId := c.Param("id")
-	projectObjID, err := primitive.ObjectIDFromHex(projectId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
-		return
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 	db := config.GetDB()
-	var project models.Project
-	err = db.Collection("projects").FindOne(ctx, bson.M{"_id": projectObjID, "adminId": adminObjID}).Decode(&project)
+	var p models.Project
+	err := db.QueryRow(`SELECT id, client_name, phone, address, html, raw_data, worker_id, admin_id, is_completed, created_at, updated_at FROM projects WHERE id = @p1 AND admin_id = @p2`, projectId, adminId).Scan(&p.ID, &p.ClientName, &p.Phone, &p.Address, &p.HTML, &p.RawData, &p.WorkerID, &p.AdminID, &p.IsCompleted, &p.CreatedAt, &p.UpdatedAt)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found or not authorized"})
 		return
 	}
-	c.JSON(http.StatusOK, project)
+	c.JSON(http.StatusOK, p)
 }
 
 // Admin toggles isCompleted for a project
 func ToggleProjectCompleted(c *gin.Context) {
-	adminId := c.GetString("admin_id")
+	adminId := c.GetInt("admin_id")
 	projectId := c.Param("id")
-	if adminId == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
 	var req struct {
 		IsCompleted bool `json:"isCompleted"`
 	}
@@ -258,24 +200,10 @@ func ToggleProjectCompleted(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	objID, err := primitive.ObjectIDFromHex(projectId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
-		return
-	}
-	adminObjID, err := primitive.ObjectIDFromHex(adminId)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin ID"})
-		return
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 	db := config.GetDB()
-	res, err := db.Collection("projects").UpdateOne(ctx,
-		bson.M{"_id": objID, "adminId": adminObjID},
-		bson.M{"$set": bson.M{"isCompleted": req.IsCompleted}},
-	)
-	if err != nil || res.MatchedCount == 0 {
+	res, err := db.Exec(`UPDATE projects SET is_completed = @p1 WHERE id = @p2 AND admin_id = @p3`, req.IsCompleted, projectId, adminId)
+	n, _ := res.RowsAffected()
+	if err != nil || n == 0 {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not update project"})
 		return
 	}
@@ -284,17 +212,8 @@ func ToggleProjectCompleted(c *gin.Context) {
 
 // Worker toggles isCompleted for a project
 func WorkerToggleProjectCompleted(c *gin.Context) {
-	workerId := c.GetString("worker_id")
-	workerObjID, err := primitive.ObjectIDFromHex(workerId)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid worker ID"})
-		return
-	}
+	workerId := c.GetInt("worker_id")
 	projectId := c.Param("id")
-	if workerId == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
 	var req struct {
 		IsCompleted bool `json:"isCompleted"`
 	}
@@ -302,19 +221,10 @@ func WorkerToggleProjectCompleted(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	objID, err := primitive.ObjectIDFromHex(projectId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
-		return
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 	db := config.GetDB()
-	res, err := db.Collection("projects").UpdateOne(ctx,
-		bson.M{"_id": objID, "workerId": workerObjID},
-		bson.M{"$set": bson.M{"isCompleted": req.IsCompleted}},
-	)
-	if err != nil || res.MatchedCount == 0 {
+	res, err := db.Exec(`UPDATE projects SET is_completed = @p1 WHERE id = @p2 AND worker_id = @p3`, req.IsCompleted, projectId, workerId)
+	n, _ := res.RowsAffected()
+	if err != nil || n == 0 {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not update project"})
 		return
 	}
@@ -323,65 +233,39 @@ func WorkerToggleProjectCompleted(c *gin.Context) {
 
 // Worker lists all projects assigned to them
 func ListWorkerProjects(c *gin.Context) {
-	workerId := c.GetString("worker_id")
-	workerObjID, err := primitive.ObjectIDFromHex(workerId)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid worker ID"})
-		return
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	workerId := c.GetInt("worker_id")
 	db := config.GetDB()
-	cursor, err := db.Collection("projects").Find(ctx, bson.M{"workerId": workerObjID})
+	rows, err := db.Query(`SELECT id, client_name, phone, address, html, raw_data, worker_id, admin_id, is_completed, created_at, updated_at FROM projects WHERE worker_id = @p1`, workerId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch projects"})
 		return
 	}
+	defer rows.Close()
 	var projects []models.Project
-	if err := cursor.All(ctx, &projects); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse projects"})
-		return
+	for rows.Next() {
+		var p models.Project
+		err := rows.Scan(&p.ID, &p.ClientName, &p.Phone, &p.Address, &p.HTML, &p.RawData, &p.WorkerID, &p.AdminID, &p.IsCompleted, &p.CreatedAt, &p.UpdatedAt)
+		if err == nil {
+			projects = append(projects, p)
+		}
 	}
 	c.JSON(http.StatusOK, projects)
 }
 
 // Admin deletes a project
 func DeleteProject(c *gin.Context) {
-	adminId := c.GetString("admin_id")
+	adminId := c.GetInt("admin_id")
 	projectId := c.Param("id")
-
-	adminObjID, err := primitive.ObjectIDFromHex(adminId)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin ID"})
-		return
-	}
-
-	projectObjID, err := primitive.ObjectIDFromHex(projectId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
-		return
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
 	db := config.GetDB()
-
-	// Delete the project, ensuring it belongs to the admin
-	res, err := db.Collection("projects").DeleteOne(ctx, bson.M{
-		"_id":     projectObjID,
-		"adminId": adminObjID,
-	})
-
+	res, err := db.Exec(`DELETE FROM projects WHERE id = @p1 AND admin_id = @p2`, projectId, adminId)
+	n, _ := res.RowsAffected()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete project"})
 		return
 	}
-
-	if res.DeletedCount == 0 {
+	if n == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found or not authorized"})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{"message": "Project deleted successfully"})
 }
