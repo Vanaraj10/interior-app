@@ -306,7 +306,7 @@ function renderWorkersGrid() {
 
 // Project functionality
 async function viewProject(projectId) {
-    const project = projects.find(p => p.id === projectId);
+    const project = projects.find(p => p.id == projectId);
     if (!project) {
         showToast('Project not found', 'error');
         return;
