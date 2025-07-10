@@ -118,13 +118,14 @@ async function loadDashboardData() {
     showLoading(true);
     
     try {
-        await Promise.all([
-            loadProjects(),
-            loadWorkers()
-        ]);
-        
-        updateDashboardStats();
-        loadRecentProjects();
+        // Load workers first, then projects, then update dashboard
+        Promise.all([
+            loadWorkers(),
+            loadProjects()
+        ]).then(() => {
+            updateDashboardStats();
+            loadRecentProjects();
+        });
     } catch (error) {
         console.error('Error loading dashboard data:', error);
         showToast('Error loading dashboard data', 'error');
@@ -202,7 +203,8 @@ function loadRecentProjects() {
     }
     
     container.innerHTML = recentProjects.map(project => {
-        const worker = workers.find(w => w.id === project.workerId);
+        // Fix: handle string/number id mismatch
+        const worker = workers.find(w => w.id == project.workerId);
         const workerName = worker ? worker.name : 'Unknown Worker';
         
         return `
