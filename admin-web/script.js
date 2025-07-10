@@ -698,7 +698,6 @@ function showCreateWorker() {
 }
 
 function showChangePassword() {
-    closeDropdown();
     showModal('changePasswordModal');
 }
 
