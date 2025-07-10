@@ -236,10 +236,10 @@ export default function InteriorMeasurements() {
                       </Text>
                     </View>{" "}
                     <View style={[styles.tableCell, styles.dimensionColumn]}>
-                      <Text style={styles.cellText}>{m.width || "-"}"</Text>
+                      <Text style={styles.cellText}>{m.width || "-"}</Text>
                     </View>
                     <View style={[styles.tableCell, styles.dimensionColumn]}>
-                      <Text style={styles.cellText}>{m.height || "-"}"</Text>
+                      <Text style={styles.cellText}>{m.height || "-"}</Text>
                     </View>
                     {type === "curtains" && (
                       <>

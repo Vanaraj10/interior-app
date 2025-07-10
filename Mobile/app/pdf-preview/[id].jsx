@@ -388,7 +388,7 @@ export default function PDFPreview() {
                   <View key={measurement.id} style={styles.measurementRow}>
                     <View style={styles.measurementInfo}>
                       <Text style={styles.measurementLabel}>{measurement.roomLabel}</Text>                      <Text style={styles.measurementDetails}>
-                        {measurement.width}" × {measurement.height}" • {measurement.interiorType}
+                        {measurement.width} × {measurement.height} • {measurement.interiorType}
                       </Text>
                     </View>
                     <Text style={styles.measurementCost}>{formatCurrency(cost)}</Text>
