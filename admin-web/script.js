@@ -631,7 +631,7 @@ function filterProjects() {
     // Filter by status
     if (statusFilter !== 'all') {
         const isCompleted = statusFilter === 'completed';
-        filteredProjects = filteredProjects.filter(project => project.isCompleted === isCompleted);
+        filteredProjects = filteredProjects.filter(project => project.isCompleted == isCompleted);
     }
     
     // Render filtered projects
