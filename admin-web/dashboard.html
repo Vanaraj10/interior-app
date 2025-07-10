@@ -12,36 +12,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
    
-</head>
-<body class="dashboard-page">
-    <!-- Header -->
 <header class="dashboard-header">
   <div class="header-content">
     <div class="header-left">
       <h1>Interior Admin</h1>
     </div>
-
     <div class="header-right">
-      <div class="admin-info">
-        <span id="adminUsername">Admin</span>
-        <div class="dropdown">
-          <button class="dropdown-btn" onclick="toggleDropdown()">
-            <i class="fas fa-user-circle"></i>
-            <i class="fas fa-chevron-down"></i>
-          </button>
-          <div class="dropdown-content" id="userDropdown">
-            <a href="#" onclick="showChangePassword()">
-              <i class="fas fa-key"></i> Change Password
-            </a>
-            <a href="#" onclick="logout()">
-              <i class="fas fa-sign-out-alt"></i> Logout
-            </a>
-          </div>
-        </div>
-      </div>
+      <span id="adminUsername">Admin</span>
+      <button class="hamburger" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
     </div>
   </div>
 </header>
+
+
+
 
 <!-- 👇 Add this just before </body> -->
 <script>
@@ -60,24 +46,52 @@
   });
 </script>
 
-
-    <!-- Sidebar -->
-    <aside class="sidebar">
+<aside class="sidebar" id="sidebar">
   <nav class="sidebar-nav">
-    <a href="#dashboard-section" class="nav-item active">
-      <i class="fas fa-tachometer-alt"></i>
-      <span>Dashboard</span>
-    </a>
-    <a href="#projects-section" class="nav-item">
-      <i class="fas fa-project-diagram"></i>
-      <span>Projects</span>
-    </a>
-    <a href="#workers-section" class="nav-item">
-      <i class="fas fa-users"></i>
-      <span>Workers</span>
-    </a>
+    <!-- Top nav links -->
+    <div class="nav-top">
+      <a href="#" class="nav-item active" data-target="dashboard-section">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item" data-target="projects-section">
+        <i class="fas fa-project-diagram"></i>
+        <span>Projects</span>
+      </a>
+      <a href="#" class="nav-item" data-target="workers-section">
+        <i class="fas fa-users"></i>
+        <span>Workers</span>
+      </a>
+    </div>
+
+    <!-- Bottom nav links -->
+    <div class="nav-bottom">
+      <a href="#" class="nav-item">
+        <i class="fas fa-key"></i>
+        <span>Change Password</span>
+      </a>
+      <a href="#" class="nav-item">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+    </div>
   </nav>
 </aside>
+
+
+    <div class="nav-bottom">
+      <a href="#" class="nav-item" onclick="showChangePassword()">
+        <i class="fas fa-key"></i>
+        <span>Change Password</span>
+      </a>
+      <a href="#" class="nav-item" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+  </nav>
+</aside>
+
 
     <!-- Main Content -->
     <main class="main-content">
@@ -307,5 +321,60 @@
     <div id="toastContainer" class="toast-container"></div>
 
     <script src="script.js"></script>
+  <script>
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      // Remove active class from all nav items
+      document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+      this.classList.add('active');
+
+      // Hide all content sections
+      document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+      });
+
+      // Show the target section
+      const targetId = this.getAttribute('data-target');
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        targetSection.classList.add('active');
+      }
+    });
+  });
+</script>
+<script>
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      // Remove active class from all nav items
+      document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+      this.classList.add('active');
+
+      // Hide all content sections
+      document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+      });
+
+      // Show the target section
+      const targetId = this.getAttribute('data-target');
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        targetSection.classList.add('active');
+      }
+    });
+  });
+</script>
+
+  <script>
+  function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("sidebar-open");
+  }
+</script>
+
+
 </body>
 </html>
+
