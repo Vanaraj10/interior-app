@@ -47,6 +47,23 @@ const INTERIOR_TYPES = [
       'Total Cost',
     ],
   },
+  {
+    key: 'blinds',
+    label: 'BLINDS',
+    generator: PDF_ROW_GENERATORS.blinds,
+    columns: [
+      'S.No',
+      'Room Label',
+      'Height (in)',
+      'Width (in)',
+      'Total Sqft',
+      'Blinds Cost',
+      'Cloth Required',
+      'Cloth Cost',
+      'Stitching Cost',
+      'Total Cost',
+    ],
+  },
 ];
 
 export default function PDFPreview() {
@@ -266,6 +283,7 @@ export default function PDFPreview() {
           ${project.curtainTotal > 0 ? `<div class="cost-row"><span>Curtains Subtotal:</span><span>${formatCurrency(project.curtainTotal)}</span></div>` : ''}
           ${project.netTotal > 0 ? `<div class="cost-row"><span>Mosquito Nets Subtotal:</span><span>${formatCurrency(project.netTotal)}</span></div>` : ''}
           ${project.wallpaperTotal > 0 ? `<div class="cost-row"><span>Wallpapers Subtotal:</span><span>${formatCurrency(project.wallpaperTotal)}</span></div>` : ''}
+          ${project.blindsTotal > 0 ? `<div class="cost-row"><span>Blinds Subtotal:</span><span>${formatCurrency(project.blindsTotal)}</span></div>` : ''}
           ${project.rodCost > 0 ? `<div class="cost-row"><span>Rod Installation:</span><span>${formatCurrency(project.rodCost)}</span></div>` : ''}
           <div class="cost-row grand-total">
             <span>GRAND TOTAL:</span>
@@ -417,6 +435,12 @@ export default function PDFPreview() {
               <View style={styles.costRow}>
                 <Text>Wallpapers Subtotal:</Text>
                 <Text style={styles.costValue}>{formatCurrency(project.wallpaperTotal)}</Text>
+              </View>
+            )}
+            {project.blindsTotal > 0 && (
+              <View style={styles.costRow}>
+                <Text>Blinds Subtotal:</Text>
+                <Text style={styles.costValue}>{formatCurrency(project.blindsTotal)}</Text>
               </View>
             )}
             {project.rodCost > 0 && (

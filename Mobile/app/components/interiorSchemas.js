@@ -138,5 +138,71 @@ export const INTERIOR_SCHEMAS = {
         totalCost,
       };
     }
+  },
+  blinds: {
+    label: 'Blinds',
+    fields: [
+      { name: 'roomLabel', label: 'Room/Location Label', type: 'text', required: true },
+      { name: 'height', label: 'Height (inches)', type: 'number', required: true },
+      { name: 'width', label: 'Width (inches)', type: 'number', required: true },
+      { name: 'blindType', label: 'Blind Type', type: 'picker', options: ['Roman Blinds', 'PVC Blinds', 'Roller Blinds', 'Zebra Blinds', 'Vertical Blinds'], required: true },
+      { name: 'costPerSqft', label: 'Cost/Sqft (₹)', type: 'number', required: true },
+      // Roman Blinds specific fields
+      { name: 'clothCostPerSqft', label: 'Cloth Cost/Sqft (₹)', type: 'number', required: false, showIf: (data) => data.blindType === 'Roman Blinds' },
+      { name: 'panelWidth', label: 'Panel Width', type: 'picker', options: ['48"', '56"'], required: false, showIf: (data) => data.blindType === 'Roman Blinds' },
+      { name: 'stitchingCostPerPart', label: 'Stitching Cost/Part (₹)', type: 'number', required: false, showIf: (data) => data.blindType === 'Roman Blinds' },
+    ],
+    calculate: (data) => {
+      const height = parseFloat(data.height) || 0;
+      const width = parseFloat(data.width) || 0;
+      const costPerSqft = parseFloat(data.costPerSqft) || 0;
+      
+      // Basic calculations for all blinds
+      const totalSqft = (height * width) / 144;
+      const blindsCost = totalSqft * costPerSqft;
+      
+      let totalCost = blindsCost;
+      let part = 1;
+      let clothRequired = 0;
+      let clothCost = 0;
+      let stitchingCost = 0;
+      
+      // Additional calculations for Roman Blinds
+      if (data.blindType === 'Roman Blinds') {
+        const panelWidth = data.panelWidth || '48"';
+        const clothCostPerSqft = parseFloat(data.clothCostPerSqft) || 0;
+        const stitchingCostPerPart = parseFloat(data.stitchingCostPerPart) || 0;
+        
+        // Calculate parts based on panel width and actual width
+        if (panelWidth === '48"') {
+          if (width <= 45) part = 1;
+          else if (width <= 90) part = 2;
+          else if (width <= 135) part = 3;
+          else part = Math.ceil(width / 45);
+        } else if (panelWidth === '56"') {
+          if (width <= 50) part = 1;
+          else if (width <= 100) part = 2;
+          else if (width <= 150) part = 3;
+          else part = Math.ceil(width / 50);
+        }
+        
+        // Calculate cloth required and costs
+        clothRequired = ((height + 15) / 39) * part;
+        clothCost = clothRequired * clothCostPerSqft;
+        stitchingCost = part * stitchingCostPerPart;
+        
+        totalCost = blindsCost + clothCost + stitchingCost;
+      }
+      
+      return {
+        totalSqft,
+        blindsCost,
+        part,
+        clothRequired,
+        clothCost,
+        stitchingCost,
+        totalCost,
+      };
+    }
   }
 };

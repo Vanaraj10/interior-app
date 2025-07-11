@@ -33,14 +33,14 @@ export default function NewMeasurement() {
   }, [editId, loadMeasurement]);
 
   const calculateProjectTotals = (projectData) => {
-    const measurements = projectData.measurements || [];
-
-    // Group measurements by interior type
+    const measurements = projectData.measurements || [];    // Group measurements by interior type
     const curtainMeasurements = measurements.filter(m => m.interiorType === 'curtains');
     const netMeasurements = measurements.filter(m => m.interiorType === 'mosquito-nets');
-    const wallpaperMeasurements = measurements.filter(m => m.interiorType === 'wallpapers');    // Calculate totals for each type
+    const wallpaperMeasurements = measurements.filter(m => m.interiorType === 'wallpapers');
+    const blindsMeasurements = measurements.filter(m => m.interiorType === 'blinds');    // Calculate totals for each type
     const curtainTotal = curtainMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
     const netTotal = netMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
+    const blindsTotal = blindsMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
     
     // Wallpaper calculation
     let wallpaperTotal = 0;
@@ -79,9 +79,7 @@ export default function NewMeasurement() {
       const length = width / 12;
       rodLength += length;
       rodCost += length * rate;
-    });
-
-    const subtotal = curtainTotal + netTotal + wallpaperTotal;
+    });    const subtotal = curtainTotal + netTotal + wallpaperTotal + blindsTotal;
     const grandTotal = subtotal + rodCost;
 
     return {
@@ -89,6 +87,7 @@ export default function NewMeasurement() {
       curtainTotal,
       netTotal,
       wallpaperTotal,
+      blindsTotal,
       rodCost,
       rodLength,
       grandTotal,
