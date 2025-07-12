@@ -8,29 +8,25 @@ export default function DynamicFields({ schema, formData, updateField }) {
     <>
       {schema.fields.map(field => {
         // Conditional display logic
-        if (typeof field.showIf === 'function' && !field.showIf(formData)) return null;        if (field.type === 'text' || field.type === 'number') {
-          return (
-            <View key={field.name} style={styles.fieldContainer}>
-              <Text style={styles.label}>{field.label}{field.required ? ' *' : ''}</Text>
+        if (typeof field.showIf === 'function' && !field.showIf(formData)) return null;
+        return (
+          <View key={field.key} style={styles.fieldContainer}>
+            <Text style={styles.label}>{field.label}{field.required ? ' *' : ''}</Text>
+            {field.type === 'text' || field.type === 'number' ? (
               <TextInput
                 style={styles.input}
-                value={formData[field.name]?.toString() || ''}
-                onChangeText={text => updateField(field.name, text)}
+                value={formData[field.key] ? String(formData[field.key]) : ''}
+                onChangeText={text => updateField(field.key, text)}
                 placeholder={field.label}
                 placeholderTextColor={COLORS.inputPlaceholder}
                 keyboardType={field.type === 'number' ? 'numeric' : 'default'}
               />
-            </View>
-          );
-        }
-        if (field.type === 'picker') {
-          return (
-            <View key={field.name} style={styles.fieldContainer}>
-              <Text style={styles.label}>{field.label}</Text>
+            ) : null}
+            {field.type === 'picker' ? (
               <View style={styles.pickerContainer}>
                 <Picker
-                  selectedValue={formData[field.name] || field.options[0]}
-                  onValueChange={value => updateField(field.name, value)}
+                  selectedValue={formData[field.key] || field.options[0]}
+                  onValueChange={value => updateField(field.key, value)}
                   style={styles.picker}
                 >
                   {field.options.map(opt => (
@@ -38,25 +34,21 @@ export default function DynamicFields({ schema, formData, updateField }) {
                   ))}
                 </Picker>
               </View>
-            </View>
-          );
-        }
-        if (field.type === 'checkbox') {
-          return (
-            <View key={field.name} style={styles.fieldContainer}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>                <Switch
-                  value={!!formData[field.name]}
-                  onValueChange={val => updateField(field.name, val)}
+            ) : null}
+            {field.type === 'checkbox' ? (
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Switch
+                  value={!!formData[field.key]}
+                  onValueChange={val => updateField(field.key, val)}
                   trackColor={{ false: COLORS.gray300, true: COLORS.primaryLight }}
-                  thumbColor={formData[field.name] ? COLORS.primary : COLORS.gray500}
+                  thumbColor={formData[field.key] ? COLORS.primary : COLORS.gray500}
                   ios_backgroundColor={COLORS.gray300}
                 />
                 <Text style={[styles.label, {marginLeft: 8}]}>{field.label}</Text>
               </View>
-            </View>
-          );
-        }
-        return null;
+            ) : null}
+          </View>
+        );
       })}
     </>
   );
@@ -71,7 +63,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.textSecondary,
     marginBottom: 8,
-  },  input: {
+  },
+  input: {
     borderWidth: 1,
     borderColor: COLORS.inputBorder,
     borderRadius: 8,

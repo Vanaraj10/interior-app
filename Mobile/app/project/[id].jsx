@@ -21,6 +21,7 @@ export default function ProjectDetails() {
     { key: 'mosquito-nets', label: INTERIOR_SCHEMAS['mosquito-nets'].label, icon: 'bug' },
     { key: 'wallpapers', label: INTERIOR_SCHEMAS.wallpapers.label, icon: 'image' },
     { key: 'blinds', label: INTERIOR_SCHEMAS.blinds.label, icon: 'layers' },
+    { key: "flooring", label: "Flooring", icon: "layers-outline" },
   ];  const loadProject = useCallback(async () => {
     try {
       const projectsData = await AsyncStorage.getItem('projects');

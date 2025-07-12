@@ -204,5 +204,39 @@ export const INTERIOR_SCHEMAS = {
         totalCost,
       };
     }
+  },
+  flooring: {
+    label: "Flooring",
+    fields: [
+      { key: "roomLabel", label: "Room", type: "text" },
+      { key: "height", label: "Height (inches)", type: "number" },
+      { key: "width", label: "Width (inches)", type: "number" },
+      { key: "costPerSqft", label: "Cost/Sqft", type: "number" },
+      { key: "layingPerSqft", label: "Laying/Sqft", type: "number" },
+    ],
+    calculate: (m) => {
+      const height = parseFloat(m.height) || 0;
+      const width = parseFloat(m.width) || 0;
+      const totalSqft = (height * width) / 144;
+      const costOfRoom = totalSqft * (parseFloat(m.costPerSqft) || 0);
+      const layingCharge = totalSqft * (parseFloat(m.layingPerSqft) || 0);
+      return {
+        ...m,
+        totalSqft,
+        costOfRoom,
+        layingCharge,
+        totalCost: costOfRoom + layingCharge,
+      };
+    },
+    tableColumns: [
+      { key: "sno", label: "S.No" },
+      { key: "roomLabel", label: "Room" },
+      { key: "height", label: "Height" },
+      { key: "width", label: "Width" },
+      { key: "totalSqft", label: "Total Sqft" },
+      { key: "costOfRoom", label: "Cost of Room" },
+      { key: "layingCharge", label: "Laying Charge" },
+      { key: "totalCost", label: "Total Cost" },
+    ],
   }
 };

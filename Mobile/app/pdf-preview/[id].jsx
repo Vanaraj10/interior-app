@@ -66,6 +66,21 @@ const INTERIOR_TYPES = [
       'Total Cost',
     ],
   },
+  {
+    key: 'flooring',
+    label: 'FLOORING',
+    generator: PDF_ROW_GENERATORS.flooring,
+    columns: [
+      'S.No',
+      'Room Label',
+      'Length (ft)',
+      'Width (ft)',
+      'Area (sqft)',
+      'Material Cost',
+      'Labor Cost',
+      'Total Cost',
+    ],
+  },
 ];
 
 export default function PDFPreview() {
