@@ -13,7 +13,6 @@ import {
   View
 } from 'react-native';
 import { PDF_ROW_GENERATORS } from '../components/pdfGenerators';
-import { WebView } from 'react-native-webview';
 
 const INTERIOR_TYPES = [
   {
@@ -87,7 +86,7 @@ const INTERIOR_TYPES = [
 export default function PDFPreview() {
   const { id } = useLocalSearchParams();
   const [project, setProject] = useState(null);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [, setIsGenerating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const loadProject = useCallback(async () => {
     try {

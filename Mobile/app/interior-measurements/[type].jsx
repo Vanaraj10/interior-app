@@ -85,9 +85,6 @@ export default function InteriorMeasurements() {
     return INTERIOR_SCHEMAS[type]?.label || type;
   };
 
-  const generatePDF = () => {
-    router.push(`/pdf-preview/${id}`);
-  };
 
   if (!project) {
     return (
