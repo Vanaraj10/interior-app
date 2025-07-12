@@ -13,6 +13,7 @@ import {
   View
 } from 'react-native';
 import { PDF_ROW_GENERATORS } from '../components/pdfGenerators';
+import { WebView } from 'react-native-webview';
 
 const INTERIOR_TYPES = [
   {
@@ -398,66 +399,38 @@ export default function PDFPreview() {
       {/* Preview Content */}
       <ScrollView style={styles.scrollView}>
         <View style={styles.previewCard}>
-
-          {/* Client Info Preview */}
-          <View style={styles.clientInfo}>
-            <View style={styles.clientRow}>
-              <Text style={styles.clientLabel}>Client: {project.clientName}</Text>
-              <Text style={styles.dateText}>{new Date().toLocaleDateString()}</Text>
-            </View>
-            <Text style={styles.clientText}>Phone: {project.phone}</Text>
-            <Text style={styles.clientText}>Address: {project.address}</Text>
-          </View>
-
-          {/* Measurements Summary */}
-          {project.measurements && project.measurements.length > 0 && (
-            <View style={styles.measurementsSection}>
-              <Text style={styles.sectionTitle}>Measurements Summary</Text>
-              {project.measurements.map((measurement, index) => {                let cost = 0;
-                if (measurement.interiorType === 'mosquito-nets') {
-                  cost = measurement.totalCost || measurement.materialCost || 0; // Use totalCost first, fallback to materialCost
-                } else {
-                  cost = measurement.totalCost || 0;
-                }
-                return (
-                  <View key={measurement.id} style={styles.measurementRow}>
-                    <View style={styles.measurementInfo}>
-                      <Text style={styles.measurementLabel}>{measurement.roomLabel}</Text>                      <Text style={styles.measurementDetails}>
-                        {measurement.width} × {measurement.height} • {measurement.interiorType}
-                      </Text>
-                    </View>
-                    <Text style={styles.measurementCost}>{formatCurrency(cost)}</Text>
-                  </View>
-                );
-              })}
-            </View>
-          )}
-
-          {/* Cost Summary */}
+          {/* Short PDF summary: Grand Total and breakdown */}
+          <Text style={styles.sectionTitle}>Quotation Summary</Text>
           <View style={styles.costSummary}>
-            <Text style={styles.costSummaryTitle}>Cost Summary</Text>
+            <Text style={styles.costSummaryTitle}>Cost Breakdown</Text>
             {project.curtainTotal > 0 && (
               <View style={styles.costRow}>
-                <Text>Curtains Subtotal:</Text>
+                <Text>Curtains:</Text>
                 <Text style={styles.costValue}>{formatCurrency(project.curtainTotal)}</Text>
               </View>
             )}
             {project.netTotal > 0 && (
               <View style={styles.costRow}>
-                <Text>Mosquito Nets Subtotal:</Text>
+                <Text>Mosquito Nets:</Text>
                 <Text style={styles.costValue}>{formatCurrency(project.netTotal)}</Text>
               </View>
             )}
             {project.wallpaperTotal > 0 && (
               <View style={styles.costRow}>
-                <Text>Wallpapers Subtotal:</Text>
+                <Text>Wallpapers:</Text>
                 <Text style={styles.costValue}>{formatCurrency(project.wallpaperTotal)}</Text>
               </View>
             )}
             {project.blindsTotal > 0 && (
               <View style={styles.costRow}>
-                <Text>Blinds Subtotal:</Text>
+                <Text>Blinds:</Text>
                 <Text style={styles.costValue}>{formatCurrency(project.blindsTotal)}</Text>
+              </View>
+            )}
+            {project.flooringTotal > 0 && (
+              <View style={styles.costRow}>
+                <Text>Flooring:</Text>
+                <Text style={styles.costValue}>{formatCurrency(project.flooringTotal)}</Text>
               </View>
             )}
             {project.rodCost > 0 && (
@@ -469,17 +442,24 @@ export default function PDFPreview() {
             <View style={styles.grandTotalRow}>
               <View style={styles.totalRowContent}>
                 <Text style={styles.grandTotalLabel}>GRAND TOTAL:</Text>
-                <Text style={styles.grandTotalValue}>
-                  {formatCurrency(project.grandTotal || 0)}
-                </Text>
+                <Text style={styles.grandTotalValue}>{formatCurrency(project.grandTotal || 0)}</Text>
               </View>
             </View>
           </View>
-
-          {/* Upload Project Button */}
-          <TouchableOpacity
-            style={[styles.button, { marginTop: 24 }]}
-            onPress={async () => {
+          {/* Action Buttons */}
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 24, gap: 12 }}>
+            <TouchableOpacity style={[styles.button, { flex: 1, minWidth: 0 }]} onPress={printPDF}>
+              <Ionicons name="print" size={20} color="white" />
+              <Text style={styles.buttonText}>Print/Download</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.button, { flex: 1, minWidth: 0 }]} onPress={generateAndSharePDF}>
+              <Ionicons name="share" size={20} color="white" />
+              <Text style={styles.buttonText}>Share</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 0, gap: 12 }}>
+            <TouchableOpacity style={[styles.button, { flex: 1, minWidth: 0 }]} onPress={async () => {
+              // Upload logic as before
               try {
                 const token = await AsyncStorage.getItem('token');
                 if (!token) {
@@ -488,15 +468,13 @@ export default function PDFPreview() {
                   return;
                 }
                 const htmlContent = generatePDFContent();
-                // FINAL CLEAN: Remove all backslashes and ensure only normal quotes
                 const cleanedHtmlContent = htmlContent
-                  .replace(/\\/g, '') // Remove all backslashes
-                  .replace(/>\s+</g, '><') // Remove whitespace between tags
-                  .replace(/[\n\r\t]+/g, ' ') // Remove newlines, tabs
-                  .replace(/\s{2,}/g, ' ') // Collapse multiple spaces
-                  .replace(/\"/g, '"') // Replace any escaped quotes with normal quotes
+                  .replace(/\\/g, '')
+                  .replace(/>\s+</g, '><')
+                  .replace(/[\n\r\t]+/g, ' ')
+                  .replace(/\s{2,}/g, ' ')
+                  .replace(/\"/g, '"')
                   .trim();
-                // Use backend API: POST /api/projects (worker JWT)
                 const response = await fetch('https://interior-app.onrender.com/api/worker/projects', {
                   method: 'POST',
                   headers: {
@@ -512,25 +490,25 @@ export default function PDFPreview() {
                 });
                 if (response.ok) {
                   setShowSuccess(true);
-                  // Optionally, auto-close after 2s and navigate home
                   setTimeout(() => {
                     setShowSuccess(false);
                     router.replace('/');
                   }, 4000);
                 } else if (response.status === 401) {
-                  // Token expired or unauthorized
                   Alert.alert('Session Expired', 'Please login again.');
                   router.replace('/login');
                 } else {
                   const data = await response.json();
                   Alert.alert('Upload Failed', data.error || 'Failed to upload project');
-                }              } catch (_error) {
+                }
+              } catch (_error) {
                 Alert.alert('Error', 'Could not upload project');
               }
-            }}
-          >
-            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Upload Quotation</Text>
-          </TouchableOpacity>
+            }}>
+              <Ionicons name="cloud-upload" size={20} color="white" />
+              <Text style={styles.buttonText}>Upload</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
       {showSuccess && (
@@ -726,10 +704,25 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#2563eb',
     paddingVertical: 12,
+    paddingHorizontal: 24,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10
+    marginBottom: 10,
+    flexDirection: 'row',
+    gap: 8,
+    elevation: 3,
+    shadowColor: '#2563eb',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginLeft: 8,
+    letterSpacing: 0.5,
   },
   successOverlay: {
     position: 'absolute',
