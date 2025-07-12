@@ -58,6 +58,8 @@ const INTERIOR_TYPES = [
       'Width (in)',
       'Total Sqft',
       'Blinds Cost',
+      'Type',
+      'Parts',
       'Cloth Required',
       'Cloth Cost',
       'Stitching Cost',
