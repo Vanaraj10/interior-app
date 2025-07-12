@@ -204,6 +204,19 @@ export default function InteriorMeasurements() {
                           <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
                             <Text style={styles.headerText}>Meters</Text>
                           </View>
+                          {/* Lining Info Columns */}
+                          <View style={[styles.tableHeaderCell, styles.typeColumn]}>
+                            <Text style={styles.headerText}>Lining Type</Text>
+                          </View>
+                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                            <Text style={styles.headerText}>Lining Cost/Meter</Text>
+                          </View>
+                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                            <Text style={styles.headerText}>Total Lining Meters</Text>
+                          </View>
+                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                            <Text style={styles.headerText}>Total Lining Cost</Text>
+                          </View>
                         </>
                       )}
                       {type === "mosquito-nets" && (
@@ -346,6 +359,27 @@ export default function InteriorMeasurements() {
                             <View style={[styles.tableCell, styles.mediumColumn]}>
                               <Text style={styles.cellText}>
                                 {m.totalMeters?.toFixed(1) || "-"}
+                              </Text>
+                            </View>
+                            {/* Lining Info Columns */}
+                            <View style={[styles.tableCell, styles.typeColumn]}>
+                              <Text style={styles.cellText}>
+                                {m.hasLining ? (m.liningType || "Yes") : "No"}
+                              </Text>
+                            </View>
+                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                              <Text style={styles.cellText}>
+                                {m.hasLining ? (m.liningCostPerMeter ? `₹${m.liningCostPerMeter}` : "-" ) : "-"}
+                              </Text>
+                            </View>
+                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                              <Text style={styles.cellText}>
+                                {m.hasLining ? (m.totalLiningMeters?.toFixed(1) || "-") : "-"}
+                              </Text>
+                            </View>
+                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                              <Text style={styles.cellText}>
+                                {m.hasLining ? (m.totalLiningCost ? `₹${m.totalLiningCost}` : "-") : "-"}
                               </Text>
                             </View>
                           </>

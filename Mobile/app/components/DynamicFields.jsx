@@ -10,13 +10,13 @@ export default function DynamicFields({ schema, formData, updateField }) {
         // Conditional display logic
         if (typeof field.showIf === 'function' && !field.showIf(formData)) return null;
         return (
-          <View key={field.key} style={styles.fieldContainer}>
+          <View key={field.name} style={styles.fieldContainer}>
             <Text style={styles.label}>{field.label}{field.required ? ' *' : ''}</Text>
             {field.type === 'text' || field.type === 'number' ? (
               <TextInput
                 style={styles.input}
-                value={formData[field.key] ? String(formData[field.key]) : ''}
-                onChangeText={text => updateField(field.key, text)}
+                value={formData[field.name] ? String(formData[field.name]) : ''}
+                onChangeText={text => updateField(field.name, text)}
                 placeholder={field.label}
                 placeholderTextColor={COLORS.inputPlaceholder}
                 keyboardType={field.type === 'number' ? 'numeric' : 'default'}
@@ -25,8 +25,8 @@ export default function DynamicFields({ schema, formData, updateField }) {
             {field.type === 'picker' ? (
               <View style={styles.pickerContainer}>
                 <Picker
-                  selectedValue={formData[field.key] || field.options[0]}
-                  onValueChange={value => updateField(field.key, value)}
+                  selectedValue={formData[field.name] || field.options[0]}
+                  onValueChange={value => updateField(field.name, value)}
                   style={styles.picker}
                 >
                   {field.options.map(opt => (
@@ -38,10 +38,10 @@ export default function DynamicFields({ schema, formData, updateField }) {
             {field.type === 'checkbox' ? (
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Switch
-                  value={!!formData[field.key]}
-                  onValueChange={val => updateField(field.key, val)}
+                  value={!!formData[field.name]}
+                  onValueChange={val => updateField(field.name, val)}
                   trackColor={{ false: COLORS.gray300, true: COLORS.primaryLight }}
-                  thumbColor={formData[field.key] ? COLORS.primary : COLORS.gray500}
+                  thumbColor={formData[field.name] ? COLORS.primary : COLORS.gray500}
                   ios_backgroundColor={COLORS.gray300}
                 />
                 <Text style={[styles.label, {marginLeft: 8}]}>{field.label}</Text>
