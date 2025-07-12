@@ -160,25 +160,39 @@ export default function InteriorMeasurements() {
                       <View style={[styles.tableHeaderCell, styles.roomColumn]}>
                         <Text style={styles.headerText}>Room</Text>
                       </View>
-                      <View style={[styles.tableHeaderCell, styles.dimensionColumn]}>
+                      <View
+                        style={[styles.tableHeaderCell, styles.dimensionColumn]}
+                      >
                         <Text style={styles.headerText}>Height</Text>
                       </View>
-                      <View style={[styles.tableHeaderCell, styles.dimensionColumn]}>
+                      <View
+                        style={[styles.tableHeaderCell, styles.dimensionColumn]}
+                      >
                         <Text style={styles.headerText}>Width</Text>
                       </View>
-                      <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                      <View
+                        style={[styles.tableHeaderCell, styles.mediumColumn]}
+                      >
                         <Text style={styles.headerText}>Total Sqft</Text>
                       </View>
-                      <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                      <View
+                        style={[styles.tableHeaderCell, styles.mediumColumn]}
+                      >
                         <Text style={styles.headerText}>Cost of Room</Text>
                       </View>
-                      <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                      <View
+                        style={[styles.tableHeaderCell, styles.mediumColumn]}
+                      >
                         <Text style={styles.headerText}>Laying Charge</Text>
                       </View>
-                      <View style={[styles.tableHeaderCell, styles.totalColumn]}>
+                      <View
+                        style={[styles.tableHeaderCell, styles.totalColumn]}
+                      >
                         <Text style={styles.headerText}>Total Cost</Text>
                       </View>
-                      <View style={[styles.tableHeaderCell, styles.actionColumn]}>
+                      <View
+                        style={[styles.tableHeaderCell, styles.actionColumn]}
+                      >
                         <Text style={styles.headerText}>Actions</Text>
                       </View>
                     </>
@@ -187,90 +201,182 @@ export default function InteriorMeasurements() {
                       <View style={[styles.tableHeaderCell, styles.roomColumn]}>
                         <Text style={styles.headerText}>Room</Text>
                       </View>
-                      <View style={[styles.tableHeaderCell, styles.dimensionColumn]}>
+                      <View
+                        style={[styles.tableHeaderCell, styles.dimensionColumn]}
+                      >
                         <Text style={styles.headerText}>Width</Text>
                       </View>
-                      <View style={[styles.tableHeaderCell, styles.dimensionColumn]}>
+                      <View
+                        style={[styles.tableHeaderCell, styles.dimensionColumn]}
+                      >
                         <Text style={styles.headerText}>Height</Text>
                       </View>
                       {type === "curtains" && (
                         <>
-                          <View style={[styles.tableHeaderCell, styles.typeColumn]}>
+                          <View
+                            style={[styles.tableHeaderCell, styles.typeColumn]}
+                          >
                             <Text style={styles.headerText}>Type</Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.smallColumn]}>
+                          <View
+                            style={[styles.tableHeaderCell, styles.smallColumn]}
+                          >
                             <Text style={styles.headerText}>Pieces</Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                          <View
+                            style={[
+                              styles.tableHeaderCell,
+                              styles.mediumColumn,
+                            ]}
+                          >
                             <Text style={styles.headerText}>Meters</Text>
                           </View>
                           {/* Lining Info Columns */}
-                          <View style={[styles.tableHeaderCell, styles.typeColumn]}>
+                          <View
+                            style={[styles.tableHeaderCell, styles.typeColumn]}
+                          >
                             <Text style={styles.headerText}>Lining Type</Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
-                            <Text style={styles.headerText}>Lining Cost/Meter</Text>
+                          <View
+                            style={[
+                              styles.tableHeaderCell,
+                              styles.mediumColumn,
+                            ]}
+                          >
+                            <Text style={styles.headerText}>
+                              Lining Cost/Meter
+                            </Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
-                            <Text style={styles.headerText}>Total Lining Meters</Text>
+                          <View
+                            style={[
+                              styles.tableHeaderCell,
+                              styles.mediumColumn,
+                            ]}
+                          >
+                            <Text style={styles.headerText}>
+                              Total Lining Meters
+                            </Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
-                            <Text style={styles.headerText}>Total Lining Cost</Text>
+                          <View
+                            style={[
+                              styles.tableHeaderCell,
+                              styles.mediumColumn,
+                            ]}
+                          >
+                            <Text style={styles.headerText}>
+                              Total Lining Cost
+                            </Text>
                           </View>
                         </>
                       )}
                       {type === "mosquito-nets" && (
                         <>
-                          <View style={[styles.tableHeaderCell, styles.typeColumn]}>
+                          <View
+                            style={[styles.tableHeaderCell, styles.typeColumn]}
+                          >
                             <Text style={styles.headerText}>Material</Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                          <View
+                            style={[
+                              styles.tableHeaderCell,
+                              styles.mediumColumn,
+                            ]}
+                          >
                             <Text style={styles.headerText}>Total Sq.Ft</Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.costColumn]}>
+                          <View
+                            style={[styles.tableHeaderCell, styles.costColumn]}
+                          >
                             <Text style={styles.headerText}>Rate/Sq.Ft</Text>
                           </View>
                         </>
                       )}
                       {type === "wallpapers" && (
                         <>
-                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                          <View
+                            style={[
+                              styles.tableHeaderCell,
+                              styles.mediumColumn,
+                            ]}
+                          >
                             <Text style={styles.headerText}>Area (Sq.Ft)</Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.smallColumn]}>
+                          <View
+                            style={[styles.tableHeaderCell, styles.smallColumn]}
+                          >
                             <Text style={styles.headerText}>Rolls</Text>
                           </View>
                         </>
                       )}
                       {type === "blinds" && (
                         <>
-                          <View style={[styles.tableHeaderCell, styles.typeColumn]}>
+                          <View
+                            style={[styles.tableHeaderCell, styles.typeColumn]}
+                          >
                             <Text style={styles.headerText}>Blind Type</Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                          <View
+                            style={[
+                              styles.tableHeaderCell,
+                              styles.mediumColumn,
+                            ]}
+                          >
                             <Text style={styles.headerText}>Parts</Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                          <View
+                            style={[
+                              styles.tableHeaderCell,
+                              styles.mediumColumn,
+                            ]}
+                          >
                             <Text style={styles.headerText}>Total Sqft</Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                          <View
+                            style={[
+                              styles.tableHeaderCell,
+                              styles.mediumColumn,
+                            ]}
+                          >
                             <Text style={styles.headerText}>Blinds Cost</Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
-                            <Text style={styles.headerText}>Cloth Required</Text>
+                          <View
+                            style={[
+                              styles.tableHeaderCell,
+                              styles.mediumColumn,
+                            ]}
+                          >
+                            <Text style={styles.headerText}>
+                              Cloth Required
+                            </Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                          <View
+                            style={[
+                              styles.tableHeaderCell,
+                              styles.mediumColumn,
+                            ]}
+                          >
                             <Text style={styles.headerText}>Cloth Cost</Text>
                           </View>
-                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
-                            <Text style={styles.headerText}>Stitching Cost</Text>
+                          <View
+                            style={[
+                              styles.tableHeaderCell,
+                              styles.mediumColumn,
+                            ]}
+                          >
+                            <Text style={styles.headerText}>
+                              Stitching Cost
+                            </Text>
                           </View>
                         </>
                       )}
-                      <View style={[styles.tableHeaderCell, styles.totalColumn]}>
+                      <View
+                        style={[styles.tableHeaderCell, styles.totalColumn]}
+                      >
                         <Text style={styles.headerText}>Total Cost</Text>
                       </View>
-                      <View style={[styles.tableHeaderCell, styles.actionColumn]}>
+                      <View
+                        style={[styles.tableHeaderCell, styles.actionColumn]}
+                      >
                         <Text style={styles.headerText}>Actions</Text>
                       </View>
                     </>
@@ -291,30 +397,49 @@ export default function InteriorMeasurements() {
                           <Text style={styles.cellText}>{index + 1}</Text>
                         </View>
                         <View style={[styles.tableCell, styles.roomColumn]}>
-                          <Text style={styles.cellText}>{m.roomLabel || "Untitled"}</Text>
+                          <Text style={styles.cellText}>
+                            {m.roomLabel || "Untitled"}
+                          </Text>
                         </View>
-                        <View style={[styles.tableCell, styles.dimensionColumn]}>
+                        <View
+                          style={[styles.tableCell, styles.dimensionColumn]}
+                        >
                           <Text style={styles.cellText}>{m.height || "-"}</Text>
                         </View>
-                        <View style={[styles.tableCell, styles.dimensionColumn]}>
+                        <View
+                          style={[styles.tableCell, styles.dimensionColumn]}
+                        >
                           <Text style={styles.cellText}>{m.width || "-"}</Text>
                         </View>
                         <View style={[styles.tableCell, styles.mediumColumn]}>
-                          <Text style={styles.cellText}>{m.totalSqft?.toFixed(2) || "-"}</Text>
+                          <Text style={styles.cellText}>
+                            {m.totalSqft?.toFixed(2) || "-"}
+                          </Text>
                         </View>
                         <View style={[styles.tableCell, styles.mediumColumn]}>
-                          <Text style={styles.cellText}>₹{m.costOfRoom?.toLocaleString("en-IN") || "-"}</Text>
+                          <Text style={styles.cellText}>
+                            ₹{m.costOfRoom?.toLocaleString("en-IN") || "-"}
+                          </Text>
                         </View>
                         <View style={[styles.tableCell, styles.mediumColumn]}>
-                          <Text style={styles.cellText}>₹{m.layingCharge?.toLocaleString("en-IN") || "-"}</Text>
+                          <Text style={styles.cellText}>
+                            ₹{m.layingCharge?.toLocaleString("en-IN") || "-"}
+                          </Text>
                         </View>
                         <View style={[styles.tableCell, styles.totalColumn]}>
-                          <Text style={[styles.cellText, styles.totalCostText]}>₹{m.totalCost?.toLocaleString("en-IN") || "-"}</Text>
+                          <Text style={[styles.cellText, styles.totalCostText]}>
+                            ₹{m.totalCost?.toLocaleString("en-IN") || "-"}
+                          </Text>
                         </View>
                         <View style={[styles.tableCell, styles.actionColumn]}>
                           <View style={styles.actionContainer}>
                             <TouchableOpacity
-                              onPress={() => router.push({ pathname: "/new-measurement/[type]", params: { id, type, editId: m.id } })}
+                              onPress={() =>
+                                router.push({
+                                  pathname: "/new-measurement/[type]",
+                                  params: { id, type, editId: m.id },
+                                })
+                              }
                               style={styles.editButton}
                             >
                               <Ionicons name="pencil" size={14} color="white" />
@@ -342,10 +467,14 @@ export default function InteriorMeasurements() {
                             {m.roomLabel || "Untitled"}
                           </Text>
                         </View>{" "}
-                        <View style={[styles.tableCell, styles.dimensionColumn]}>
+                        <View
+                          style={[styles.tableCell, styles.dimensionColumn]}
+                        >
                           <Text style={styles.cellText}>{m.width || "-"}</Text>
                         </View>
-                        <View style={[styles.tableCell, styles.dimensionColumn]}>
+                        <View
+                          style={[styles.tableCell, styles.dimensionColumn]}
+                        >
                           <Text style={styles.cellText}>{m.height || "-"}</Text>
                         </View>
                         {type === "curtains" && (
@@ -355,7 +484,9 @@ export default function InteriorMeasurements() {
                                 {m.curtainType || "-"}
                               </Text>
                             </View>{" "}
-                            <View style={[styles.tableCell, styles.smallColumn]}>
+                            <View
+                              style={[styles.tableCell, styles.smallColumn]}
+                            >
                               <View
                                 style={
                                   m.parts === "One Part" ||
@@ -381,7 +512,9 @@ export default function InteriorMeasurements() {
                                 </Text>
                               </View>
                             </View>
-                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                            <View
+                              style={[styles.tableCell, styles.mediumColumn]}
+                            >
                               <Text style={styles.cellText}>
                                 {m.totalMeters?.toFixed(1) || "-"}
                               </Text>
@@ -389,22 +522,38 @@ export default function InteriorMeasurements() {
                             {/* Lining Info Columns */}
                             <View style={[styles.tableCell, styles.typeColumn]}>
                               <Text style={styles.cellText}>
-                                {m.hasLining ? (m.liningType || "Yes") : "No"}
+                                {m.hasLining ? m.liningType || "Yes" : "No"}
                               </Text>
                             </View>
-                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                            <View
+                              style={[styles.tableCell, styles.mediumColumn]}
+                            >
                               <Text style={styles.cellText}>
-                                {m.hasLining ? (m.liningCostPerMeter ? `₹${m.liningCostPerMeter}` : "-" ) : "-"}
+                                {m.hasLining
+                                  ? m.liningCostPerMeter
+                                    ? `₹${m.liningCostPerMeter}`
+                                    : "-"
+                                  : "-"}
                               </Text>
                             </View>
-                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                            <View
+                              style={[styles.tableCell, styles.mediumColumn]}
+                            >
                               <Text style={styles.cellText}>
-                                {m.hasLining ? (m.totalLiningMeters?.toFixed(1) || "-") : "-"}
+                                {m.hasLining
+                                  ? m.totalLiningMeters?.toFixed(1) || "-"
+                                  : "-"}
                               </Text>
                             </View>
-                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                            <View
+                              style={[styles.tableCell, styles.mediumColumn]}
+                            >
                               <Text style={styles.cellText}>
-                                {m.hasLining ? (m.totalLiningCost ? `₹${m.totalLiningCost}` : "-") : "-"}
+                                {m.hasLining
+                                  ? m.totalLiningCost
+                                    ? `₹${Math.floor(m.totalLiningCost)}`
+                                    : "-"
+                                  : "-"}
                               </Text>
                             </View>
                           </>
@@ -416,7 +565,9 @@ export default function InteriorMeasurements() {
                                 {m.materialType || "-"}
                               </Text>
                             </View>
-                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                            <View
+                              style={[styles.tableCell, styles.mediumColumn]}
+                            >
                               <Text style={styles.cellText}>
                                 {m.totalSqft?.toFixed(1) || "-"}
                               </Text>
@@ -430,7 +581,9 @@ export default function InteriorMeasurements() {
                         )}
                         {type === "wallpapers" && (
                           <>
-                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                            <View
+                              style={[styles.tableCell, styles.mediumColumn]}
+                            >
                               <Text style={styles.cellText}>
                                 {(
                                   ((parseFloat(m.width) || 0) *
@@ -439,7 +592,9 @@ export default function InteriorMeasurements() {
                                 ).toFixed(1)}
                               </Text>
                             </View>{" "}
-                            <View style={[styles.tableCell, styles.smallColumn]}>
+                            <View
+                              style={[styles.tableCell, styles.smallColumn]}
+                            >
                               <Text style={styles.cellText}>
                                 {(() => {
                                   const squareInches =
@@ -462,25 +617,68 @@ export default function InteriorMeasurements() {
                         {type === "blinds" && (
                           <>
                             <View style={[styles.tableCell, styles.typeColumn]}>
-                              <Text style={styles.cellText}>{m.blindType || "-"}</Text>
+                              <Text style={styles.cellText}>
+                                {m.blindType || "-"}
+                              </Text>
                             </View>
-                            <View style={[styles.tableCell, styles.mediumColumn]}>
-                              <Text style={styles.cellText}>{m.blindType?.toLowerCase() === "roman blinds" ? (m.part || "-") : "-"}</Text>
+                            <View
+                              style={[styles.tableCell, styles.mediumColumn]}
+                            >
+                              <Text style={styles.cellText}>
+                                {m.blindType?.toLowerCase() === "roman blinds"
+                                  ? m.part || "-"
+                                  : "-"}
+                              </Text>
                             </View>
-                            <View style={[styles.tableCell, styles.mediumColumn]}>
-                              <Text style={styles.cellText}>{m.totalSqft?.toFixed(2) || "-"}</Text>
+                            <View
+                              style={[styles.tableCell, styles.mediumColumn]}
+                            >
+                              <Text style={styles.cellText}>
+                                {m.totalSqft?.toFixed(2) || "-"}
+                              </Text>
                             </View>
-                            <View style={[styles.tableCell, styles.mediumColumn]}>
-                              <Text style={styles.cellText}>₹{m.blindsCost ? Math.ceil(m.blindsCost).toLocaleString("en-IN") : "-"}</Text>
+                            <View
+                              style={[styles.tableCell, styles.mediumColumn]}
+                            >
+                              <Text style={styles.cellText}>
+                                ₹
+                                {m.blindsCost
+                                  ? Math.ceil(m.blindsCost).toLocaleString(
+                                      "en-IN"
+                                    )
+                                  : "-"}
+                              </Text>
                             </View>
-                            <View style={[styles.tableCell, styles.mediumColumn]}>
-                              <Text style={styles.cellText}>{m.clothRequired?.toFixed(2) || "-"}</Text>
+                            <View
+                              style={[styles.tableCell, styles.mediumColumn]}
+                            >
+                              <Text style={styles.cellText}>
+                                {m.clothRequired?.toFixed(2) || "-"}
+                              </Text>
                             </View>
-                            <View style={[styles.tableCell, styles.mediumColumn]}>
-                              <Text style={styles.cellText}>₹{m.clothCost ? Math.ceil(m.clothCost).toLocaleString("en-IN") : "-"}</Text>
+                            <View
+                              style={[styles.tableCell, styles.mediumColumn]}
+                            >
+                              <Text style={styles.cellText}>
+                                ₹
+                                {m.clothCost
+                                  ? Math.ceil(m.clothCost).toLocaleString(
+                                      "en-IN"
+                                    )
+                                  : "-"}
+                              </Text>
                             </View>
-                            <View style={[styles.tableCell, styles.mediumColumn]}>
-                              <Text style={styles.cellText}>₹{m.stitchingCost ? Math.ceil(m.stitchingCost).toLocaleString("en-IN") : "-"}</Text>
+                            <View
+                              style={[styles.tableCell, styles.mediumColumn]}
+                            >
+                              <Text style={styles.cellText}>
+                                ₹
+                                {m.stitchingCost
+                                  ? Math.ceil(m.stitchingCost).toLocaleString(
+                                      "en-IN"
+                                    )
+                                  : "-"}
+                              </Text>
                             </View>
                           </>
                         )}{" "}
@@ -506,8 +704,9 @@ export default function InteriorMeasurements() {
                                 const totalCost =
                                   rolls * (parseFloat(m.costPerRoll) || 0) +
                                   rolls *
-                                    (parseFloat(m.implementationCostPerRoll) || 0);
-                                return totalCost.toLocaleString("en-IN");
+                                    (parseFloat(m.implementationCostPerRoll) ||
+                                      0);
+                                return Math.floor(totalCost).toLocaleString("en-IN");
                               } else {
                                 return (m.materialCost || 0).toLocaleString(
                                   "en-IN"
@@ -682,7 +881,9 @@ export default function InteriorMeasurements() {
                       <Text style={styles.summaryText}>Total</Text>
                     </View>
                     <View style={[styles.tableCell, styles.roomColumn]}>
-                      <Text style={styles.summaryText}>({measurements.length} rooms)</Text>
+                      <Text style={styles.summaryText}>
+                        ({measurements.length} rooms)
+                      </Text>
                     </View>
                     <View style={[styles.tableCell, styles.dimensionColumn]}>
                       <Text style={styles.summaryText}>-</Text>
@@ -691,16 +892,47 @@ export default function InteriorMeasurements() {
                       <Text style={styles.summaryText}>-</Text>
                     </View>
                     <View style={[styles.tableCell, styles.mediumColumn]}>
-                      <Text style={styles.summaryText}>{measurements.reduce((sum, m) => sum + (parseFloat(m.totalSqft) || 0), 0).toFixed(2)}</Text>
+                      <Text style={styles.summaryText}>
+                        {measurements
+                          .reduce(
+                            (sum, m) => sum + (parseFloat(m.totalSqft) || 0),
+                            0
+                          )
+                          .toFixed(2)}
+                      </Text>
                     </View>
                     <View style={[styles.tableCell, styles.mediumColumn]}>
-                      <Text style={styles.summaryText}>₹{measurements.reduce((sum, m) => sum + (parseFloat(m.costOfRoom) || 0), 0).toLocaleString("en-IN")}</Text>
+                      <Text style={styles.summaryText}>
+                        ₹
+                        {measurements
+                          .reduce(
+                            (sum, m) => sum + (parseFloat(m.costOfRoom) || 0),
+                            0
+                          )
+                          .toLocaleString("en-IN")}
+                      </Text>
                     </View>
                     <View style={[styles.tableCell, styles.mediumColumn]}>
-                      <Text style={styles.summaryText}>₹{measurements.reduce((sum, m) => sum + (parseFloat(m.layingCharge) || 0), 0).toLocaleString("en-IN")}</Text>
+                      <Text style={styles.summaryText}>
+                        ₹
+                        {measurements
+                          .reduce(
+                            (sum, m) => sum + (parseFloat(m.layingCharge) || 0),
+                            0
+                          )
+                          .toLocaleString("en-IN")}
+                      </Text>
                     </View>
                     <View style={[styles.tableCell, styles.totalColumn]}>
-                      <Text style={styles.summaryTotalText}>₹{measurements.reduce((sum, m) => sum + (parseFloat(m.totalCost) || 0), 0).toLocaleString("en-IN")}</Text>
+                      <Text style={styles.summaryTotalText}>
+                        ₹
+                        {measurements
+                          .reduce(
+                            (sum, m) => sum + (parseFloat(m.totalCost) || 0),
+                            0
+                          )
+                          .toLocaleString("en-IN")}
+                      </Text>
                     </View>
                     <View style={[styles.tableCell, styles.actionColumn]}>
                       <Text style={styles.summaryText}>-</Text>

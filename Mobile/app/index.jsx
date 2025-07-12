@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   Alert,
   RefreshControl,
@@ -70,7 +70,8 @@ export default function Home() {
   };
 
   const formatCurrency = (amount) => {
-    return `₹${amount.toLocaleString("en-IN")}`;
+    // Only round cost values, no decimals
+    return `₹${Math.ceil(amount).toLocaleString("en-IN")}`;
   };
 
   const ProjectCard = ({ project }) => (
@@ -119,6 +120,15 @@ export default function Home() {
     await AsyncStorage.removeItem("token");
     router.replace("/login");
   };
+
+  useEffect(() => {
+    (async () => {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) {
+        router.replace("/login");
+      }
+    })();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -305,7 +315,8 @@ const styles = StyleSheet.create({
     gap: 8,
     flexShrink: 1,
     minWidth: 0,
-  },  viewButton: {
+  },
+  viewButton: {
     backgroundColor: COLORS.primaryLight,
     paddingHorizontal: 12,
     paddingVertical: 4,
