@@ -242,6 +242,31 @@ export default function InteriorMeasurements() {
                           </View>
                         </>
                       )}
+                      {type === "blinds" && (
+                        <>
+                          <View style={[styles.tableHeaderCell, styles.typeColumn]}>
+                            <Text style={styles.headerText}>Blind Type</Text>
+                          </View>
+                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                            <Text style={styles.headerText}>Parts</Text>
+                          </View>
+                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                            <Text style={styles.headerText}>Total Sqft</Text>
+                          </View>
+                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                            <Text style={styles.headerText}>Blinds Cost</Text>
+                          </View>
+                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                            <Text style={styles.headerText}>Cloth Required</Text>
+                          </View>
+                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                            <Text style={styles.headerText}>Cloth Cost</Text>
+                          </View>
+                          <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+                            <Text style={styles.headerText}>Stitching Cost</Text>
+                          </View>
+                        </>
+                      )}
                       <View style={[styles.tableHeaderCell, styles.totalColumn]}>
                         <Text style={styles.headerText}>Total Cost</Text>
                       </View>
@@ -431,6 +456,31 @@ export default function InteriorMeasurements() {
                                   return rolls;
                                 })()}
                               </Text>
+                            </View>
+                          </>
+                        )}{" "}
+                        {type === "blinds" && (
+                          <>
+                            <View style={[styles.tableCell, styles.typeColumn]}>
+                              <Text style={styles.cellText}>{m.blindType || "-"}</Text>
+                            </View>
+                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                              <Text style={styles.cellText}>{m.blindType?.toLowerCase() === "roman blinds" ? (m.part || "-") : "-"}</Text>
+                            </View>
+                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                              <Text style={styles.cellText}>{m.totalSqft?.toFixed(2) || "-"}</Text>
+                            </View>
+                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                              <Text style={styles.cellText}>₹{m.blindsCost ? Math.ceil(m.blindsCost).toLocaleString("en-IN") : "-"}</Text>
+                            </View>
+                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                              <Text style={styles.cellText}>{m.clothRequired?.toFixed(2) || "-"}</Text>
+                            </View>
+                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                              <Text style={styles.cellText}>₹{m.clothCost ? Math.ceil(m.clothCost).toLocaleString("en-IN") : "-"}</Text>
+                            </View>
+                            <View style={[styles.tableCell, styles.mediumColumn]}>
+                              <Text style={styles.cellText}>₹{m.stitchingCost ? Math.ceil(m.stitchingCost).toLocaleString("en-IN") : "-"}</Text>
                             </View>
                           </>
                         )}{" "}
