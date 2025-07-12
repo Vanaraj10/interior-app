@@ -378,21 +378,7 @@ export default function PDFPreview() {
               <Text style={styles.headerSubtitle}>{project.clientName}</Text>
             </View>
           </View>
-          <View style={styles.headerButtons}>
-            <TouchableOpacity
-              style={styles.printButton}
-              onPress={printPDF}
-            >
-              <Ionicons name="print" size={20} color="white" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.shareButton, isGenerating && styles.disabledButton]}
-              onPress={generateAndSharePDF}
-              disabled={isGenerating}
-            >
-              <Ionicons name="share" size={20} color="white" />
-            </TouchableOpacity>
-          </View>
+
         </View>
       </View>
 
@@ -450,7 +436,7 @@ export default function PDFPreview() {
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 24, gap: 12 }}>
             <TouchableOpacity style={[styles.button, { flex: 1, minWidth: 0 }]} onPress={printPDF}>
               <Ionicons name="print" size={20} color="white" />
-              <Text style={styles.buttonText}>Print/Download</Text>
+              <Text style={styles.buttonText}>Print</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.button, { flex: 1, minWidth: 0 }]} onPress={generateAndSharePDF}>
               <Ionicons name="share" size={20} color="white" />
