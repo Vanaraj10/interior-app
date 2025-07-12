@@ -67,13 +67,16 @@ async function handleLogin(e) {
         
         if (response.ok) {
             localStorage.setItem('adminToken', data.token);
-            localStorage.setItem('adminUsername', username);
+            localStorage.setItem('adminUsername', username);            
             showToast('Login successful!', 'success');
+            
             setTimeout(() => {
                 window.location.href = 'dashboard.html';
             }, 1000);
         } else {
-            showToast(data.error || 'Login failed', 'error');
+            showToast(data.error || 'Login failed', 'error');            
+            alert('Invalid Username or Password');
+            window.location.reload();
         }
     } catch (error) {
         console.error('Login error:', error);
@@ -585,12 +588,17 @@ async function handleChangePassword(e) {
             showToast('Password changed successfully', 'success');
             closeModal('changePasswordModal');
             e.target.reset();
+            window.location.href = 'dashboard.html'; 
         } else {
             showToast(data.error || 'Failed to change password', 'error');
+             closeModal('changePasswordModal');
+            
         }
     } catch (error) {
         console.error('Error changing password:', error);
         showToast('Network error. Please try again.', 'error');
+         closeModal('changePasswordModal');
+         
     } finally {
         showLoading(false);
     }
@@ -707,17 +715,8 @@ function toggleDropdown() {
     dropdown.classList.toggle('show');
 }
 
-function closeDropdown() {
-    const dropdown = document.getElementById('userDropdown');
-    dropdown.classList.remove('show');
-}
 
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    if (!event.target.matches('.dropdown-btn') && !event.target.closest('.dropdown')) {
-        closeDropdown();
-    }
-});
+
 
 // Password toggle functionality
 function togglePassword(inputId) {
@@ -809,6 +808,10 @@ function logout() {
         localStorage.removeItem('adminToken');
         localStorage.removeItem('adminUsername');
         window.location.href = 'index.html';
+    }
+    else {
+        // Reload the page if cancel is clicked
+        window.location.href= 'dashboard.html' ;
     }
 }
 
