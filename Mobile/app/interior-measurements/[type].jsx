@@ -737,7 +737,7 @@ export default function InteriorMeasurements() {
                     ))}
 
                 {/* Summary Row */}
-                {measurements.length > 1 && (
+                {measurements.length > 1 && type !== "flooring" && (
                   <View style={styles.summaryRow}>
                     <View style={[styles.tableCell, styles.roomColumn]}>
                       <Text style={styles.summaryText}>
@@ -872,7 +872,7 @@ export default function InteriorMeasurements() {
                     </View>
                   </View>
                 )}
-                {type === "flooring" && (
+                {type === "flooring" && measurements.length > 1 && (
                   <View style={styles.summaryRow}>
                     <View style={[styles.tableCell, { width: 40 }]}>
                       <Text style={styles.summaryText}>Total</Text>
