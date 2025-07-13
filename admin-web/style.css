@@ -144,7 +144,7 @@ button:hover {
   padding-right: 2.5rem; /* Leaves space for the icon */
   padding-left: 1rem;
   font-size: 1rem;
-  border-radius: 12px;
+  border-radius: 30px;
 }
 
 .toggle-password {
@@ -313,6 +313,8 @@ button:hover {
 
 #adminUsername {
   color: #cbd5e1;
+  font-weight: bold;
+  font-size:24px;
 }
 
 /* HAMBURGER BUTTON */
@@ -590,12 +592,12 @@ button:hover {
 .search-box i {
   position: absolute;
   left: 0.875rem;
-  color: var(--text-muted);
+  color: var(--bg-main);
 }
 
 .search-box input {
   padding: 0.75rem 0.75rem 0.75rem 2.5rem;
-  background: var(--bg-secondary);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   color: var(--text-primary);
@@ -614,7 +616,7 @@ button:hover {
 
 #projectFilter {
   padding: 0.75rem;
-  background: var(--bg-secondary);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   color: var(--text-primary);

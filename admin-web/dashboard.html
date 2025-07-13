@@ -18,33 +18,13 @@
       <h1>Interior Admin</h1>
     </div>
     <div class="header-right">
-      <span id="adminUsername">Admin</span>
+      <span id="adminUsername"><bold>Admin</bold></span>
       <button class="hamburger" onclick="toggleSidebar()">
         <i class="fas fa-bars"></i>
       </button>
     </div>
   </div>
 </header>
-
-
-
-
-<!-- 👇 Add this just before </body> -->
-<script>
-  function toggleDropdown() {
-    const dropdown = document.getElementById("userDropdown");
-    dropdown.classList.toggle("show");
-  }
-
-  window.addEventListener("click", function (e) {
-    const dropdown = document.getElementById("userDropdown");
-    const button = document.querySelector(".dropdown-btn");
-
-    if (!button.contains(e.target) && !dropdown.contains(e.target)) {
-      dropdown.classList.remove("show");
-    }
-  });
-</script>
 
 <aside class="sidebar" id="sidebar">
   <nav class="sidebar-nav">
@@ -141,7 +121,7 @@
         <section id="projects-section" class="content-section">
             <div class="section-header">
                 <h2>Projects Management</h2>
-                <div class="header-actions">
+                <div class="header-actions">                    
                     <div class="search-box">
                         <i class="fas fa-search"></i>
                         <input type="text" id="projectSearch" placeholder="Search projects..." onkeyup="filterProjects()">
@@ -195,7 +175,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Change Password</h3>
-                <span class="close" onclick="closeModal('changePasswordModal')">&times;</span>
+                <span class="close" onclick="closeModal('changePasswordModal');window.location.reload(true);">&times;</span>
             </div>
             <form id="changePasswordForm">
                 <div class="form-group">
@@ -220,7 +200,7 @@
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="closeModal('changePasswordModal')">Cancel</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('changePasswordModal'); window.location.href = 'dashboard.html';">Cancel</button>
                     <button type="submit" class="btn-primary">Change Password</button>
                 </div>
             </form>
