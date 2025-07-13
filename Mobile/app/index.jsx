@@ -12,16 +12,32 @@ import {
   View,
 } from "react-native";
 import { COLORS } from "./styles/colors";
+import { calculateProjectTotals } from "./components/projectTotals";
 
 export default function Home() {
   const [projects, setProjects] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
+  const recalculateProjectTotals = async (projects) => {
+    return projects.map((project) => {
+      // Only recalculate if grandTotal or flooringTotal is missing or zero
+      if (!project.grandTotal || !project.flooringTotal || project.flooringTotal === 0) {
+        return calculateProjectTotals(project);
+      }
+      return project;
+    });
+  };
+
   const loadProjects = useCallback(async () => {
     try {
       const projectsData = await AsyncStorage.getItem("projects");
       if (projectsData) {
-        setProjects(JSON.parse(projectsData));
+        let loadedProjects = JSON.parse(projectsData);
+        // Recalculate totals for all projects to ensure flooring is included
+        loadedProjects = await recalculateProjectTotals(loadedProjects);
+        setProjects(loadedProjects);
+        // Optionally, persist recalculated projects back to storage
+        await AsyncStorage.setItem("projects", JSON.stringify(loadedProjects));
       }
     } catch (error) {
       console.error("Error loading projects:", error);
