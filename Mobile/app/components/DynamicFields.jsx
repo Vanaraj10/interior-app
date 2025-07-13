@@ -15,7 +15,7 @@ export default function DynamicFields({ schema, formData, updateField }) {
             {field.type === 'text' || field.type === 'number' ? (
               <TextInput
                 style={styles.input}
-                value={formData[field.name] ? String(formData[field.name]) : ''}
+                value={formData[field.name] !== undefined && formData[field.name] !== null ? String(formData[field.name]) : ''}
                 onChangeText={text => updateField(field.name, text)}
                 placeholder={field.label}
                 placeholderTextColor={COLORS.inputPlaceholder}

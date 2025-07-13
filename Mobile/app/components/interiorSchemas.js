@@ -208,11 +208,11 @@ export const INTERIOR_SCHEMAS = {
   flooring: {
     label: "Flooring",
     fields: [
-      { key: "roomLabel", label: "Room", type: "text" },
-      { key: "height", label: "Height (inches)", type: "number" },
-      { key: "width", label: "Width (inches)", type: "number" },
-      { key: "costPerSqft", label: "Cost/Sqft", type: "number" },
-      { key: "layingPerSqft", label: "Laying/Sqft", type: "number" },
+      { name: "roomLabel", label: "Room", type: "text" },
+      { name: "height", label: "Height (inches)", type: "number" },
+      { name: "width", label: "Width (inches)", type: "number" },
+      { name: "costPerSqft", label: "Cost/Sqft", type: "number" },
+      { name: "layingPerSqft", label: "Laying/Sqft", type: "number" },
     ],
     calculate: (m) => {
       const height = parseFloat(m.height) || 0;

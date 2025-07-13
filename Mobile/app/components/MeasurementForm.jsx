@@ -17,7 +17,8 @@ export default function MeasurementForm({
   onCancel,
   editingMeasurement,
   forceInteriorType,
-}) {  const [formData, setFormData] = useState({
+}) {
+  const [formData, setFormData] = useState({
     interiorType: forceInteriorType || "curtains",
   });
 
@@ -25,20 +26,23 @@ export default function MeasurementForm({
     if (editingMeasurement) {
       setFormData(editingMeasurement);
     } else {
-      // Ensure default values for pickers
       const interiorType = forceInteriorType || "curtains";
-      setFormData((prev) => {
-        const schema = INTERIOR_SCHEMAS[interiorType];
-        const defaults = { interiorType };
-        schema.fields.forEach((field) => {
-          if (field.type === "picker" && !prev[field.name]) {
-            defaults[field.name] = field.options[0];
-          }
-        });
-        return { ...prev, ...defaults };
+      const schema = INTERIOR_SCHEMAS[interiorType];
+      const defaults = { interiorType };
+      schema.fields.forEach((field) => {
+        if (field.type === "picker") {
+          defaults[field.name] = field.options[0];
+        } else if (field.type === "checkbox") {
+          defaults[field.name] = false;
+        } else {
+          defaults[field.name] = "";
+        }
       });
+      setFormData(defaults);
     }
-  }, [editingMeasurement, forceInteriorType]);  useEffect(() => {
+  }, [editingMeasurement, forceInteriorType]);
+
+  useEffect(() => {
     // Calculation is handled in the component that uses this form
   }, [formData]);
 
