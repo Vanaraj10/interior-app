@@ -13,6 +13,762 @@ import {
 import { INTERIOR_SCHEMAS } from "../components/interiorSchemas";
 import { COLORS } from "../styles/colors";
 
+// TableHeader component
+const TableHeader = ({ type }) => {
+  return (
+    <>
+      {type === "flooring" ? (
+        <>
+          <View style={[styles.tableHeaderCell, styles.snoColumn]}>
+            <Text style={styles.headerText}>S.No</Text>
+          </View>
+          <View style={[styles.tableHeaderCell, styles.roomColumn]}>
+            <Text style={styles.headerText}>Room</Text>
+          </View>
+          <View
+            style={[styles.tableHeaderCell, styles.dimensionColumn]}
+          >
+            <Text style={styles.headerText}>Height</Text>
+          </View>
+          <View
+            style={[styles.tableHeaderCell, styles.dimensionColumn]}
+          >
+            <Text style={styles.headerText}>Width</Text>
+          </View>
+          <View
+            style={[styles.tableHeaderCell, styles.mediumColumn]}
+          >
+            <Text style={styles.headerText}>Total Sqft</Text>
+          </View>
+          <View
+            style={[styles.tableHeaderCell, styles.mediumColumn]}
+          >
+            <Text style={styles.headerText}>Cost of Room</Text>
+          </View>
+          <View
+            style={[styles.tableHeaderCell, styles.mediumColumn]}
+          >
+            <Text style={styles.headerText}>Laying Charge</Text>
+          </View>
+          <View
+            style={[styles.tableHeaderCell, styles.totalColumn]}
+          >
+            <Text style={styles.headerText}>Total Cost</Text>
+          </View>
+          <View
+            style={[styles.tableHeaderCell, styles.actionColumn]}
+          >
+            <Text style={styles.headerText}>Actions</Text>
+          </View>
+        </>
+      ) : (
+        <>
+          <View style={[styles.tableHeaderCell, styles.roomColumn]}>
+            <Text style={styles.headerText}>Room</Text>
+          </View>
+          <View
+            style={[styles.tableHeaderCell, styles.dimensionColumn]}
+          >
+            <Text style={styles.headerText}>Width</Text>
+          </View>
+          <View
+            style={[styles.tableHeaderCell, styles.dimensionColumn]}
+          >
+            <Text style={styles.headerText}>Height</Text>
+          </View>
+          {type === "curtains" && (
+            <>
+              <View
+                style={[styles.tableHeaderCell, styles.typeColumn]}
+              >
+                <Text style={styles.headerText}>Type</Text>
+              </View>
+              <View
+                style={[styles.tableHeaderCell, styles.smallColumn]}
+              >
+                <Text style={styles.headerText}>Pieces</Text>
+              </View>
+              <View
+                style={[
+                  styles.tableHeaderCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.headerText}>Meters</Text>
+              </View>
+              {/* Lining Info Columns */}
+              <View
+                style={[styles.tableHeaderCell, styles.typeColumn]}
+              >
+                <Text style={styles.headerText}>Lining Type</Text>
+              </View>
+              <View
+                style={[
+                  styles.tableHeaderCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.headerText}>
+                  Lining Cost/Meter
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.tableHeaderCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.headerText}>
+                  Total Lining Meters
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.tableHeaderCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.headerText}>
+                  Total Lining Cost
+                </Text>
+              </View>
+            </>
+          )}
+          {type === "mosquito-nets" && (
+            <>
+              <View
+                style={[styles.tableHeaderCell, styles.typeColumn]}
+              >
+                <Text style={styles.headerText}>Material</Text>
+              </View>
+              <View
+                style={[
+                  styles.tableHeaderCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.headerText}>Total Sq.Ft</Text>
+              </View>
+              <View
+                style={[styles.tableHeaderCell, styles.costColumn]}
+              >
+                <Text style={styles.headerText}>Rate/Sq.Ft</Text>
+              </View>
+            </>
+          )}
+          {type === "wallpapers" && (
+            <>
+              <View
+                style={[
+                  styles.tableHeaderCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.headerText}>Area (Sq.Ft)</Text>
+              </View>
+              <View
+                style={[styles.tableHeaderCell, styles.smallColumn]}
+              >
+                <Text style={styles.headerText}>Rolls</Text>
+              </View>
+            </>
+          )}
+          {type === "blinds" && (
+            <>
+              <View
+                style={[styles.tableHeaderCell, styles.typeColumn]}
+              >
+                <Text style={styles.headerText}>Blind Type</Text>
+              </View>
+              <View
+                style={[
+                  styles.tableHeaderCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.headerText}>Parts</Text>
+              </View>
+              <View
+                style={[
+                  styles.tableHeaderCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.headerText}>Total Sqft</Text>
+              </View>
+              <View
+                style={[
+                  styles.tableHeaderCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.headerText}>Blinds Cost</Text>
+              </View>
+              <View
+                style={[
+                  styles.tableHeaderCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.headerText}>
+                  Cloth Required
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.tableHeaderCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.headerText}>Cloth Cost</Text>
+              </View>
+              <View
+                style={[
+                  styles.tableHeaderCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.headerText}>
+                  Stitching Cost
+                </Text>
+              </View>
+            </>
+          )}
+          <View
+            style={[styles.tableHeaderCell, styles.totalColumn]}
+          >
+            <Text style={styles.headerText}>Total Cost</Text>
+          </View>
+          <View
+            style={[styles.tableHeaderCell, styles.actionColumn]}
+          >
+            <Text style={styles.headerText}>Actions</Text>
+          </View>
+        </>
+      )}
+    </>
+  );
+};
+
+// TableRow component
+const TableRow = ({ type, m, index, id, router, deleteMeasurement, styles }) => {
+  return (
+    <View
+      key={m.id}
+      style={[
+        styles.tableRow,
+        index % 2 === 0 ? styles.evenRow : styles.oddRow,
+      ]}
+    >
+      {type === "flooring" ? (
+        <>
+          <View style={[styles.tableCell, styles.snoColumn]}>
+            <Text style={styles.cellText}>{index + 1}</Text>
+          </View>
+          <View style={[styles.tableCell, styles.roomColumn]}>
+            <Text style={styles.cellText}>
+              {m.roomLabel || "Untitled"}
+            </Text>
+          </View>
+          <View
+            style={[styles.tableCell, styles.dimensionColumn]}
+          >
+            <Text style={styles.cellText}>{m.height || "-"}</Text>
+          </View>
+          <View
+            style={[styles.tableCell, styles.dimensionColumn]}
+          >
+            <Text style={styles.cellText}>{m.width || "-"}</Text>
+          </View>
+          <View style={[styles.tableCell, styles.mediumColumn]}>
+            <Text style={styles.cellText}>
+              {m.totalSqft?.toFixed(2) || "-"}
+            </Text>
+          </View>
+          <View style={[styles.tableCell, styles.mediumColumn]}>
+            <Text style={styles.cellText}>
+              ₹{m.costOfRoom?.toLocaleString("en-IN") || "-"}
+            </Text>
+          </View>
+          <View style={[styles.tableCell, styles.mediumColumn]}>
+            <Text style={styles.cellText}>
+              ₹{m.layingCharge?.toLocaleString("en-IN") || "-"}
+            </Text>
+          </View>
+          <View style={[styles.tableCell, styles.totalColumn]}>
+            <Text style={[styles.cellText, styles.totalCostText]}>
+              ₹{m.totalCost?.toLocaleString("en-IN") || "-"}
+            </Text>
+          </View>
+          <View style={[styles.tableCell, styles.actionColumn]}>
+            <View style={styles.actionContainer}>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/new-measurement/[type]",
+                    params: { id, type, editId: m.id },
+                  })
+                }
+                style={styles.editButton}
+              >
+                <Ionicons name="pencil" size={14} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => deleteMeasurement(m.id)}
+                style={styles.deleteButton}
+              >
+                <Ionicons name="trash" size={14} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      ) : (
+        <>
+          <View style={[styles.tableCell, styles.roomColumn]}>
+            <Text style={styles.cellText} numberOfLines={2}>
+              {m.roomLabel || "Untitled"}
+            </Text>
+          </View>{" "}
+          <View
+            style={[styles.tableCell, styles.dimensionColumn]}
+          >
+            <Text style={styles.cellText}>{m.width || "-"}</Text>
+          </View>
+          <View
+            style={[styles.tableCell, styles.dimensionColumn]}
+          >
+            <Text style={styles.cellText}>{m.height || "-"}</Text>
+          </View>
+          {type === "curtains" && (
+            <>
+              <View style={[styles.tableCell, styles.typeColumn]}>
+                <Text style={styles.cellText} numberOfLines={2}>
+                  {m.curtainType || "-"}
+                </Text>
+              </View>{" "}
+              <View
+                style={[styles.tableCell, styles.smallColumn]}
+              >
+                <View
+                  style={
+                    m.parts === "One Part" ||
+                    m.parts === "One part" ||
+                    m.parts === "1" ||
+                    m.parts === 1
+                      ? styles.circledPieces
+                      : styles.normalPieces
+                  }
+                >
+                  <Text
+                    style={[
+                      styles.cellText,
+                      m.parts === "One Part" ||
+                      m.parts === "One part" ||
+                      m.parts === "1" ||
+                      m.parts === 1
+                        ? styles.circledText
+                        : null,
+                    ]}
+                  >
+                    {m.pieces || "-"}
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={[styles.tableCell, styles.mediumColumn]}
+              >
+                <Text style={styles.cellText}>
+                  {m.totalMeters?.toFixed(1) || "-"}
+                </Text>
+              </View>
+              {/* Lining Info Columns */}
+              <View style={[styles.tableCell, styles.typeColumn]}>
+                <Text style={styles.cellText}>
+                  {m.hasLining ? m.liningType || "Yes" : "No"}
+                </Text>
+              </View>
+              <View
+                style={[styles.tableCell, styles.mediumColumn]}
+              >
+                <Text style={styles.cellText}>
+                  {m.hasLining
+                    ? m.liningCostPerMeter
+                      ? `₹${m.liningCostPerMeter}`
+                      : "-"
+                    : "-"}
+                </Text>
+              </View>
+              <View
+                style={[styles.tableCell, styles.mediumColumn]}
+              >
+                <Text style={styles.cellText}>
+                  {m.hasLining
+                    ? m.totalLiningMeters?.toFixed(1) || "-"
+                    : "-"}
+                </Text>
+              </View>
+              <View
+                style={[styles.tableCell, styles.mediumColumn]}
+              >
+                <Text style={styles.cellText}>
+                  {m.hasLining
+                    ? m.totalLiningCost
+                      ? `₹${Math.floor(m.totalLiningCost)}`
+                      : "-"
+                    : "-"}
+                </Text>
+              </View>
+            </>
+          )}
+          {type === "mosquito-nets" && (
+            <>
+              <View style={[styles.tableCell, styles.typeColumn]}>
+                <Text style={styles.cellText} numberOfLines={2}>
+                  {m.materialType || "-"}
+                </Text>
+              </View>
+              <View
+                style={[styles.tableCell, styles.mediumColumn]}
+              >
+                <Text style={styles.cellText}>
+                  {m.totalSqft?.toFixed(1) || "-"}
+                </Text>
+              </View>
+              <View style={[styles.tableCell, styles.costColumn]}>
+                <Text style={[styles.cellText, styles.costText]}>
+                  ₹{m.materialRatePerSqft || "0"}
+                </Text>
+              </View>
+            </>
+          )}
+          {type === "wallpapers" && (
+            <>
+              <View
+                style={[
+                  styles.tableCell,
+                  styles.mediumColumn,
+                ]}
+              >
+                <Text style={styles.cellText}>
+                  {(
+                    ((parseFloat(m.width) || 0) *
+                      (parseFloat(m.height) || 0)) /
+                    144
+                  ).toFixed(1)}
+                </Text>
+              </View>{" "}
+              <View
+                style={[styles.tableCell, styles.smallColumn]}
+              >
+                <Text style={styles.cellText}>
+                  {(() => {
+                    const squareInches =
+                      (parseFloat(m.width) || 0) *
+                      (parseFloat(m.height) || 0);
+                    const squareFeet = squareInches / 144;
+                    let rolls = squareFeet / 50;
+                    const decimal = rolls - Math.floor(rolls);
+                    if (decimal >= 0.3) {
+                      rolls = Math.ceil(rolls);
+                    } else {
+                      rolls = Math.max(1, Math.floor(rolls));
+                    }
+                    return rolls;
+                  })()}
+                </Text>
+              </View>
+            </>
+          )}{" "}
+          {type === "blinds" && (
+            <>
+              <View style={[styles.tableCell, styles.typeColumn]}>
+                <Text style={styles.cellText}>
+                  {m.blindType || "-"}
+                </Text>
+              </View>
+              <View
+                style={[styles.tableCell, styles.mediumColumn]}
+              >
+                <Text style={styles.cellText}>
+                  {m.blindType?.toLowerCase() === "roman blinds"
+                    ? m.part || "-"
+                    : "-"}
+                </Text>
+              </View>
+              <View
+                style={[styles.tableCell, styles.mediumColumn]}
+              >
+                <Text style={styles.cellText}>
+                  {m.totalSqft?.toFixed(2) || "-"}
+                </Text>
+              </View>
+              <View
+                style={[styles.tableCell, styles.mediumColumn]}
+              >
+                <Text style={styles.cellText}>
+                  ₹
+                  {m.blindsCost
+                    ? Math.ceil(m.blindsCost).toLocaleString(
+                        "en-IN"
+                      )
+                    : "-"}
+                </Text>
+              </View>
+              <View
+                style={[styles.tableCell, styles.mediumColumn]}
+              >
+                <Text style={styles.cellText}>
+                  {m.clothRequired?.toFixed(2) || "-"}
+                </Text>
+              </View>
+              <View
+                style={[styles.tableCell, styles.mediumColumn]}
+              >
+                <Text style={styles.cellText}>
+                  ₹
+                  {m.clothCost
+                    ? Math.ceil(m.clothCost).toLocaleString(
+                        "en-IN"
+                      )
+                    : "-"}
+                </Text>
+              </View>
+              <View
+                style={[styles.tableCell, styles.mediumColumn]}
+              >
+                <Text style={styles.cellText}>
+                  ₹
+                  {m.stitchingCost
+                    ? Math.ceil(m.stitchingCost).toLocaleString(
+                        "en-IN"
+                      )
+                    : "-"}
+                </Text>
+              </View>
+            </>
+          )}{" "}
+          <View style={[styles.tableCell, styles.totalColumn]}>
+            <Text style={[styles.cellText, styles.totalCostText]}>
+              ₹
+              {(() => {
+                // Use stored totalCost if available, otherwise calculate for wallpapers
+                if (m.totalCost) {
+                  return m.totalCost.toLocaleString("en-IN");
+                } else if (type === "wallpapers") {
+                  const squareInches =
+                    (parseFloat(m.width) || 0) *
+                    (parseFloat(m.height) || 0);
+                  const squareFeet = squareInches / 144;
+                  let rolls = squareFeet / 50;
+                  const decimal = rolls - Math.floor(rolls);
+                  if (decimal >= 0.3) {
+                    rolls = Math.ceil(rolls);
+                  } else {
+                    rolls = Math.max(1, Math.floor(rolls));
+                  }
+                  const totalCost =
+                    rolls * (parseFloat(m.costPerRoll) || 0) +
+                    rolls *
+                      (parseFloat(m.implementationCostPerRoll) ||
+                        0);
+                  return Math.floor(totalCost).toLocaleString("en-IN");
+                } else {
+                  return (m.materialCost || 0).toLocaleString(
+                    "en-IN"
+                  );
+                }
+              })()}
+            </Text>
+          </View>
+          <View style={[styles.tableCell, styles.actionColumn]}>
+            <View style={styles.actionContainer}>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/new-measurement/[type]",
+                    params: { id, type, editId: m.id },
+                  })
+                }
+                style={styles.editButton}
+              >
+                <Ionicons name="pencil" size={14} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => deleteMeasurement(m.id)}
+                style={styles.deleteButton}
+              >
+                <Ionicons name="trash" size={14} color="white" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      )}
+    </View>
+  );
+};
+
+// SummaryRow component
+const SummaryRow = ({ type, measurements, styles }) => {
+  return (
+    <View style={styles.summaryRow}>
+      <View style={[styles.tableCell, styles.roomColumn]}>
+        <Text style={styles.summaryText}>
+          Total ({measurements.length} rooms)
+        </Text>
+      </View>
+      <View style={[styles.tableCell, styles.dimensionColumn]}>
+        <Text style={styles.summaryText}>-</Text>
+      </View>
+      <View style={[styles.tableCell, styles.dimensionColumn]}>
+        <Text style={styles.summaryText}>-</Text>
+      </View>
+      {type === "curtains" && (
+        <>
+          <View style={[styles.tableCell, styles.typeColumn]}>
+            <Text style={styles.summaryText}>-</Text>
+          </View>{" "}
+          <View style={[styles.tableCell, styles.smallColumn]}>
+            <Text style={styles.summaryText}>
+              {measurements
+                .reduce(
+                  (sum, m) => sum + (parseFloat(m.pieces) || 0),
+                  0
+                )
+                .toFixed(1)}
+            </Text>
+          </View>
+          <View style={[styles.tableCell, styles.mediumColumn]}>
+            <Text style={styles.summaryText}>
+              {measurements
+                .reduce(
+                  (sum, m) =>
+                    sum + (parseFloat(m.totalMeters) || 0),
+                  0
+                )
+                .toFixed(1)}
+            </Text>
+          </View>
+        </>
+      )}
+      {type === "mosquito-nets" && (
+        <>
+          <View style={[styles.tableCell, styles.typeColumn]}>
+            <Text style={styles.summaryText}>-</Text>
+          </View>
+          <View style={[styles.tableCell, styles.mediumColumn]}>
+            <Text style={styles.summaryText}>
+              {measurements
+                .reduce(
+                  (sum, m) =>
+                    sum + (parseFloat(m.totalSqft) || 0),
+                  0
+                )
+                .toFixed(1)}
+            </Text>
+          </View>
+          <View style={[styles.tableCell, styles.costColumn]}>
+            <Text style={styles.summaryText}>-</Text>
+          </View>
+        </>
+      )}
+      {type === "wallpapers" && (
+        <>
+          <View style={[styles.tableCell, styles.mediumColumn]}>
+            <Text style={styles.summaryText}>
+              {measurements
+                .reduce((sum, m) => {
+                  const area =
+                    ((parseFloat(m.width) || 0) *
+                      (parseFloat(m.height) || 0)) /
+                    144;
+                  return sum + area;
+                }, 0)
+                .toFixed(1)}
+            </Text>
+          </View>{" "}
+          <View style={[styles.tableCell, styles.smallColumn]}>
+            <Text style={styles.summaryText}>
+              {measurements.reduce((sum, m) => {
+                const squareInches =
+                  (parseFloat(m.width) || 0) *
+                  (parseFloat(m.height) || 0);
+                const squareFeet = squareInches / 144;
+                let rolls = squareFeet / 50;
+                const decimal = rolls - Math.floor(rolls);
+                if (decimal >= 0.3) {
+                  rolls = Math.ceil(rolls);
+                } else {
+                  rolls = Math.max(1, Math.floor(rolls));
+                }
+                return sum + rolls;
+              }, 0)}
+            </Text>
+          </View>
+        </>
+      )}{" "}
+      <View style={[styles.tableCell, styles.totalColumn]}>
+        <Text style={styles.summaryTotalText}>
+          ₹
+          {measurements
+            .reduce((sum, m) => {
+              // Use stored totalCost if available, otherwise calculate
+              if (m.totalCost) {
+                return sum + m.totalCost;
+              } else if (type === "wallpapers") {
+                const squareInches =
+                  (parseFloat(m.width) || 0) *
+                  (parseFloat(m.height) || 0);
+                const squareFeet = squareInches / 144;
+                let rolls = squareFeet / 50;
+                const decimal = rolls - Math.floor(rolls);
+                if (decimal >= 0.3) {
+                  rolls = Math.ceil(rolls);
+                } else {
+                  rolls = Math.max(1, Math.floor(rolls));
+                }
+                const totalCost =
+                  rolls * (parseFloat(m.costPerRoll) || 0) +
+                  rolls *
+                    (parseFloat(m.implementationCostPerRoll) ||
+                      0);
+                return sum + totalCost;
+              } else {
+                return sum + (m.materialCost || 0);
+              }
+            }, 0)
+            .toLocaleString("en-IN")}
+        </Text>
+      </View>
+      <View style={[styles.tableCell, styles.actionColumn]}>
+        <Text style={styles.summaryText}>-</Text>
+      </View>
+    </View>
+  );
+};
+
+function renderTable({ type, measurements, id, router, deleteMeasurement, styles }) {
+  return (
+    <View style={styles.table}>
+      <View style={styles.tableHeader}>
+        <TableHeader type={type} />
+      </View>
+      {measurements.map((m, index) => (
+        <TableRow
+          key={m.id}
+          type={type}
+          m={m}
+          index={index}
+          id={id}
+          router={router}
+          deleteMeasurement={deleteMeasurement}
+          styles={styles}
+        />
+      ))}
+      <SummaryRow type={type} measurements={measurements} styles={styles} />
+    </View>
+  );
+}
+
 export default function InteriorMeasurements() {
   const { id, type } = useLocalSearchParams();
   const [project, setProject] = useState(null);
@@ -93,18 +849,13 @@ export default function InteriorMeasurements() {
       </View>
     );
   }
-
   return (
     <View style={styles.container}>
-      {" "}
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
-        >
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>{" "}
+        </TouchableOpacity>
         <View style={styles.headerInfo}>
           <Text style={styles.headerTitle}>{project.clientName}</Text>
           <Text style={styles.headerSubtitle}>
@@ -145,798 +896,7 @@ export default function InteriorMeasurements() {
                   </Text>
                 </View>
               )}
-
-              <View style={styles.table}>
-                {/* Table Header */}
-                <View style={styles.tableHeader}>
-                  {type === "flooring" ? (
-                    <>
-                      <View style={[styles.tableHeaderCell, styles.snoColumn]}>
-                        <Text style={styles.headerText}>S.No</Text>
-                      </View>
-                      <View style={[styles.tableHeaderCell, styles.roomColumn]}>
-                        <Text style={styles.headerText}>Room</Text>
-                      </View>
-                      <View
-                        style={[styles.tableHeaderCell, styles.dimensionColumn]}
-                      >
-                        <Text style={styles.headerText}>Height</Text>
-                      </View>
-                      <View
-                        style={[styles.tableHeaderCell, styles.dimensionColumn]}
-                      >
-                        <Text style={styles.headerText}>Width</Text>
-                      </View>
-                      <View
-                        style={[styles.tableHeaderCell, styles.mediumColumn]}
-                      >
-                        <Text style={styles.headerText}>Total Sqft</Text>
-                      </View>
-                      <View
-                        style={[styles.tableHeaderCell, styles.mediumColumn]}
-                      >
-                        <Text style={styles.headerText}>Cost of Room</Text>
-                      </View>
-                      <View
-                        style={[styles.tableHeaderCell, styles.mediumColumn]}
-                      >
-                        <Text style={styles.headerText}>Laying Charge</Text>
-                      </View>
-                      <View
-                        style={[styles.tableHeaderCell, styles.totalColumn]}
-                      >
-                        <Text style={styles.headerText}>Total Cost</Text>
-                      </View>
-                      <View
-                        style={[styles.tableHeaderCell, styles.actionColumn]}
-                      >
-                        <Text style={styles.headerText}>Actions</Text>
-                      </View>
-                    </>
-                  ) : (
-                    <>
-                      <View style={[styles.tableHeaderCell, styles.roomColumn]}>
-                        <Text style={styles.headerText}>Room</Text>
-                      </View>
-                      <View
-                        style={[styles.tableHeaderCell, styles.dimensionColumn]}
-                      >
-                        <Text style={styles.headerText}>Width</Text>
-                      </View>
-                      <View
-                        style={[styles.tableHeaderCell, styles.dimensionColumn]}
-                      >
-                        <Text style={styles.headerText}>Height</Text>
-                      </View>
-                      {type === "curtains" && (
-                        <>
-                          <View
-                            style={[styles.tableHeaderCell, styles.typeColumn]}
-                          >
-                            <Text style={styles.headerText}>Type</Text>
-                          </View>
-                          <View
-                            style={[styles.tableHeaderCell, styles.smallColumn]}
-                          >
-                            <Text style={styles.headerText}>Pieces</Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.tableHeaderCell,
-                              styles.mediumColumn,
-                            ]}
-                          >
-                            <Text style={styles.headerText}>Meters</Text>
-                          </View>
-                          {/* Lining Info Columns */}
-                          <View
-                            style={[styles.tableHeaderCell, styles.typeColumn]}
-                          >
-                            <Text style={styles.headerText}>Lining Type</Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.tableHeaderCell,
-                              styles.mediumColumn,
-                            ]}
-                          >
-                            <Text style={styles.headerText}>
-                              Lining Cost/Meter
-                            </Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.tableHeaderCell,
-                              styles.mediumColumn,
-                            ]}
-                          >
-                            <Text style={styles.headerText}>
-                              Total Lining Meters
-                            </Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.tableHeaderCell,
-                              styles.mediumColumn,
-                            ]}
-                          >
-                            <Text style={styles.headerText}>
-                              Total Lining Cost
-                            </Text>
-                          </View>
-                        </>
-                      )}
-                      {type === "mosquito-nets" && (
-                        <>
-                          <View
-                            style={[styles.tableHeaderCell, styles.typeColumn]}
-                          >
-                            <Text style={styles.headerText}>Material</Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.tableHeaderCell,
-                              styles.mediumColumn,
-                            ]}
-                          >
-                            <Text style={styles.headerText}>Total Sq.Ft</Text>
-                          </View>
-                          <View
-                            style={[styles.tableHeaderCell, styles.costColumn]}
-                          >
-                            <Text style={styles.headerText}>Rate/Sq.Ft</Text>
-                          </View>
-                        </>
-                      )}
-                      {type === "wallpapers" && (
-                        <>
-                          <View
-                            style={[
-                              styles.tableHeaderCell,
-                              styles.mediumColumn,
-                            ]}
-                          >
-                            <Text style={styles.headerText}>Area (Sq.Ft)</Text>
-                          </View>
-                          <View
-                            style={[styles.tableHeaderCell, styles.smallColumn]}
-                          >
-                            <Text style={styles.headerText}>Rolls</Text>
-                          </View>
-                        </>
-                      )}
-                      {type === "blinds" && (
-                        <>
-                          <View
-                            style={[styles.tableHeaderCell, styles.typeColumn]}
-                          >
-                            <Text style={styles.headerText}>Blind Type</Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.tableHeaderCell,
-                              styles.mediumColumn,
-                            ]}
-                          >
-                            <Text style={styles.headerText}>Parts</Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.tableHeaderCell,
-                              styles.mediumColumn,
-                            ]}
-                          >
-                            <Text style={styles.headerText}>Total Sqft</Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.tableHeaderCell,
-                              styles.mediumColumn,
-                            ]}
-                          >
-                            <Text style={styles.headerText}>Blinds Cost</Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.tableHeaderCell,
-                              styles.mediumColumn,
-                            ]}
-                          >
-                            <Text style={styles.headerText}>
-                              Cloth Required
-                            </Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.tableHeaderCell,
-                              styles.mediumColumn,
-                            ]}
-                          >
-                            <Text style={styles.headerText}>Cloth Cost</Text>
-                          </View>
-                          <View
-                            style={[
-                              styles.tableHeaderCell,
-                              styles.mediumColumn,
-                            ]}
-                          >
-                            <Text style={styles.headerText}>
-                              Stitching Cost
-                            </Text>
-                          </View>
-                        </>
-                      )}
-                      <View
-                        style={[styles.tableHeaderCell, styles.totalColumn]}
-                      >
-                        <Text style={styles.headerText}>Total Cost</Text>
-                      </View>
-                      <View
-                        style={[styles.tableHeaderCell, styles.actionColumn]}
-                      >
-                        <Text style={styles.headerText}>Actions</Text>
-                      </View>
-                    </>
-                  )}
-                </View>
-
-                {/* Table Rows */}
-                {type === "flooring"
-                  ? measurements.map((m, index) => (
-                      <View
-                        key={m.id}
-                        style={[
-                          styles.tableRow,
-                          index % 2 === 0 ? styles.evenRow : styles.oddRow,
-                        ]}
-                      >
-                        <View style={[styles.tableCell, styles.snoColumn]}>
-                          <Text style={styles.cellText}>{index + 1}</Text>
-                        </View>
-                        <View style={[styles.tableCell, styles.roomColumn]}>
-                          <Text style={styles.cellText}>
-                            {m.roomLabel || "Untitled"}
-                          </Text>
-                        </View>
-                        <View
-                          style={[styles.tableCell, styles.dimensionColumn]}
-                        >
-                          <Text style={styles.cellText}>{m.height || "-"}</Text>
-                        </View>
-                        <View
-                          style={[styles.tableCell, styles.dimensionColumn]}
-                        >
-                          <Text style={styles.cellText}>{m.width || "-"}</Text>
-                        </View>
-                        <View style={[styles.tableCell, styles.mediumColumn]}>
-                          <Text style={styles.cellText}>
-                            {m.totalSqft?.toFixed(2) || "-"}
-                          </Text>
-                        </View>
-                        <View style={[styles.tableCell, styles.mediumColumn]}>
-                          <Text style={styles.cellText}>
-                            ₹{m.costOfRoom?.toLocaleString("en-IN") || "-"}
-                          </Text>
-                        </View>
-                        <View style={[styles.tableCell, styles.mediumColumn]}>
-                          <Text style={styles.cellText}>
-                            ₹{m.layingCharge?.toLocaleString("en-IN") || "-"}
-                          </Text>
-                        </View>
-                        <View style={[styles.tableCell, styles.totalColumn]}>
-                          <Text style={[styles.cellText, styles.totalCostText]}>
-                            ₹{m.totalCost?.toLocaleString("en-IN") || "-"}
-                          </Text>
-                        </View>
-                        <View style={[styles.tableCell, styles.actionColumn]}>
-                          <View style={styles.actionContainer}>
-                            <TouchableOpacity
-                              onPress={() =>
-                                router.push({
-                                  pathname: "/new-measurement/[type]",
-                                  params: { id, type, editId: m.id },
-                                })
-                              }
-                              style={styles.editButton}
-                            >
-                              <Ionicons name="pencil" size={14} color="white" />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                              onPress={() => deleteMeasurement(m.id)}
-                              style={styles.deleteButton}
-                            >
-                              <Ionicons name="trash" size={14} color="white" />
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      </View>
-                    ))
-                  : measurements.map((m, index) => (
-                      <View
-                        key={m.id}
-                        style={[
-                          styles.tableRow,
-                          index % 2 === 0 ? styles.evenRow : styles.oddRow,
-                        ]}
-                      >
-                        <View style={[styles.tableCell, styles.roomColumn]}>
-                          <Text style={styles.cellText} numberOfLines={2}>
-                            {m.roomLabel || "Untitled"}
-                          </Text>
-                        </View>{" "}
-                        <View
-                          style={[styles.tableCell, styles.dimensionColumn]}
-                        >
-                          <Text style={styles.cellText}>{m.width || "-"}</Text>
-                        </View>
-                        <View
-                          style={[styles.tableCell, styles.dimensionColumn]}
-                        >
-                          <Text style={styles.cellText}>{m.height || "-"}</Text>
-                        </View>
-                        {type === "curtains" && (
-                          <>
-                            <View style={[styles.tableCell, styles.typeColumn]}>
-                              <Text style={styles.cellText} numberOfLines={2}>
-                                {m.curtainType || "-"}
-                              </Text>
-                            </View>{" "}
-                            <View
-                              style={[styles.tableCell, styles.smallColumn]}
-                            >
-                              <View
-                                style={
-                                  m.parts === "One Part" ||
-                                  m.parts === "One part" ||
-                                  m.parts === "1" ||
-                                  m.parts === 1
-                                    ? styles.circledPieces
-                                    : styles.normalPieces
-                                }
-                              >
-                                <Text
-                                  style={[
-                                    styles.cellText,
-                                    m.parts === "One Part" ||
-                                    m.parts === "One part" ||
-                                    m.parts === "1" ||
-                                    m.parts === 1
-                                      ? styles.circledText
-                                      : null,
-                                  ]}
-                                >
-                                  {m.pieces || "-"}
-                                </Text>
-                              </View>
-                            </View>
-                            <View
-                              style={[styles.tableCell, styles.mediumColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                {m.totalMeters?.toFixed(1) || "-"}
-                              </Text>
-                            </View>
-                            {/* Lining Info Columns */}
-                            <View style={[styles.tableCell, styles.typeColumn]}>
-                              <Text style={styles.cellText}>
-                                {m.hasLining ? m.liningType || "Yes" : "No"}
-                              </Text>
-                            </View>
-                            <View
-                              style={[styles.tableCell, styles.mediumColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                {m.hasLining
-                                  ? m.liningCostPerMeter
-                                    ? `₹${m.liningCostPerMeter}`
-                                    : "-"
-                                  : "-"}
-                              </Text>
-                            </View>
-                            <View
-                              style={[styles.tableCell, styles.mediumColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                {m.hasLining
-                                  ? m.totalLiningMeters?.toFixed(1) || "-"
-                                  : "-"}
-                              </Text>
-                            </View>
-                            <View
-                              style={[styles.tableCell, styles.mediumColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                {m.hasLining
-                                  ? m.totalLiningCost
-                                    ? `₹${Math.floor(m.totalLiningCost)}`
-                                    : "-"
-                                  : "-"}
-                              </Text>
-                            </View>
-                          </>
-                        )}
-                        {type === "mosquito-nets" && (
-                          <>
-                            <View style={[styles.tableCell, styles.typeColumn]}>
-                              <Text style={styles.cellText} numberOfLines={2}>
-                                {m.materialType || "-"}
-                              </Text>
-                            </View>
-                            <View
-                              style={[styles.tableCell, styles.mediumColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                {m.totalSqft?.toFixed(1) || "-"}
-                              </Text>
-                            </View>
-                            <View style={[styles.tableCell, styles.costColumn]}>
-                              <Text style={[styles.cellText, styles.costText]}>
-                                ₹{m.materialRatePerSqft || "0"}
-                              </Text>
-                            </View>
-                          </>
-                        )}
-                        {type === "wallpapers" && (
-                          <>
-                            <View
-                              style={[styles.tableCell, styles.mediumColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                {(
-                                  ((parseFloat(m.width) || 0) *
-                                    (parseFloat(m.height) || 0)) /
-                                  144
-                                ).toFixed(1)}
-                              </Text>
-                            </View>{" "}
-                            <View
-                              style={[styles.tableCell, styles.smallColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                {(() => {
-                                  const squareInches =
-                                    (parseFloat(m.width) || 0) *
-                                    (parseFloat(m.height) || 0);
-                                  const squareFeet = squareInches / 144;
-                                  let rolls = squareFeet / 50;
-                                  const decimal = rolls - Math.floor(rolls);
-                                  if (decimal >= 0.3) {
-                                    rolls = Math.ceil(rolls);
-                                  } else {
-                                    rolls = Math.max(1, Math.floor(rolls));
-                                  }
-                                  return rolls;
-                                })()}
-                              </Text>
-                            </View>
-                          </>
-                        )}{" "}
-                        {type === "blinds" && (
-                          <>
-                            <View style={[styles.tableCell, styles.typeColumn]}>
-                              <Text style={styles.cellText}>
-                                {m.blindType || "-"}
-                              </Text>
-                            </View>
-                            <View
-                              style={[styles.tableCell, styles.mediumColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                {m.blindType?.toLowerCase() === "roman blinds"
-                                  ? m.part || "-"
-                                  : "-"}
-                              </Text>
-                            </View>
-                            <View
-                              style={[styles.tableCell, styles.mediumColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                {m.totalSqft?.toFixed(2) || "-"}
-                              </Text>
-                            </View>
-                            <View
-                              style={[styles.tableCell, styles.mediumColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                ₹
-                                {m.blindsCost
-                                  ? Math.ceil(m.blindsCost).toLocaleString(
-                                      "en-IN"
-                                    )
-                                  : "-"}
-                              </Text>
-                            </View>
-                            <View
-                              style={[styles.tableCell, styles.mediumColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                {m.clothRequired?.toFixed(2) || "-"}
-                              </Text>
-                            </View>
-                            <View
-                              style={[styles.tableCell, styles.mediumColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                ₹
-                                {m.clothCost
-                                  ? Math.ceil(m.clothCost).toLocaleString(
-                                      "en-IN"
-                                    )
-                                  : "-"}
-                              </Text>
-                            </View>
-                            <View
-                              style={[styles.tableCell, styles.mediumColumn]}
-                            >
-                              <Text style={styles.cellText}>
-                                ₹
-                                {m.stitchingCost
-                                  ? Math.ceil(m.stitchingCost).toLocaleString(
-                                      "en-IN"
-                                    )
-                                  : "-"}
-                              </Text>
-                            </View>
-                          </>
-                        )}{" "}
-                        <View style={[styles.tableCell, styles.totalColumn]}>
-                          <Text style={[styles.cellText, styles.totalCostText]}>
-                            ₹
-                            {(() => {
-                              // Use stored totalCost if available, otherwise calculate for wallpapers
-                              if (m.totalCost) {
-                                return m.totalCost.toLocaleString("en-IN");
-                              } else if (type === "wallpapers") {
-                                const squareInches =
-                                  (parseFloat(m.width) || 0) *
-                                  (parseFloat(m.height) || 0);
-                                const squareFeet = squareInches / 144;
-                                let rolls = squareFeet / 50;
-                                const decimal = rolls - Math.floor(rolls);
-                                if (decimal >= 0.3) {
-                                  rolls = Math.ceil(rolls);
-                                } else {
-                                  rolls = Math.max(1, Math.floor(rolls));
-                                }
-                                const totalCost =
-                                  rolls * (parseFloat(m.costPerRoll) || 0) +
-                                  rolls *
-                                    (parseFloat(m.implementationCostPerRoll) ||
-                                      0);
-                                return Math.floor(totalCost).toLocaleString("en-IN");
-                              } else {
-                                return (m.materialCost || 0).toLocaleString(
-                                  "en-IN"
-                                );
-                              }
-                            })()}
-                          </Text>
-                        </View>
-                        <View style={[styles.tableCell, styles.actionColumn]}>
-                          <View style={styles.actionContainer}>
-                            <TouchableOpacity
-                              onPress={() =>
-                                router.push({
-                                  pathname: "/new-measurement/[type]",
-                                  params: { id, type, editId: m.id },
-                                })
-                              }
-                              style={styles.editButton}
-                            >
-                              <Ionicons name="pencil" size={14} color="white" />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                              onPress={() => deleteMeasurement(m.id)}
-                              style={styles.deleteButton}
-                            >
-                              <Ionicons name="trash" size={14} color="white" />
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      </View>
-                    ))}
-
-                {/* Summary Row */}
-                {measurements.length > 1 && type !== "flooring" && (
-                  <View style={styles.summaryRow}>
-                    <View style={[styles.tableCell, styles.roomColumn]}>
-                      <Text style={styles.summaryText}>
-                        Total ({measurements.length} rooms)
-                      </Text>
-                    </View>
-                    <View style={[styles.tableCell, styles.dimensionColumn]}>
-                      <Text style={styles.summaryText}>-</Text>
-                    </View>
-                    <View style={[styles.tableCell, styles.dimensionColumn]}>
-                      <Text style={styles.summaryText}>-</Text>
-                    </View>
-                    {type === "curtains" && (
-                      <>
-                        <View style={[styles.tableCell, styles.typeColumn]}>
-                          <Text style={styles.summaryText}>-</Text>
-                        </View>{" "}
-                        <View style={[styles.tableCell, styles.smallColumn]}>
-                          <Text style={styles.summaryText}>
-                            {measurements
-                              .reduce(
-                                (sum, m) => sum + (parseFloat(m.pieces) || 0),
-                                0
-                              )
-                              .toFixed(1)}
-                          </Text>
-                        </View>
-                        <View style={[styles.tableCell, styles.mediumColumn]}>
-                          <Text style={styles.summaryText}>
-                            {measurements
-                              .reduce(
-                                (sum, m) =>
-                                  sum + (parseFloat(m.totalMeters) || 0),
-                                0
-                              )
-                              .toFixed(1)}
-                          </Text>
-                        </View>
-                      </>
-                    )}
-                    {type === "mosquito-nets" && (
-                      <>
-                        <View style={[styles.tableCell, styles.typeColumn]}>
-                          <Text style={styles.summaryText}>-</Text>
-                        </View>
-                        <View style={[styles.tableCell, styles.mediumColumn]}>
-                          <Text style={styles.summaryText}>
-                            {measurements
-                              .reduce(
-                                (sum, m) =>
-                                  sum + (parseFloat(m.totalSqft) || 0),
-                                0
-                              )
-                              .toFixed(1)}
-                          </Text>
-                        </View>
-                        <View style={[styles.tableCell, styles.costColumn]}>
-                          <Text style={styles.summaryText}>-</Text>
-                        </View>
-                      </>
-                    )}
-                    {type === "wallpapers" && (
-                      <>
-                        <View style={[styles.tableCell, styles.mediumColumn]}>
-                          <Text style={styles.summaryText}>
-                            {measurements
-                              .reduce((sum, m) => {
-                                const area =
-                                  ((parseFloat(m.width) || 0) *
-                                    (parseFloat(m.height) || 0)) /
-                                  144;
-                                return sum + area;
-                              }, 0)
-                              .toFixed(1)}
-                          </Text>
-                        </View>{" "}
-                        <View style={[styles.tableCell, styles.smallColumn]}>
-                          <Text style={styles.summaryText}>
-                            {measurements.reduce((sum, m) => {
-                              const squareInches =
-                                (parseFloat(m.width) || 0) *
-                                (parseFloat(m.height) || 0);
-                              const squareFeet = squareInches / 144;
-                              let rolls = squareFeet / 50;
-                              const decimal = rolls - Math.floor(rolls);
-                              if (decimal >= 0.3) {
-                                rolls = Math.ceil(rolls);
-                              } else {
-                                rolls = Math.max(1, Math.floor(rolls));
-                              }
-                              return sum + rolls;
-                            }, 0)}
-                          </Text>
-                        </View>
-                      </>
-                    )}{" "}
-                    <View style={[styles.tableCell, styles.totalColumn]}>
-                      <Text style={styles.summaryTotalText}>
-                        ₹
-                        {measurements
-                          .reduce((sum, m) => {
-                            // Use stored totalCost if available, otherwise calculate
-                            if (m.totalCost) {
-                              return sum + m.totalCost;
-                            } else if (type === "wallpapers") {
-                              const squareInches =
-                                (parseFloat(m.width) || 0) *
-                                (parseFloat(m.height) || 0);
-                              const squareFeet = squareInches / 144;
-                              let rolls = squareFeet / 50;
-                              const decimal = rolls - Math.floor(rolls);
-                              if (decimal >= 0.3) {
-                                rolls = Math.ceil(rolls);
-                              } else {
-                                rolls = Math.max(1, Math.floor(rolls));
-                              }
-                              const totalCost =
-                                rolls * (parseFloat(m.costPerRoll) || 0) +
-                                rolls *
-                                  (parseFloat(m.implementationCostPerRoll) ||
-                                    0);
-                              return sum + totalCost;
-                            } else {
-                              return sum + (m.materialCost || 0);
-                            }
-                          }, 0)
-                          .toLocaleString("en-IN")}
-                      </Text>
-                    </View>
-                    <View style={[styles.tableCell, styles.actionColumn]}>
-                      <Text style={styles.summaryText}>-</Text>
-                    </View>
-                  </View>
-                )}
-                {type === "flooring" && measurements.length > 1 && (
-                  <View style={styles.summaryRow}>
-                    <View style={[styles.tableCell, { width: 40 }]}>
-                      <Text style={styles.summaryText}>Total</Text>
-                    </View>
-                    <View style={[styles.tableCell, styles.roomColumn]}>
-                      <Text style={styles.summaryText}>
-                        ({measurements.length} rooms)
-                      </Text>
-                    </View>
-                    <View style={[styles.tableCell, styles.dimensionColumn]}>
-                      <Text style={styles.summaryText}>-</Text>
-                    </View>
-                    <View style={[styles.tableCell, styles.dimensionColumn]}>
-                      <Text style={styles.summaryText}>-</Text>
-                    </View>
-                    <View style={[styles.tableCell, styles.mediumColumn]}>
-                      <Text style={styles.summaryText}>
-                        {measurements
-                          .reduce(
-                            (sum, m) => sum + (parseFloat(m.totalSqft) || 0),
-                            0
-                          )
-                          .toFixed(2)}
-                      </Text>
-                    </View>
-                    <View style={[styles.tableCell, styles.mediumColumn]}>
-                      <Text style={styles.summaryText}>
-                        ₹
-                        {measurements
-                          .reduce(
-                            (sum, m) => sum + (parseFloat(m.costOfRoom) || 0),
-                            0
-                          )
-                          .toLocaleString("en-IN")}
-                      </Text>
-                    </View>
-                    <View style={[styles.tableCell, styles.mediumColumn]}>
-                      <Text style={styles.summaryText}>
-                        ₹
-                        {measurements
-                          .reduce(
-                            (sum, m) => sum + (parseFloat(m.layingCharge) || 0),
-                            0
-                          )
-                          .toLocaleString("en-IN")}
-                      </Text>
-                    </View>
-                    <View style={[styles.tableCell, styles.totalColumn]}>
-                      <Text style={styles.summaryTotalText}>
-                        ₹
-                        {measurements
-                          .reduce(
-                            (sum, m) => sum + (parseFloat(m.totalCost) || 0),
-                            0
-                          )
-                          .toLocaleString("en-IN")}
-                      </Text>
-                    </View>
-                    <View style={[styles.tableCell, styles.actionColumn]}>
-                      <Text style={styles.summaryText}>-</Text>
-                    </View>
-                  </View>
-                )}
-              </View>
+              {renderTable({ type, measurements, id, router, deleteMeasurement, styles })}
             </>
           )}
         </View>
