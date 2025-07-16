@@ -12,7 +12,7 @@ export const generateBlindsRows = (measurements, formatCurrency) => {
     let totalCost = blindsCost;
     let part = m.part || 1;
     if (m.blindType === "Roman Blinds") {
-      clothRequired = ((height + 15) / 39) * part;
+      clothRequired = ((height + 12) / 39) * part;
       clothCost = clothRequired * (parseFloat(m.clothCostPerSqft) || 0);
       stitchingCost = part * (parseFloat(m.stitchingCostPerPart) || 0);
       totalCost = blindsCost + clothCost + stitchingCost;
@@ -45,7 +45,7 @@ generateBlindsRows.totals = (measurements, formatCurrency) => {
     let totalCost = blindsCost;
     let part = m.part || 1;
     if (m.blindType === "Roman Blinds") {
-      const clothRequired = ((height + 15) / 39) * part;
+      const clothRequired = ((height + 12) / 39) * part;
       const clothCost = clothRequired * (parseFloat(m.clothCostPerSqft) || 0);
       const stitchingCost = part * (parseFloat(m.stitchingCostPerPart) || 0);
       totalCost = blindsCost + clothCost + stitchingCost;

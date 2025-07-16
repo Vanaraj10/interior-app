@@ -37,7 +37,7 @@ export const INTERIOR_SCHEMAS = {
       // Meters
       const height = parseFloat(data.height) || 0;
       const roundedPieces = Math.ceil(pieces);
-      const totalMeters = ((height + 15) * roundedPieces) / 39;
+      const totalMeters = ((height + 12) * roundedPieces) / 39;
       // Costs
       const clothRate = parseFloat(data.clothRatePerMeter) || 0;
       const stitchingRate = parseFloat(data.stitchingCostPerPiece) || 0;      const clothCost = totalMeters * clothRate;
@@ -187,7 +187,7 @@ export const INTERIOR_SCHEMAS = {
         }
         
         // Calculate cloth required and costs
-        clothRequired = ((height + 15) / 39) * part;
+        clothRequired = ((height + 12) / 39) * part;
         clothCost = clothRequired * clothCostPerSqft;
         stitchingCost = part * stitchingCostPerPart;
         
