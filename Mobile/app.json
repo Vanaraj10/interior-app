@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Interiors",
-    "slug": "Interiors",
+    "slug": "interior-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
@@ -43,8 +43,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "30bc7ecb-1e99-4ee6-b073-1fe4db1868b4"
+        "projectId": "706520e9-4262-4682-af75-32e1d7f541a4"
       }
-    }
+    },
+    "owner": "neutrino10"
   }
 }
