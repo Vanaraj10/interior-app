@@ -49,7 +49,7 @@ body::before {
 .login-page {
   height: 100vh;
   width: 100vw;
-  background: url('https://i.postimg.cc/hj3hWJRD/Adena-Material-Works.jpg') no-repeat center center / cover;
+  background: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2158&q=80') no-repeat center center / cover;
   padding: 1rem;
   background-size: cover;
   background-position: center;
@@ -61,23 +61,25 @@ body::before {
 }
 
 .login-container {
-  width: 9cm;
+  width: 10cm;
   height: 12cm;
-  background: rgba(255, 255, 255, 0.1); /* Semi-transparent for glass effect */
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03); /* More transparent glass effect */
+  border-radius: 18px;
   padding: 2rem;
-   gap: 1rem;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow:
-    0 0 10px rgba(76, 139, 245, 0.6),
-    0 0 20px rgba(76, 139, 245, 0.5),
-    0 0 40px rgba(76, 139, 245, 0.3);
+  gap: 1rem;
+  backdrop-filter: blur(8px);
+  border: 3.5px solid rgba(7, 7, 7, 0.08); /* Softer border */
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.45); /* Stronger black shadow for contrast */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  animation: glowFade 2s ease-in-out infinite alternate;
+}
+
+.login-container:hover {
+  box-shadow: 0 12px 48px 0 rgba(61, 59, 59, 0.6), 0 1.5px 8px 0 rgba(76,139,245,0.10);
+  transform: scale(1.025);
+  transition: box-shadow 0.3s cubic-bezier(.4,2,.6,1), transform 0.3s cubic-bezier(.4,2,.6,1);
 }
 .avatar {
   display: flex;
@@ -89,10 +91,15 @@ body::before {
 .avatar i {
   font-size: 3rem;
   color: #ffffff;
-  background: linear-gradient(to right, #4C8BF5, #38D9A9);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: 1rem;
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 0 15px rgba(255, 255, 255, 0.2),
+    0 0 30px rgba(76, 139, 245, 0.1);
 }
 
 form {
@@ -190,6 +197,7 @@ button:hover {
   grid-template-columns: 250px 1fr;
   grid-template-rows: 70px 1fr;
   min-height: 100vh;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .main-content {
@@ -220,7 +228,7 @@ button:hover {
 /* Sidebar container */
 .sidebar {
   width: 220px;
-  background-color: #1A1D2E;
+  background-color: #4d63e4;
   color: #fff;
   height: 100vh;
   display: flex;
