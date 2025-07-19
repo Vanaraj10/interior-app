@@ -7,22 +7,27 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  ScrollView,
+  Dimensions
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { COLORS } from '../styles/colors';
 import { INTERIOR_SCHEMAS } from '../components/interiorSchemas';
+
+const { width, height } = Dimensions.get('window');
 
 export default function ProjectDetails() {
   const { id } = useLocalSearchParams();
   const [project, setProject] = useState(null);
-
   // Define INTERIOR_TYPES for the cards
   const INTERIOR_TYPES = [
-    { key: 'curtains', label: INTERIOR_SCHEMAS.curtains.label, icon: 'logo-windows' },
-    { key: 'mosquito-nets', label: INTERIOR_SCHEMAS['mosquito-nets'].label, icon: 'bug' },
-    { key: 'wallpapers', label: INTERIOR_SCHEMAS.wallpapers.label, icon: 'image' },
-    { key: 'blinds', label: INTERIOR_SCHEMAS.blinds.label, icon: 'layers' },
-    { key: "flooring", label: "Flooring", icon: "layers-outline" },
-  ];  const loadProject = useCallback(async () => {
+    { key: 'curtains', label: INTERIOR_SCHEMAS.curtains.label, icon: 'logo-windows', color: '#2563eb' },
+    { key: 'mosquito-nets', label: INTERIOR_SCHEMAS['mosquito-nets'].label, icon: 'bug', color: '#059669' },
+    { key: 'wallpapers', label: INTERIOR_SCHEMAS.wallpapers.label, icon: 'image', color: '#dc2626' },
+    { key: 'blinds', label: INTERIOR_SCHEMAS.blinds.label, icon: 'layers', color: '#7c3aed' },
+    { key: "flooring", label: "Flooring", icon: "layers-outline", color: '#ea580c' },
+  ];const loadProject = useCallback(async () => {
     try {
       const projectsData = await AsyncStorage.getItem('projects');
       if (projectsData) {
@@ -50,242 +55,383 @@ export default function ProjectDetails() {
   const generatePDF = () => {
     router.push(`/pdf-preview/${id}`);
   };
-
   if (!project) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-  return (
-    <View style={styles.container}>
-      {/* Header with Gradient */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <View style={styles.headerContent}>
-          <Text style={styles.headerTitle}>{project.clientName}</Text>
-          <Text style={styles.headerSubtitle}>Project Dashboard</Text>
+      <LinearGradient
+        colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+        style={styles.loadingContainer}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <View style={styles.loadingContent}>
+          <View style={styles.loadingSpinner} />
+          <Text style={styles.loadingText}>Loading Project...</Text>
         </View>
+      </LinearGradient>
+    );
+  }  return (
+    <LinearGradient
+      colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+      style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      {/* Background Pattern */}
+      <View style={styles.backgroundPattern}>
+        {[...Array(8)].map((_, i) => (
+          <View key={i} style={[styles.patternCircle, { 
+            top: Math.random() * height,
+            left: Math.random() * width,
+            opacity: 0.03 + Math.random() * 0.07,
+          }]} />
+        ))}
       </View>
-      
-      {/* Interior Type Cards */}
-      <View style={styles.cardsContainer}>
-        <View style={styles.interiorTypesGrid}>
-          {INTERIOR_TYPES.map((type, index) => (
-            <TouchableOpacity
-              key={type.key}
-              style={[styles.interiorTypeCard, { 
-                transform: [{ scale: 1 }] 
-              }]}
-              onPress={() => router.push({ pathname: '/interior-measurements/[type]', params: { id, type: type.key } })}
-              activeOpacity={0.8}
-            >
-              <View style={styles.cardIconContainer}>
-                <Ionicons name={type.icon} size={48} color="white" />
-              </View>
-              <Text style={styles.interiorTypeLabel}>{type.label}</Text>
-              <View style={styles.cardArrow}>
-                <Ionicons name="arrow-forward" size={16} color="#6b7280" />
-              </View>
-            </TouchableOpacity>
-          ))}
+
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerTitle}>{project.clientName}</Text>
+            <Text style={styles.headerSubtitle}>Project Dashboard</Text>
+          </View>
+          <TouchableOpacity style={styles.headerPdfButton} onPress={generatePDF}>
+            <Ionicons name="document-text-outline" size={20} color="white" />
+          </TouchableOpacity>
         </View>
       </View>
 
-      {/* Quick Actions */}
-      <View style={styles.quickActions}>
-        <TouchableOpacity style={styles.pdfButton} onPress={generatePDF}>
-          <View style={styles.pdfButtonContent}>
-            <Ionicons name="document-text" size={24} color="white" />
-            <View>
-              <Text style={styles.pdfButtonText}>Generate PDF</Text>
-              <Text style={styles.pdfButtonSubtext}>Export complete report</Text>
-            </View>
+      <ScrollView 
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      > 
+        {/* Services Section */}
+        <View style={styles.servicesSection}>
+          <Text style={styles.sectionTitle}>Available Services</Text>
+          <View style={styles.interiorTypesGrid}>
+            {INTERIOR_TYPES.map((type, index) => (
+              <TouchableOpacity
+                key={type.key}
+                style={styles.interiorTypeCard}
+                onPress={() => router.push({ pathname: '/interior-measurements/[type]', params: { id, type: type.key } })}
+                activeOpacity={0.8}
+              >
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.98)', 'rgba(255, 255, 255, 0.95)']}
+                  style={styles.cardGradient}
+                >
+                  <View style={[styles.cardIconContainer, { backgroundColor: type.color }]}>
+                    <Ionicons name={type.icon} size={28} color="white" />
+                  </View>
+                  <View style={styles.cardContent}>
+                    <Text style={styles.interiorTypeLabel}>{type.label}</Text>
+                    <Text style={styles.interiorTypeDescription}>
+                      Add measurements and get quotes
+                    </Text>
+                  </View>
+                  <View style={styles.cardArrow}>
+                    <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
+                  </View>
+                </LinearGradient>
+              </TouchableOpacity>
+            ))}
           </View>
-          <Ionicons name="download" size={20} color="white" />
-        </TouchableOpacity>
-      </View>
-    </View>
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.quickActionsSection}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <TouchableOpacity style={styles.pdfButton} onPress={generatePDF} activeOpacity={0.8}>
+            <LinearGradient
+              colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+              style={styles.pdfButtonGradient}
+            >
+              <View style={styles.pdfIconContainer}>
+                <Ionicons name="document-text" size={24} color={COLORS.success} />
+              </View>
+              <View style={styles.pdfButtonContent}>
+                <Text style={styles.pdfButtonText}>Generate PDF Report</Text>
+                <Text style={styles.pdfButtonSubtext}>Export complete quotation</Text>
+              </View>
+              <Ionicons name="download-outline" size={20} color={COLORS.success} />
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.bottomSpacing} />
+      </ScrollView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: { 
-    flex: 1, 
-    backgroundColor: '#f8fafc' 
+    flex: 1,
+  },
+  backgroundPattern: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  patternCircle: {
+    position: 'absolute',
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: 'white',
   },
   loadingContainer: {
     flex: 1, 
     justifyContent: 'center', 
     alignItems: 'center',
-    backgroundColor: '#f8fafc'
+  },
+  loadingContent: {
+    alignItems: 'center',
+    padding: 40,
+  },
+  loadingSpinner: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderTopColor: 'white',
+    marginBottom: 16,
+  },
+  loadingText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center',
   },
   header: {
-    backgroundColor: '#2563eb',
-    paddingTop: 30,
-    paddingBottom: 10,
+    paddingTop: 48,
+    paddingBottom: 24,
     paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    elevation: 8,
-    shadowColor: '#2563eb',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  backButton: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  headerTextContainer: {
     flex: 1,
-    marginLeft: 16,
+    alignItems: 'center',
   },
   headerTitle: {
     color: 'white',
     fontSize: 22,
     fontWeight: 'bold',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   headerSubtitle: {
-    color: '#93c5fd',
+    color: 'rgba(255, 255, 255, 0.9)',
     fontSize: 14,
+    textAlign: 'center',
     marginTop: 2,
   },
-  pdfHeaderButton: {
-    backgroundColor: '#059669',
-    padding: 12,
-    borderRadius: 24,
-    elevation: 4,
-    shadowColor: '#059669',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+  headerPdfButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
   },
   welcomeSection: {
-    padding: 20,
-    paddingTop: 24,
+    marginBottom: 32,
   },
   welcomeCard: {
-    backgroundColor: 'white',
-    borderRadius: 16,
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  welcomeGradient: {
     padding: 24,
     alignItems: 'center',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#2563eb',
+  },
+  welcomeIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.2)',
   },
   welcomeTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1f2937',
-    marginTop: 12,
+    color: COLORS.textPrimary,
+    marginBottom: 8,
     textAlign: 'center',
   },
   welcomeSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
-    marginTop: 8,
+    color: COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
+    marginBottom: 20,
   },
-  cardsContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
+  clientInfo: {
+    width: '100%',
+    gap: 8,
+  },
+  clientInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.05)',
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.primary,
+  },
+  clientInfoText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: COLORS.textPrimary,
+    fontWeight: '500',
+  },
+  servicesSection: {
+    marginBottom: 32,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#374151',
+    color: 'white',
     marginBottom: 16,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   interiorTypesGrid: {
-    flex: 1,
-    justifyContent: 'center',
+    gap: 16,
   },
   interiorTypeCard: { 
-    backgroundColor: 'white',
-    borderRadius: 20,
-    marginBottom: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  cardGradient: {
     padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
   },
   cardIconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#2563eb',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 3,
-    shadowColor: '#2563eb',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  cardContent: {
+    flex: 1,
+    marginLeft: 16,
   },
   interiorTypeLabel: { 
-    flex: 1,
-    marginLeft: 20,
     fontSize: 18,
-    color: '#1f2937',
-    fontWeight: '600',
+    color: COLORS.textPrimary,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  interiorTypeDescription: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    lineHeight: 18,
   },
   cardArrow: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#f3f4f6',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.gray100,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  quickActions: {
-    padding: 20,
-    paddingBottom: 32,
+  quickActionsSection: {
+    marginBottom: 20,
   },
   pdfButton: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  pdfButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#059669',
-    borderRadius: 16,
-    paddingVertical: 18,
+    paddingVertical: 20,
     paddingHorizontal: 24,
-    elevation: 6,
-    shadowColor: '#059669',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  pdfIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(' + COLORS.success.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
   },
   pdfButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
     flex: 1,
   },
   pdfButtonText: {
-    color: 'white',
+    color: COLORS.success,
     fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 16,
+    marginBottom: 2,
   },
   pdfButtonSubtext: {
-    color: '#a7f3d0',
-    fontSize: 12,
-    marginLeft: 16,
-    marginTop: 2,
+    color: COLORS.textSecondary,
+    fontSize: 13,
+  },
+  bottomSpacing: {
+    height: 40,
   },
 });
