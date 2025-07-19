@@ -132,8 +132,7 @@ export default function PDFPreview() {
             </tbody>
           </table>
         `;
-        
-        // Add Rod Cost table for curtains
+          // Add Rod Cost table for curtains
         if (type.key === 'curtains' && type.hasRodCost) {
           htmlSections += `
             <div class="section-title" style="margin-top: 30px;">ROD COST</div>
@@ -152,8 +151,6 @@ export default function PDFPreview() {
                 ${PDF_ROW_GENERATORS.curtains.generateRodCostRows ? PDF_ROW_GENERATORS.curtains.generateRodCostRows(measurements, formatCurrency) : ''}
               </tbody>
             </table>
-            
-            ${PDF_ROW_GENERATORS.curtains.generateTotalCostSummary ? PDF_ROW_GENERATORS.curtains.generateTotalCostSummary(measurements, formatCurrency) : ''}
           `;
         }
       }
@@ -284,18 +281,23 @@ export default function PDFPreview() {
           </div>
         </div>        ${htmlSections}
 
-        <div class="cost-summary">
-          <h3 style="margin-top: 0; color: #3B82F6;">COST SUMMARY</h3>
-          ${project.curtainTotal > 0 ? `<div class="cost-row"><span>Curtains Subtotal:</span><span>${formatCurrency(project.curtainTotal)}</span></div>` : ''}
-          ${project.netTotal > 0 ? `<div class="cost-row"><span>Mosquito Nets Subtotal:</span><span>${formatCurrency(project.netTotal)}</span></div>` : ''}
-          ${project.wallpaperTotal > 0 ? `<div class="cost-row"><span>Wallpapers Subtotal:</span><span>${formatCurrency(project.wallpaperTotal)}</span></div>` : ''}
-          ${project.blindsTotal > 0 ? `<div class="cost-row"><span>Blinds Subtotal:</span><span>${formatCurrency(project.blindsTotal)}</span></div>` : ''}
-          ${project.rodCost > 0 ? `<div class="cost-row"><span>Rod Installation:</span><span>${formatCurrency(project.rodCost)}</span></div>` : ''}
-          <div class="cost-row grand-total">
-            <span>GRAND TOTAL:</span>
-            <span>${formatCurrency(project.grandTotal || 0)}</span>
-          </div>
-        </div>
+        ${project.measurements?.some(m => m.curtainType || m.stitchingModel) 
+          ? PDF_ROW_GENERATORS.curtains.generateTotalCostSummary 
+            ? PDF_ROW_GENERATORS.curtains.generateTotalCostSummary(project.measurements.filter(m => m.curtainType || m.stitchingModel), formatCurrency)
+            : ''
+          : `<div class="cost-summary">
+              <h3 style="margin-top: 0; color: #3B82F6;">COST SUMMARY</h3>
+              ${project.curtainTotal > 0 ? `<div class="cost-row"><span>Curtains Subtotal:</span><span>${formatCurrency(project.curtainTotal)}</span></div>` : ''}
+              ${project.netTotal > 0 ? `<div class="cost-row"><span>Mosquito Nets Subtotal:</span><span>${formatCurrency(project.netTotal)}</span></div>` : ''}
+              ${project.wallpaperTotal > 0 ? `<div class="cost-row"><span>Wallpapers Subtotal:</span><span>${formatCurrency(project.wallpaperTotal)}</span></div>` : ''}
+              ${project.blindsTotal > 0 ? `<div class="cost-row"><span>Blinds Subtotal:</span><span>${formatCurrency(project.blindsTotal)}</span></div>` : ''}
+              ${project.rodCost > 0 ? `<div class="cost-row"><span>Rod Installation:</span><span>${formatCurrency(project.rodCost)}</span></div>` : ''}
+              <div class="cost-row grand-total">
+                <span>GRAND TOTAL:</span>
+                <span>${formatCurrency(project.grandTotal || 0)}</span>
+              </div>
+            </div>`
+        }
       </body>
       </html>
     `;

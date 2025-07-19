@@ -60,7 +60,7 @@ export function generateRodCostRows(measurements, formatCurrency) {
     return `
       <tr>
         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${index + 1}</td>
-        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.curtainBracketModel || '-'}</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.curtainBracketModels || '-'}</td>
         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${rodFeet.toFixed(2)}</td>        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
           <div style="font-weight: bold;">${formatCurrency(clampCost)}</div>
           ${m.clampRequired && m.clampRatePerPiece ? `<div style="font-size: 11px; color: #666;">${m.clampRequired} × ${formatCurrency(m.clampRatePerPiece)}</div>` : ''}
@@ -92,9 +92,7 @@ export function generateRodCostRows(measurements, formatCurrency) {
   const totalDoomRequired = measurements.reduce((sum, m) => sum + (parseFloat(m.doomRequired) || 0), 0);
   const totalClampCost = measurements.reduce((sum, m) => sum + ((parseFloat(m.clampRequired) || 0) * (parseFloat(m.clampRatePerPiece) || 0)), 0);
   const totalDoomCost = measurements.reduce((sum, m) => sum + ((parseFloat(m.doomRequired) || 0) * (parseFloat(m.doomRatePerPiece) || 0)), 0);
-  
-  // Summary row with improved formatting
-  const summaryRow = `
+    const summaryRow = `
     <tr style="background:#f0f9ff;font-weight:bold;">
       <td style="padding:8px;border:1px solid #ddd;text-align:center;">Total</td>
       <td style="padding:8px;border:1px solid #ddd;text-align:center;">(${measurements.length} items)</td>
@@ -111,18 +109,7 @@ export function generateRodCostRows(measurements, formatCurrency) {
     </tr>
   `;
   
-  const rodCalculationRow = `
-    <tr style="background:#f8f9fa;">
-      <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">-</td>
-      <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">Rod Required (Calc.)</td>
-      <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">${totalRodsRequired} rods</td>
-      <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">-</td>
-      <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">-</td>
-      <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(totalRodCost)}</td>
-    </tr>
-  `;
-  
-  return rodData + summaryRow + rodCalculationRow;
+  return rodData + summaryRow;
 }
 
 // Generate Total Cost Summary
@@ -147,25 +134,34 @@ export function generateTotalCostSummary(measurements, formatCurrency) {
   const totalRodCostWithGST = (totalWallBracketCost + totalRodCost) * 1.18;
   
   const grandTotal = clothCostWithGST + totalRodCostWithGST;  return `
-    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px;">
-      <h3 style="margin: 0 0 16px 0; color: #2563eb;">Total Cost Summary</h3>
-      <div style="margin-bottom: 12px; font-size: 16px;">
-        <strong>Total Rods Required: ${rodCalc.totalRods} rods</strong>
-      </div>
-      <div style="margin-bottom: 12px; font-size: 16px;">
-        <strong>Total Wall Brackets Cost: ${formatCurrency(totalWallBracketCost)}</strong>
-      </div>
-      <div style="margin-bottom: 12px; font-size: 16px;">
-        <strong>Cloth Cost (with 5% GST): ${formatCurrency(Math.ceil(clothCostWithGST))}</strong>
-      </div>
-      <div style="margin-bottom: 12px; font-size: 16px;">
-        <strong>Rod Cost (with 18% GST): ${formatCurrency(Math.ceil(totalRodCostWithGST))}</strong>
-      </div>
-      <div style="border-top: 2px solid #2563eb; padding-top: 12px; margin-top: 16px;">
-        <div style="font-size: 20px; font-weight: bold; color: #dc2626;">
-          <strong>Grand Total: ${formatCurrency(Math.ceil(grandTotal))}</strong>
-        </div>
-      </div>
+    <div style="margin-top: 20px;">
+      <h4 style="margin: 0 0 10px 0;">Cost Summary</h4>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+        <tr>
+          <td style="padding: 4px 8px; border: 1px solid #ddd;">Total Rods Required:</td>
+          <td style="padding: 4px 8px; border: 1px solid #ddd; text-align: right;">${rodCalc.totalRods} rods</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 8px; border: 1px solid #ddd;">Rod Calculation Cost:</td>
+          <td style="padding: 4px 8px; border: 1px solid #ddd; text-align: right;">${formatCurrency(totalRodCost)}</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 8px; border: 1px solid #ddd;">Total Wall Brackets Cost:</td>
+          <td style="padding: 4px 8px; border: 1px solid #ddd; text-align: right;">${formatCurrency(totalWallBracketCost)}</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 8px; border: 1px solid #ddd;">Cloth Cost (with 5% GST):</td>
+          <td style="padding: 4px 8px; border: 1px solid #ddd; text-align: right;">${formatCurrency(Math.ceil(clothCostWithGST))}</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 8px; border: 1px solid #ddd;">Rod Cost (with 18% GST):</td>
+          <td style="padding: 4px 8px; border: 1px solid #ddd; text-align: right;">${formatCurrency(Math.ceil(totalRodCostWithGST))}</td>
+        </tr>
+        <tr style="background: #f0f0f0; font-weight: bold;">
+          <td style="padding: 6px 8px; border: 1px solid #ddd;">GRAND TOTAL:</td>
+          <td style="padding: 6px 8px; border: 1px solid #ddd; text-align: right;">${formatCurrency(Math.ceil(grandTotal))}</td>
+        </tr>
+      </table>
     </div>
   `;
 }
