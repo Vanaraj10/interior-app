@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
 import { INTERIOR_SCHEMAS } from "./interiorSchemas";
 import DynamicFields from "./DynamicFields";
 import { COLORS } from "../styles/colors";
@@ -87,36 +88,57 @@ export default function MeasurementForm({
   };
 
   const schema = INTERIOR_SCHEMAS[formData.interiorType];
-
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <TouchableOpacity onPress={onCancel} style={styles.closeButton}>
-            <Ionicons name="close" size={24} color="white" />
+            <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>
-            {editingMeasurement ? "Edit Measurement" : "Add Measurement"}
-          </Text>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerTitle}>
+              {editingMeasurement ? "Edit Measurement" : "Add Measurement"}
+            </Text>
+            <Text style={styles.headerSubtitle}>
+              {schema.label}
+            </Text>
+          </View>
         </View>
-      </View>{" "}
-      <ScrollView style={styles.scrollView}>
+      </View>
+
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Dynamic Fields */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Measurement Details</Text>
-          <DynamicFields
-            schema={schema}
-            formData={formData}
-            updateField={updateField}
-          />
+        <View style={styles.formCard}>
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.9)']}
+            style={styles.formCardGradient}
+          >
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Measurement Details</Text>
+              <DynamicFields
+                schema={schema}
+                formData={formData}
+                updateField={updateField}
+              />
+            </View>
+            
+            {/* Save Button */}
+            <TouchableOpacity style={styles.saveButton} onPress={handleSave} activeOpacity={0.8}>
+              <LinearGradient
+                colors={[COLORS.primary, COLORS.primaryLight]}
+                style={styles.saveButtonGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <Ionicons name="checkmark-circle" size={20} color="white" />
+                <Text style={styles.saveButtonText}>
+                  {editingMeasurement ? "Update Measurement" : "Save Measurement"}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </LinearGradient>
         </View>
-        {/* Save Button */}
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>
-            {editingMeasurement ? "Update Measurement" : "Save Measurement"}
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -125,103 +147,141 @@ export default function MeasurementForm({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   header: {
-    backgroundColor: COLORS.primary,
-    paddingTop: 40,
-    paddingBottom: 15,
-    paddingHorizontal: 12,
+    paddingTop: 48,
+    paddingBottom: 24,
+    paddingHorizontal: 20,
   },
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
   },
   closeButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
     marginRight: 16,
   },
+  headerTextContainer: {
+    flex: 1,
+  },
   headerTitle: {
-    color: COLORS.textInverse,
-    fontSize: 20,
-    fontWeight: "bold",
+    color: 'white',
+    fontSize: 22,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  headerSubtitle: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 14,
+    marginTop: 2,
   },
   scrollView: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 24,
+  },
+  formCard: {
+    margin: 20,
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  formCardGradient: {
+    padding: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   section: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 8,
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    padding: 16,
-    marginBottom: 16,
+    marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     color: COLORS.textPrimary,
-    marginBottom: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   fieldContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   rowContainer: {
     flexDirection: "row",
     gap: 16,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   halfField: {
     flex: 1,
   },
   label: {
     fontSize: 14,
-    fontWeight: "500",
-    color: COLORS.textSecondary,
+    fontWeight: "600",
+    color: COLORS.textPrimary,
     marginBottom: 8,
   },
   input: {
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: COLORS.inputBorder,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     fontSize: 16,
     backgroundColor: COLORS.inputBackground,
     color: COLORS.inputText,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   pickerContainer: {
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: COLORS.inputBorder,
-    borderRadius: 8,
+    borderRadius: 12,
     backgroundColor: COLORS.inputBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   picker: {
     height: 50,
     color: COLORS.inputText,
+    paddingHorizontal: 12,
   },
   calculationSection: {
-    backgroundColor: COLORS.background,
-    borderRadius: 8,
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    padding: 16,
+    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+    borderRadius: 16,
+    padding: 20,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: COLORS.primaryLight,
+    borderColor: 'rgba(59, 130, 246, 0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
   },
   calculationTitle: {
     fontSize: 18,
     fontWeight: "bold",
     color: COLORS.primary,
     marginBottom: 16,
+    textAlign: 'center',
   },
   calculationGrid: {
     gap: 8,
@@ -229,57 +289,76 @@ const styles = StyleSheet.create({
   calculationRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 8,
   },
   calculationLabel: {
     fontSize: 14,
     color: COLORS.textSecondary,
+    fontWeight: '500',
   },
   calculationValue: {
     fontSize: 14,
-    fontWeight: "500",
-    color: COLORS.textPrimary,
+    fontWeight: "600",
+    color: COLORS.success,
   },
   totalRow: {
-    borderTopWidth: 1,
-    borderTopColor: COLORS.primaryLight,
-    paddingTop: 8,
-    marginTop: 8,
+    borderTopWidth: 2,
+    borderTopColor: COLORS.primary,
+    paddingTop: 12,
+    marginTop: 12,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
   },
   totalLabel: {
     fontSize: 16,
     fontWeight: "bold",
-    color: COLORS.primary,
+    color: 'white',
   },
   totalValue: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
-    color: COLORS.primaryLight,
+    color: 'white',
   },
   saveButton: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 8,
+    borderRadius: 12,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  saveButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 16,
-    alignItems: "center",
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    marginBottom: 40,
+    paddingHorizontal: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    gap: 8,
   },
   saveButtonText: {
-    color: COLORS.textInverse,
+    color: 'white',
     fontSize: 16,
     fontWeight: "bold",
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   readOnlyContainer: {
-    backgroundColor: COLORS.gray100,
-    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: 'rgba(59, 130, 246, 0.2)',
   },
   readOnlyText: {
     fontSize: 16,
@@ -290,5 +369,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.textMuted,
     marginTop: 4,
+    fontStyle: 'italic',
   },
 });

@@ -11,11 +11,11 @@ import {
   Alert,
   Dimensions,
 } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient";
 import { INTERIOR_SCHEMAS } from "../components/interiorSchemas";
 import { COLORS } from "../styles/colors";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 // TableHeader component
 const TableHeader = ({ type }) => {
@@ -901,8 +901,10 @@ const SummaryRow = ({ type, measurements, styles }) => {
 // RodCostTable component for curtains
 const RodCostTable = ({ measurements, styles }) => {
   return (
-    <View style={[styles.table, { marginTop: 20, minWidth: 760 }]}>      <Text style={styles.tableTitle}>Table 2 - Rod Cost</Text>
-      {/* Header */}      <View style={styles.tableHeader}>
+    <View style={[styles.table, { marginTop: 20, minWidth: 760 }]}>
+      {" "}
+      <Text style={styles.tableTitle}>Rod Cost</Text>
+      <View style={styles.tableHeader}>
         <View style={[styles.tableHeaderCell, styles.rodSnoColumn]}>
           <Text style={styles.headerText}>S.No</Text>
         </View>
@@ -930,12 +932,15 @@ const RodCostTable = ({ measurements, styles }) => {
             styles.tableRow,
             index % 2 === 0 ? styles.evenRow : styles.oddRow,
           ]}
-        >          <View style={[styles.tableCell, styles.rodSnoColumn]}>
+        >
+          {" "}
+          <View style={[styles.tableCell, styles.rodSnoColumn]}>
             <Text style={styles.cellText}>{index + 1}</Text>
           </View>
           <View style={[styles.tableCell, styles.rodBracketColumn]}>
             <Text style={styles.cellText}>{m.curtainBracketModels || "-"}</Text>
-          </View>          <View style={[styles.tableCell, styles.rodFeetColumn]}>
+          </View>{" "}
+          <View style={[styles.tableCell, styles.rodFeetColumn]}>
             <Text style={styles.cellText}>
               {m.rodFeet?.toFixed(2) || m.rodLength?.toFixed(2) || "-"}
             </Text>
@@ -945,7 +950,7 @@ const RodCostTable = ({ measurements, styles }) => {
               ₹{m.clampCost?.toLocaleString("en-IN") || "0"}
             </Text>
             {m.clampRequired && m.clampRatePerPiece && (
-              <Text style={[styles.cellText, { fontSize: 10, color: '#666' }]}>
+              <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
                 {m.clampRequired} × ₹{m.clampRatePerPiece}
               </Text>
             )}
@@ -955,7 +960,7 @@ const RodCostTable = ({ measurements, styles }) => {
               ₹{m.doomCost?.toLocaleString("en-IN") || "0"}
             </Text>
             {m.doomRequired && m.doomRatePerPiece && (
-              <Text style={[styles.cellText, { fontSize: 10, color: '#666' }]}>
+              <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
                 {m.doomRequired} × ₹{m.doomRatePerPiece}
               </Text>
             )}
@@ -964,8 +969,10 @@ const RodCostTable = ({ measurements, styles }) => {
             <Text style={[styles.cellText, styles.totalCostText]}>
               ₹{m.totalWallBracketCost?.toLocaleString("en-IN") || "0"}
             </Text>
-          </View></View>
-      ))}      {/* Summary Row */}
+          </View>
+        </View>
+      ))}{" "}
+      {/* Summary Row */}
       <View style={styles.summaryRow}>
         <View style={[styles.tableCell, styles.rodSnoColumn]}>
           <Text style={styles.summaryText}>Total</Text>
@@ -977,91 +984,46 @@ const RodCostTable = ({ measurements, styles }) => {
           <Text style={styles.summaryText}>
             {measurements
               .reduce((sum, m) => sum + (m.rodFeet || m.rodLength || 0), 0)
-              .toFixed(2)} ft
+              .toFixed(2)}{" "}
+            ft
           </Text>
         </View>
         <View style={[styles.tableCell, styles.rodClampColumn]}>
           <Text style={styles.summaryText}>
-            ₹{measurements
+            ₹
+            {measurements
               .reduce((sum, m) => sum + (m.clampCost || 0), 0)
               .toLocaleString("en-IN")}
           </Text>
-          <Text style={[styles.summaryText, { fontSize: 10, color: '#666' }]}>
-            Total: {measurements.reduce((sum, m) => sum + (m.clampRequired || 0), 0)} pieces
+          <Text style={[styles.summaryText, { fontSize: 10, color: "#666" }]}>
+            Total:{" "}
+            {measurements.reduce((sum, m) => sum + (m.clampRequired || 0), 0)}{" "}
+            pieces
           </Text>
         </View>
         <View style={[styles.tableCell, styles.rodDoomColumn]}>
           <Text style={styles.summaryText}>
-            ₹{measurements
+            ₹
+            {measurements
               .reduce((sum, m) => sum + (m.doomCost || 0), 0)
               .toLocaleString("en-IN")}
           </Text>
-          <Text style={[styles.summaryText, { fontSize: 10, color: '#666' }]}>
-            Total: {measurements.reduce((sum, m) => sum + (m.doomRequired || 0), 0)} pieces
+          <Text style={[styles.summaryText, { fontSize: 10, color: "#666" }]}>
+            Total:{" "}
+            {measurements.reduce((sum, m) => sum + (m.doomRequired || 0), 0)}{" "}
+            pieces
           </Text>
         </View>
         <View style={[styles.tableCell, styles.rodTotalColumn]}>
           <Text style={styles.summaryTotalText}>
-            ₹{measurements
+            ₹
+            {measurements
               .reduce((sum, m) => sum + (m.totalWallBracketCost || 0), 0)
               .toLocaleString("en-IN")}
           </Text>
         </View>
-      </View>      {/* Rod Calculation Summary */}
-      <View
-        style={[
-          styles.tableRow,
-          {
-            backgroundColor: COLORS.primaryLight,
-            borderBottomWidth: 1,
-            borderBottomColor: COLORS.border,
-          },
-        ]}
-      >
-        <View style={[styles.tableCell, styles.rodSnoColumn]}>
-          <Text style={[styles.cellText, { fontWeight: "bold" }]}>-</Text>
-        </View>
-        <View style={[styles.tableCell, styles.rodBracketColumn]}>
-          <Text style={[styles.cellText, { fontWeight: "bold" }]}>
-            Rod Required (Calc.)
-          </Text>
-        </View>
-        <View style={[styles.tableCell, styles.rodFeetColumn]}>
-          <Text style={[styles.cellText, { fontWeight: "bold" }]}>
-            {measurements.reduce(
-              (sum, m) => sum + (m.totalRodsRequired || 0),
-              0
-            )}{" "}
-            rods
-          </Text>
-        </View>
-        <View style={[styles.tableCell, styles.rodClampColumn]}>
-          <Text style={[styles.cellText, { fontWeight: "bold" }]}>-</Text>
-        </View>
-        <View style={[styles.tableCell, styles.rodDoomColumn]}>
-          <Text style={[styles.cellText, { fontWeight: "bold" }]}>-</Text>
-        </View>
-        <View style={[styles.tableCell, styles.rodTotalColumn]}>
-          <Text
-            style={[
-              styles.cellText,
-              styles.totalCostText,
-              { fontWeight: "bold" },
-            ]}
-          >
-            ₹
-            {measurements
-              .reduce(
-                (sum, m) =>
-                  sum +
-                  (m.totalRodsRequired || 0) *
-                    parseFloat(m.rodRatePerLength || 0),
-                0
-              )
-              .toLocaleString("en-IN")}
-          </Text>
-        </View>
-      </View>
+      </View>{" "}
+      
     </View>
   );
 };
@@ -1095,7 +1057,8 @@ const TotalCostSummary = ({ measurements, styles }) => {
 
   const clothCostWithGST = curtainTotal + clothGST;
   const rodCostWithGST = totalRodCostBeforeGST + rodGST;
-  const grandTotal = clothCostWithGST + rodCostWithGST;  return (
+  const grandTotal = clothCostWithGST + rodCostWithGST;
+  return (
     <View style={[styles.table, { marginTop: 20, minWidth: "auto" }]}>
       <Text style={styles.tableTitle}>Total Cost Summary</Text>
 
@@ -1286,7 +1249,8 @@ export default function InteriorMeasurements() {
         </View>
       </LinearGradient>
     );
-  }  return (
+  }
+  return (
     <LinearGradient
       colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
       style={styles.container}
@@ -1296,18 +1260,27 @@ export default function InteriorMeasurements() {
       {/* Background Pattern */}
       <View style={styles.backgroundPattern}>
         {[...Array(8)].map((_, i) => (
-          <View key={i} style={[styles.patternCircle, { 
-            top: Math.random() * height,
-            left: Math.random() * width,
-            opacity: 0.03 + Math.random() * 0.07,
-          }]} />
+          <View
+            key={i}
+            style={[
+              styles.patternCircle,
+              {
+                top: Math.random() * height,
+                left: Math.random() * width,
+                opacity: 0.03 + Math.random() * 0.07,
+              },
+            ]}
+          />
         ))}
       </View>
 
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
           <View style={styles.headerTextContainer}>
@@ -1321,21 +1294,35 @@ export default function InteriorMeasurements() {
       </View>
 
       {/* Measurements Table */}
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.tableContainer}>
           {measurements.length === 0 ? (
             <View style={styles.emptyCard}>
               <LinearGradient
-                colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+                colors={[
+                  "rgba(255, 255, 255, 0.95)",
+                  "rgba(255, 255, 255, 0.85)",
+                ]}
                 style={styles.emptyCardGradient}
               >
-                <Ionicons name="document-outline" size={64} color={COLORS.gray400} />
+                <Ionicons
+                  name="document-outline"
+                  size={64}
+                  color={COLORS.gray400}
+                />
                 <Text style={styles.emptyMessage}>No measurements yet</Text>
                 <Text style={styles.emptySubMessage}>
                   Add your first measurement to get started
                 </Text>
                 <View style={styles.emptyHint}>
-                  <Ionicons name="bulb-outline" size={16} color={COLORS.primary} />
+                  <Ionicons
+                    name="bulb-outline"
+                    size={16}
+                    color={COLORS.primary}
+                  />
                   <Text style={styles.emptyHintText}>
                     Use the button below to add your first{" "}
                     {getInteriorTypeLabel().toLowerCase()} measurement
@@ -1345,25 +1332,14 @@ export default function InteriorMeasurements() {
             </View>
           ) : (
             <>
-              {/* Scroll hint for complex tables */}
-              {(type === "curtains" || type === "wallpapers") && (
-                <View style={styles.scrollHintCard}>
-                  <LinearGradient
-                    colors={['rgba(255, 255, 255, 0.9)', 'rgba(255, 255, 255, 0.8)']}
-                    style={styles.scrollHintGradient}
-                  >
-                    <Ionicons name="arrow-forward" size={16} color={COLORS.primary} />
-                    <Text style={styles.scrollHintText}>
-                      Scroll horizontally to view all columns
-                    </Text>
-                  </LinearGradient>
-                </View>
-              )}
-              
+
               {/* Table Card */}
               <View style={styles.tableCard}>
                 <LinearGradient
-                  colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+                  colors={[
+                    "rgba(255, 255, 255, 0.95)",
+                    "rgba(255, 255, 255, 0.85)",
+                  ]}
                   style={styles.tableCardGradient}
                 >
                   {/* Horizontal scroll wrapper for tables */}
@@ -1389,7 +1365,10 @@ export default function InteriorMeasurements() {
                 <>
                   <View style={styles.tableCard}>
                     <LinearGradient
-                      colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+                      colors={[
+                        "rgba(255, 255, 255, 0.95)",
+                        "rgba(255, 255, 255, 0.85)",
+                      ]}
                       style={styles.tableCardGradient}
                     >
                       <ScrollView
@@ -1397,14 +1376,20 @@ export default function InteriorMeasurements() {
                         showsHorizontalScrollIndicator={true}
                         style={styles.horizontalScrollView}
                       >
-                        <RodCostTable measurements={measurements} styles={styles} />
+                        <RodCostTable
+                          measurements={measurements}
+                          styles={styles}
+                        />
                       </ScrollView>
                     </LinearGradient>
                   </View>
-                  
+
                   <View style={styles.tableCard}>
                     <LinearGradient
-                      colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+                      colors={[
+                        "rgba(255, 255, 255, 0.95)",
+                        "rgba(255, 255, 255, 0.85)",
+                      ]}
                       style={styles.tableCardGradient}
                     >
                       <TotalCostSummary
@@ -1450,26 +1435,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   backgroundPattern: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
   },
   patternCircle: {
-    position: 'absolute',
+    position: "absolute",
     width: 150,
     height: 150,
     borderRadius: 75,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   loadingContainer: {
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center',
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingContent: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 40,
   },
   loadingSpinner: {
@@ -1477,15 +1462,15 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     borderWidth: 3,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    borderTopColor: 'white',
+    borderColor: "rgba(255, 255, 255, 0.3)",
+    borderTopColor: "white",
     marginBottom: 16,
   },
   loadingText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: '500',
-    textAlign: 'center',
+    fontWeight: "500",
+    textAlign: "center",
   },
   header: {
     paddingTop: 48,
@@ -1493,34 +1478,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    justifyContent: "center",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: "rgba(255, 255, 255, 0.3)",
     marginRight: 16,
   },
   headerTextContainer: {
     flex: 1,
   },
   headerTitle: {
-    color: 'white',
+    color: "white",
     fontSize: 22,
-    fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    fontWeight: "bold",
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
   headerSubtitle: {
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: "rgba(255, 255, 255, 0.9)",
     fontSize: 14,
     marginTop: 2,
   },
@@ -1530,12 +1515,12 @@ const styles = StyleSheet.create({
   tableContainer: {
     padding: 20,
   },
-  
+
   // Empty State Card
   emptyCard: {
     borderRadius: 20,
-    overflow: 'hidden',
-    shadowColor: '#000',
+    overflow: "hidden",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 16,
@@ -1544,29 +1529,36 @@ const styles = StyleSheet.create({
   },
   emptyCardGradient: {
     padding: 40,
-    alignItems: 'center',
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: "rgba(255, 255, 255, 0.3)",
   },
   emptyMessage: {
     fontSize: 20,
     color: COLORS.textPrimary,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 16,
     marginBottom: 8,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   emptySubMessage: {
     fontSize: 14,
     color: COLORS.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 20,
     marginBottom: 20,
   },
   emptyHint: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.1)',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor:
+      "rgba(" +
+      COLORS.primary
+        .slice(1)
+        .match(/.{2}/g)
+        .map((x) => parseInt(x, 16))
+        .join(",") +
+      ", 0.1)",
     borderRadius: 12,
     padding: 16,
     borderLeftWidth: 4,
@@ -1577,41 +1569,41 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     color: COLORS.primary,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 
   // Scroll Hint Card
   scrollHintCard: {
     borderRadius: 12,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
   },
   scrollHintGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: "rgba(255, 255, 255, 0.3)",
     gap: 8,
   },
   scrollHintText: {
     fontSize: 13,
     color: COLORS.primary,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 
   // Table Card
   tableCard: {
     borderRadius: 20,
-    overflow: 'hidden',
-    shadowColor: '#000',
+    overflow: "hidden",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 16,
@@ -1620,13 +1612,13 @@ const styles = StyleSheet.create({
   },
   tableCardGradient: {
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: "rgba(255, 255, 255, 0.3)",
   },
   horizontalScrollView: {
     flexGrow: 0,
   },
   table: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     borderRadius: 0,
     elevation: 0,
     shadowOpacity: 0,
@@ -1639,9 +1631,23 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.textPrimary,
     padding: 16,
-    backgroundColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.1)',
+    backgroundColor:
+      "rgba(" +
+      COLORS.primary
+        .slice(1)
+        .match(/.{2}/g)
+        .map((x) => parseInt(x, 16))
+        .join(",") +
+      ", 0.1)",
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.2)',
+    borderBottomColor:
+      "rgba(" +
+      COLORS.primary
+        .slice(1)
+        .match(/.{2}/g)
+        .map((x) => parseInt(x, 16))
+        .join(",") +
+      ", 0.2)",
   },
   tableHeader: {
     flexDirection: "row",
@@ -1655,7 +1661,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 4,
     borderRightWidth: 1,
-    borderRightColor: 'rgba(255, 255, 255, 0.2)',
+    borderRightColor: "rgba(255, 255, 255, 0.2)",
   },
   headerText: {
     color: COLORS.textInverse,
@@ -1667,12 +1673,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     minHeight: 60,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.1)',
+    borderBottomColor:
+      "rgba(" +
+      COLORS.primary
+        .slice(1)
+        .match(/.{2}/g)
+        .map((x) => parseInt(x, 16))
+        .join(",") +
+      ", 0.1)",
   },
   summaryRow: {
     flexDirection: "row",
     minHeight: 50,
-    backgroundColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.05)',
+    backgroundColor:'#fff',
     borderTopWidth: 2,
     borderTopColor: COLORS.primary,
   },
@@ -1680,7 +1693,14 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   oddRow: {
-    backgroundColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.02)',
+    backgroundColor:
+      "rgba(" +
+      COLORS.primary
+        .slice(1)
+        .match(/.{2}/g)
+        .map((x) => parseInt(x, 16))
+        .join(",") +
+      ", 0.02)",
   },
   tableCell: {
     paddingVertical: 8,
@@ -1688,7 +1708,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRightWidth: 1,
-    borderRightColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.1)',
+    borderRightColor:
+      "rgba(" +
+      COLORS.primary
+        .slice(1)
+        .match(/.{2}/g)
+        .map((x) => parseInt(x, 16))
+        .join(",") +
+      ", 0.1)",
   },
   cellText: {
     fontSize: 12,
@@ -1760,7 +1787,7 @@ const styles = StyleSheet.create({
   actionColumn: {
     width: 90,
     borderRightWidth: 0,
-  },  
+  },
   snoColumn: {
     width: 50,
   },
@@ -1816,29 +1843,29 @@ const styles = StyleSheet.create({
   // Add button
   addButton: {
     borderRadius: 16,
-    overflow: 'hidden',
+    overflow: "hidden",
     margin: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
     elevation: 8,
   },
   addButtonGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: "rgba(255, 255, 255, 0.3)",
     gap: 8,
   },
   addButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     fontSize: 16,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },

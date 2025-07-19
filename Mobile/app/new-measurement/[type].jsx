@@ -1,10 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useEffect, useState, useCallback } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert, Dimensions } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import MeasurementForm from '../components/MeasurementForm';
 import { COLORS } from '../styles/colors';
 import { calculateProjectTotals } from '../components/projectTotals';
+
+const { width, height } = Dimensions.get('window');
 
 export default function NewMeasurement() {
   const { id, type, editId } = useLocalSearchParams();
@@ -69,22 +72,50 @@ export default function NewMeasurement() {
       Alert.alert('Error', 'Failed to save measurement');
     }
   };
-
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+      style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      {/* Background Pattern */}
+      <View style={styles.backgroundPattern}>
+        {[...Array(8)].map((_, i) => (
+          <View key={i} style={[styles.patternCircle, { 
+            top: Math.random() * height,
+            left: Math.random() * width,
+            opacity: 0.03 + Math.random() * 0.07,
+          }]} />
+        ))}
+      </View>
+      
       <MeasurementForm
         onSave={handleSave}
         onCancel={() => router.back()}
         editingMeasurement={editingMeasurement}
         forceInteriorType={type}
       />
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+  },
+  backgroundPattern: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  patternCircle: {
+    position: 'absolute',
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: 'white',
   },
 });

@@ -10,9 +10,14 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  Dimensions
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { PDF_ROW_GENERATORS } from '../components/pdfGenerators';
+import { COLORS } from '../styles/colors';
+
+const { width, height } = Dimensions.get('window');
 
 const INTERIOR_TYPES = [
   {
@@ -345,34 +350,51 @@ export default function PDFPreview() {
       console.error('Error printing PDF:', error);
       Alert.alert('Error', 'Failed to print PDF');
     }
-  };
-  if (!project) {
+  };  if (!project) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
+      <LinearGradient
+        colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+        style={styles.loadingContainer}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <View style={styles.loadingContent}>
+          <View style={styles.loadingSpinner} />
+          <Text style={styles.loadingText}>Loading Project...</Text>
+        </View>
+      </LinearGradient>
     );
   }
-
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+      style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      {/* Background Pattern */}
+      <View style={styles.backgroundPattern}>
+        {[...Array(8)].map((_, i) => (
+          <View key={i} style={[styles.patternCircle, { 
+            top: Math.random() * height,
+            left: Math.random() * width,
+            opacity: 0.03 + Math.random() * 0.07,
+          }]} />
+        ))}
+      </View>
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <View style={styles.headerLeft}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color="white" />
-            </TouchableOpacity>
-            <View>
-              <Text style={styles.headerTitle}>PDF Preview</Text>
-              <Text style={styles.headerSubtitle}>{project.clientName}</Text>
-            </View>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerTitle}>PDF Preview</Text>
+            <Text style={styles.headerSubtitle}>{project.clientName}</Text>
           </View>
-
         </View>
-      </View>
-
-      {/* Preview Content */}
+      </View>      {/* Preview Content */}
       <ScrollView style={styles.scrollView}>
         <View style={styles.previewCard}>
           {/* Short PDF summary: Grand Total and breakdown */}
@@ -487,73 +509,102 @@ export default function PDFPreview() {
           </View>
         </View>
       </ScrollView>
+
       {showSuccess && (
         <View style={styles.successOverlay}>
           <View style={styles.successModal}>
-            <Ionicons name="checkmark-circle" size={64} color="#22c55e" style={{ marginBottom: 12 }} />
-            <Text style={styles.successText}>Quotation uploaded successfully</Text>
+            <LinearGradient
+              colors={['rgba(34, 197, 94, 0.1)', 'rgba(34, 197, 94, 0.05)']}
+              style={styles.successModalGradient}
+            >
+              <Ionicons name="checkmark-circle" size={64} color="#22c55e" style={{ marginBottom: 12 }} />
+              <Text style={styles.successText}>Quotation uploaded successfully!</Text>
+              <Text style={styles.successSubtext}>Redirecting to home...</Text>
+            </LinearGradient>
           </View>
         </View>
       )}
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  backgroundPattern: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  patternCircle: {
+    position: 'absolute',
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: 'white',
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  container: {
-    flex: 1,
-    backgroundColor: '#f3f4f6',
+  loadingContent: {
+    alignItems: 'center',
+    padding: 40,
+  },
+  loadingSpinner: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderTopColor: 'white',
+    marginBottom: 16,
+  },
+  loadingText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center',
   },
   header: {
-    backgroundColor: '#2563eb',
     paddingTop: 48,
     paddingBottom: 24,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
   },
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
     marginRight: 16,
+  },
+  headerTextContainer: {
+    flex: 1,
   },
   headerTitle: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   headerSubtitle: {
-    color: '#93c5fd',
+    color: 'rgba(255, 255, 255, 0.9)',
     fontSize: 14,
-  },
-  headerButtons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  printButton: {
-    backgroundColor: '#059669',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  shareButton: {
-    backgroundColor: '#059669',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  disabledButton: {
-    backgroundColor: '#6b7280',
+    marginTop: 2,
   },
   scrollView: {
     flex: 1,
@@ -562,143 +613,101 @@ const styles = StyleSheet.create({
   },
   previewCard: {
     backgroundColor: 'white',
-    borderRadius: 8,
+    borderRadius: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 16,
+    elevation: 8,
     padding: 24,
-  },
-  clientInfo: {
-    backgroundColor: '#f9fafb',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 24,
-  },
-  clientRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  clientLabel: {
-    fontWeight: '500',
-  },
-  dateText: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  clientText: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  measurementsSection: {
-    marginBottom: 24,
+    marginHorizontal: 4,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 12,
-  },
-  measurementRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
-  },
-  measurementInfo: {
-    flex: 1,
-  },
-  measurementLabel: {
-    fontWeight: '500',
-  },
-  measurementDetails: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  measurementCost: {
-    fontWeight: '600',
+    color: COLORS.textPrimary,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   costSummary: {
-    backgroundColor: '#eff6ff',
-    borderRadius: 8,
-    padding: 16,
+    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+    borderRadius: 12,
+    padding: 20,
     borderWidth: 1,
-    borderColor: '#3b82f6',
+    borderColor: 'rgba(59, 130, 246, 0.1)',
+    marginBottom: 8,
   },
   costSummaryTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1e40af',
-    marginBottom: 12,
+    color: COLORS.primary,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   costRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     marginBottom: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.1)',
   },
   costValue: {
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '600',
+    color: COLORS.success,
   },
   grandTotalRow: {
-    borderTopWidth: 1,
-    borderTopColor: '#3b82f6',
-    paddingTop: 8,
-    marginTop: 8,
+    marginTop: 12,
+    backgroundColor: COLORS.primary,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   totalRowContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
   },
   grandTotalLabel: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1e40af',
+    color: 'white',
   },
   grandTotalValue: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#2563eb',
-  },
-  termsSection: {
-    marginTop: 24,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-  },
-  termsTitle: {
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  termsText: {
-    fontSize: 14,
-    color: '#6b7280',
+    color: 'white',
   },
   button: {
-    backgroundColor: '#2563eb',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
     flexDirection: 'row',
     gap: 8,
-    elevation: 3,
-    shadowColor: '#2563eb',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
-    marginLeft: 8,
-    letterSpacing: 0.5,
   },
   successOverlay: {
     position: 'absolute',
@@ -706,21 +715,24 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
   },
   successModal: {
-    backgroundColor: '#d1fae5',
+    backgroundColor: 'white',
     borderRadius: 16,
     padding: 32,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowRadius: 16,
+    elevation: 12,
+    marginHorizontal: 40,
+    borderWidth: 2,
+    borderColor: '#22c55e',
   },
   successText: {
     color: '#15803d',
