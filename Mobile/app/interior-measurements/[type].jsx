@@ -897,29 +897,27 @@ const SummaryRow = ({ type, measurements, styles }) => {
 // RodCostTable component for curtains
 const RodCostTable = ({ measurements, styles }) => {
   return (
-    <View style={[styles.table, { marginTop: 20 }]}>
-      <Text style={styles.tableTitle}>Table 2 - Rod Cost</Text>
-      {/* Header */}
-      <View style={styles.tableHeader}>
-        <View style={[styles.tableHeaderCell, styles.snoColumn]}>
+    <View style={[styles.table, { marginTop: 20, minWidth: 760 }]}>      <Text style={styles.tableTitle}>Table 2 - Rod Cost</Text>
+      {/* Header */}      <View style={styles.tableHeader}>
+        <View style={[styles.tableHeaderCell, styles.rodSnoColumn]}>
           <Text style={styles.headerText}>S.No</Text>
         </View>
-        <View style={[styles.tableHeaderCell, styles.typeColumn]}>
+        <View style={[styles.tableHeaderCell, styles.rodBracketColumn]}>
           <Text style={styles.headerText}>Curtain Wall Bracket</Text>
         </View>
-        <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+        <View style={[styles.tableHeaderCell, styles.rodFeetColumn]}>
           <Text style={styles.headerText}>Rod Feet</Text>
         </View>
-        <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+        <View style={[styles.tableHeaderCell, styles.rodClampColumn]}>
           <Text style={styles.headerText}>Clamp Cost</Text>
         </View>
-        <View style={[styles.tableHeaderCell, styles.mediumColumn]}>
+        <View style={[styles.tableHeaderCell, styles.rodDoomColumn]}>
           <Text style={styles.headerText}>Doom Cost</Text>
         </View>
-        <View style={[styles.tableHeaderCell, styles.totalColumn]}>
+        <View style={[styles.tableHeaderCell, styles.rodTotalColumn]}>
           <Text style={styles.headerText}>Total Wall Bracket Cost</Text>
         </View>
-      </View>{" "}
+      </View>
       {/* Rows */}
       {measurements.map((m, index) => (
         <View
@@ -928,18 +926,17 @@ const RodCostTable = ({ measurements, styles }) => {
             styles.tableRow,
             index % 2 === 0 ? styles.evenRow : styles.oddRow,
           ]}
-        >
-          <View style={[styles.tableCell, styles.snoColumn]}>
+        >          <View style={[styles.tableCell, styles.rodSnoColumn]}>
             <Text style={styles.cellText}>{index + 1}</Text>
           </View>
-          <View style={[styles.tableCell, styles.typeColumn]}>
+          <View style={[styles.tableCell, styles.rodBracketColumn]}>
             <Text style={styles.cellText}>{m.curtainBracketModels || "-"}</Text>
-          </View>
-          <View style={[styles.tableCell, styles.mediumColumn]}>
+          </View>          <View style={[styles.tableCell, styles.rodFeetColumn]}>
             <Text style={styles.cellText}>
               {m.rodFeet?.toFixed(2) || m.rodLength?.toFixed(2) || "-"}
             </Text>
-          </View>          <View style={[styles.tableCell, styles.mediumColumn]}>
+          </View>
+          <View style={[styles.tableCell, styles.rodClampColumn]}>
             <Text style={styles.cellText}>
               ₹{m.clampCost?.toLocaleString("en-IN") || "0"}
             </Text>
@@ -949,7 +946,7 @@ const RodCostTable = ({ measurements, styles }) => {
               </Text>
             )}
           </View>
-          <View style={[styles.tableCell, styles.mediumColumn]}>
+          <View style={[styles.tableCell, styles.rodDoomColumn]}>
             <Text style={styles.cellText}>
               ₹{m.doomCost?.toLocaleString("en-IN") || "0"}
             </Text>
@@ -959,54 +956,54 @@ const RodCostTable = ({ measurements, styles }) => {
               </Text>
             )}
           </View>
-          <View style={[styles.tableCell, styles.totalColumn]}>
+          <View style={[styles.tableCell, styles.rodTotalColumn]}>
             <Text style={[styles.cellText, styles.totalCostText]}>
               ₹{m.totalWallBracketCost?.toLocaleString("en-IN") || "0"}
             </Text>
-          </View>
-        </View>
-      ))}
-      {/* Summary Row */}
+          </View></View>
+      ))}      {/* Summary Row */}
       <View style={styles.summaryRow}>
-        <View style={[styles.tableCell, styles.snoColumn]}>
+        <View style={[styles.tableCell, styles.rodSnoColumn]}>
           <Text style={styles.summaryText}>Total</Text>
         </View>
-        <View style={[styles.tableCell, styles.typeColumn]}>
+        <View style={[styles.tableCell, styles.rodBracketColumn]}>
           <Text style={styles.summaryText}>({measurements.length} items)</Text>
         </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        <View style={[styles.tableCell, styles.rodFeetColumn]}>
           <Text style={styles.summaryText}>
             {measurements
               .reduce((sum, m) => sum + (m.rodFeet || m.rodLength || 0), 0)
-              .toFixed(2)}
+              .toFixed(2)} ft
           </Text>
         </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        <View style={[styles.tableCell, styles.rodClampColumn]}>
           <Text style={styles.summaryText}>
-            ₹
-            {measurements
+            ₹{measurements
               .reduce((sum, m) => sum + (m.clampCost || 0), 0)
               .toLocaleString("en-IN")}
           </Text>
+          <Text style={[styles.summaryText, { fontSize: 10, color: '#666' }]}>
+            Total: {measurements.reduce((sum, m) => sum + (m.clampRequired || 0), 0)} pieces
+          </Text>
         </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        <View style={[styles.tableCell, styles.rodDoomColumn]}>
           <Text style={styles.summaryText}>
-            ₹
-            {measurements
+            ₹{measurements
               .reduce((sum, m) => sum + (m.doomCost || 0), 0)
               .toLocaleString("en-IN")}
           </Text>
+          <Text style={[styles.summaryText, { fontSize: 10, color: '#666' }]}>
+            Total: {measurements.reduce((sum, m) => sum + (m.doomRequired || 0), 0)} pieces
+          </Text>
         </View>
-        <View style={[styles.tableCell, styles.totalColumn]}>
+        <View style={[styles.tableCell, styles.rodTotalColumn]}>
           <Text style={styles.summaryTotalText}>
-            ₹
-            {measurements
+            ₹{measurements
               .reduce((sum, m) => sum + (m.totalWallBracketCost || 0), 0)
               .toLocaleString("en-IN")}
           </Text>
         </View>
-      </View>
-      {/* Rod Calculation Summary */}
+      </View>      {/* Rod Calculation Summary */}
       <View
         style={[
           styles.tableRow,
@@ -1017,15 +1014,15 @@ const RodCostTable = ({ measurements, styles }) => {
           },
         ]}
       >
-        <View style={[styles.tableCell, styles.snoColumn]}>
+        <View style={[styles.tableCell, styles.rodSnoColumn]}>
           <Text style={[styles.cellText, { fontWeight: "bold" }]}>-</Text>
         </View>
-        <View style={[styles.tableCell, styles.typeColumn]}>
+        <View style={[styles.tableCell, styles.rodBracketColumn]}>
           <Text style={[styles.cellText, { fontWeight: "bold" }]}>
             Rod Required (Calc.)
           </Text>
         </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        <View style={[styles.tableCell, styles.rodFeetColumn]}>
           <Text style={[styles.cellText, { fontWeight: "bold" }]}>
             {measurements.reduce(
               (sum, m) => sum + (m.totalRodsRequired || 0),
@@ -1034,13 +1031,13 @@ const RodCostTable = ({ measurements, styles }) => {
             rods
           </Text>
         </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        <View style={[styles.tableCell, styles.rodClampColumn]}>
           <Text style={[styles.cellText, { fontWeight: "bold" }]}>-</Text>
         </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        <View style={[styles.tableCell, styles.rodDoomColumn]}>
           <Text style={[styles.cellText, { fontWeight: "bold" }]}>-</Text>
         </View>
-        <View style={[styles.tableCell, styles.totalColumn]}>
+        <View style={[styles.tableCell, styles.rodTotalColumn]}>
           <Text
             style={[
               styles.cellText,
@@ -1294,19 +1291,17 @@ export default function InteriorMeasurements() {
           <Text style={styles.headerSubtitle}>
             {getInteriorTypeLabel()} • {measurements.length}{" "}
             {measurements.length === 1 ? "measurement" : "measurements"}
-          </Text>
-        </View>
-      </View>{" "}
+          </Text>        </View>
+      </View>
       {/* Measurements Table */}
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={true}>
         <View style={styles.tableContainer}>
           {measurements.length === 0 ? (
             <View style={styles.emptyContainer}>
               <Ionicons name="document-outline" size={64} color="#9CA3AF" />
-              <Text style={styles.emptyMessage}>No measurements yet</Text>
-              <Text style={styles.emptySubMessage}>
+              <Text style={styles.emptyMessage}>No measurements yet</Text>              <Text style={styles.emptySubMessage}>
                 Add your first measurement to get started
-              </Text>{" "}
+              </Text>
               <View style={styles.emptyHint}>
                 <Text style={styles.emptyHintText}>
                   💡 Tip: Use the button below to add your first{" "}
@@ -1323,9 +1318,7 @@ export default function InteriorMeasurements() {
                   <Text style={styles.scrollHintText}>
                     Scroll horizontally to view all columns
                   </Text>
-                </View>
-              )}
-
+                </View>              )}
               {/* Horizontal scroll wrapper for tables */}
               <ScrollView
                 horizontal
@@ -1339,9 +1332,7 @@ export default function InteriorMeasurements() {
                   router,
                   deleteMeasurement,
                   styles,
-                })}
-              </ScrollView>
-
+                })}              </ScrollView>
               {/* Add Rod Cost Table and Total Cost Summary for curtains */}
               {type === "curtains" && measurements.length > 0 && (
                 <>
@@ -1359,8 +1350,7 @@ export default function InteriorMeasurements() {
                 </>
               )}
             </>
-          )}
-        </View>
+          )}        </View>
       </ScrollView>
       {/* Add Measurement Button */}
       <TouchableOpacity
@@ -1569,9 +1559,29 @@ const styles = StyleSheet.create({
   actionColumn: {
     width: 90,
     borderRightWidth: 0,
-  },
-  snoColumn: {
+  },  snoColumn: {
     width: 50,
+  },
+
+  // Rod Cost Table specific column widths (6 columns total)
+  rodSnoColumn: {
+    width: 60,
+  },
+  rodBracketColumn: {
+    width: 200,
+  },
+  rodFeetColumn: {
+    width: 100,
+  },
+  rodClampColumn: {
+    width: 120,
+  },
+  rodDoomColumn: {
+    width: 120,
+  },
+  rodTotalColumn: {
+    width: 160,
+    borderRightWidth: 0,
   },
 
   actionContainer: {

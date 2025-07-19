@@ -80,24 +80,49 @@ export function generateRodCostRows(measurements, formatCurrency) {
   const totalRodsRequired = rodCalc.totalRods;
   const rodRatePerLength = measurements.length > 0 ? (parseFloat(measurements[0].rodRatePerLength) || 0) : 0;
   const totalRodCost = totalRodsRequired * rodRatePerLength;
-  
-  const totalWallBracketCost = measurements.reduce((sum, m) => {
+    const totalWallBracketCost = measurements.reduce((sum, m) => {
     const clampCost = (parseFloat(m.clampRequired) || 0) * (parseFloat(m.clampRatePerPiece) || 0);
     const doomCost = (parseFloat(m.doomRequired) || 0) * (parseFloat(m.doomRatePerPiece) || 0);
     return sum + clampCost + doomCost;
   }, 0);
   
-  const rodSummary = `
-    <tr style="background:#f8f9fa;">
-      <td colspan="6" style="padding: 12px; border: 1px solid #ddd;">
-        <div style="margin-bottom: 8px;"><strong>Total No. of Rods Required: ${totalRodsRequired} length(s)</strong></div>
-        <div style="margin-bottom: 8px;"><strong>Total Rod Cost: ${formatCurrency(totalRodCost)}</strong></div>
-        <div style="font-weight: bold; font-size: 16px;"><strong>Total Wall Bracket Cost: ${formatCurrency(totalWallBracketCost)}</strong></div>
+  // Calculate totals for summary row
+  const totalRodFeet = measurements.reduce((sum, m) => sum + ((parseFloat(m.width) || 0) / 12), 0);
+  const totalClampRequired = measurements.reduce((sum, m) => sum + (parseFloat(m.clampRequired) || 0), 0);
+  const totalDoomRequired = measurements.reduce((sum, m) => sum + (parseFloat(m.doomRequired) || 0), 0);
+  const totalClampCost = measurements.reduce((sum, m) => sum + ((parseFloat(m.clampRequired) || 0) * (parseFloat(m.clampRatePerPiece) || 0)), 0);
+  const totalDoomCost = measurements.reduce((sum, m) => sum + ((parseFloat(m.doomRequired) || 0) * (parseFloat(m.doomRatePerPiece) || 0)), 0);
+  
+  // Summary row with improved formatting
+  const summaryRow = `
+    <tr style="background:#f0f9ff;font-weight:bold;">
+      <td style="padding:8px;border:1px solid #ddd;text-align:center;">Total</td>
+      <td style="padding:8px;border:1px solid #ddd;text-align:center;">(${measurements.length} items)</td>
+      <td style="padding:8px;border:1px solid #ddd;text-align:center;">${totalRodFeet.toFixed(2)} ft</td>
+      <td style="padding:8px;border:1px solid #ddd;text-align:right;">
+        <div style="font-weight: bold;">${formatCurrency(totalClampCost)}</div>
+        <div style="font-size: 11px; color: #666;">Total: ${totalClampRequired} pieces</div>
       </td>
+      <td style="padding:8px;border:1px solid #ddd;text-align:right;">
+        <div style="font-weight: bold;">${formatCurrency(totalDoomCost)}</div>
+        <div style="font-size: 11px; color: #666;">Total: ${totalDoomRequired} pieces</div>
+      </td>
+      <td style="padding:8px;border:1px solid #ddd;text-align:right;font-weight:bold;">${formatCurrency(totalWallBracketCost)}</td>
     </tr>
   `;
   
-  return rodData + rodSummary;
+  const rodCalculationRow = `
+    <tr style="background:#f8f9fa;">
+      <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">-</td>
+      <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">Rod Required (Calc.)</td>
+      <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">${totalRodsRequired} rods</td>
+      <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">-</td>
+      <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold;">-</td>
+      <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(totalRodCost)}</td>
+    </tr>
+  `;
+  
+  return rodData + summaryRow + rodCalculationRow;
 }
 
 // Generate Total Cost Summary
