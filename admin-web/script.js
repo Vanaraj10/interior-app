@@ -45,6 +45,19 @@ function initLogin() {
   }
 }
 
+// Login loader function
+function showLoader(show) {
+    const loader = document.getElementById('loader');
+    if (loader) {
+        if (show) {
+            loader.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        } else {
+            loader.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+    }
+}
 
 async function handleLogin(e) {
     e.preventDefault();
@@ -52,7 +65,7 @@ async function handleLogin(e) {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
-    showLoading(true);
+    showLoader(true);
     
     try {
         const response = await fetch(`${API_BASE_URL}/admin/login`, {
@@ -77,12 +90,11 @@ async function handleLogin(e) {
             showToast(data.error || 'Login failed', 'error');            
             alert('Invalid Username or Password');
             window.location.reload();
-        }
-    } catch (error) {
+        }    } catch (error) {
         console.error('Login error:', error);
         showToast('Network error. Please try again.', 'error');
     } finally {
-        showLoading(false);
+        showLoader(false);
     }
 }
 
