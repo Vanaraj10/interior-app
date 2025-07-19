@@ -852,11 +852,9 @@ async function downloadAsPDF(filename) {
         printWindow.document.write(fullHtml);
         printWindow.document.close();
         
-        // Wait for styles and content to fully load
         await new Promise(resolve => {
             const checkLoaded = () => {
                 if (printWindow.document.readyState === 'complete') {
-                    // Additional wait to ensure all styles are applied
                     setTimeout(resolve, 1500);
                 } else {
                     setTimeout(checkLoaded, 100);
@@ -869,22 +867,15 @@ async function downloadAsPDF(filename) {
                 printWindow.addEventListener('load', () => {
                     setTimeout(resolve, 1500);
                 });
-                // Fallback timeout
+
                 setTimeout(resolve, 3000);
             }
         });
-        
-        // Focus the print window and trigger print dialog
+
         printWindow.focus();
-        
-        // Small delay to ensure focus before printing
         setTimeout(() => {
             printWindow.print();
-            
-            // Show instructions to user
             showToast('Print dialog opened. Choose "Save as PDF" to download as PDF', 'info', 7000);
-            
-            // Close the print window after print dialog
             setTimeout(() => {
                 if (printWindow && !printWindow.closed) {
                     printWindow.close();
@@ -905,9 +896,6 @@ function createStandaloneHTML() {
     
     // Get the exact global.css styles
     const globalCSS = `
-        /* global.css: Styles for class-based HTML generated from backend */
-
-        /* Light theme styles for project content (used in iframe) */
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -1007,7 +995,6 @@ function createStandaloneHTML() {
             background-color: #fafafa;
         }
 
-        /* Enhanced table styling */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -1053,7 +1040,6 @@ function createStandaloneHTML() {
             background-color: #e3f2fd;
         }
 
-        /* Cost summary styling */
         .cost-summary {
             margin-top: 20px;
             padding: 15px;
@@ -1089,7 +1075,6 @@ function createStandaloneHTML() {
             font-weight: 600;
         }
 
-        /* Section headers */
         .section-header {
             background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
@@ -1102,7 +1087,6 @@ function createStandaloneHTML() {
             box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
         }
 
-        /* Measurement sections */
         .measurement-section {
             margin-bottom: 30px;
             border: 1px solid #e5e7eb;
@@ -1123,7 +1107,6 @@ function createStandaloneHTML() {
             background-color: #fff;
         }
 
-        /* Item styling */
         .item-row {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
@@ -1170,7 +1153,6 @@ function createStandaloneHTML() {
             color: #1f2937;
         }
 
-        /* Summary table enhancements */
         .summary-table {
             background: #fff;
             border-radius: 8px;
@@ -1191,7 +1173,6 @@ function createStandaloneHTML() {
             border-top: 2px solid #3b82f6;
         }
 
-        /* Responsive design for tables */
         @media (max-width: 768px) {
             table {
                 font-size: 10px;
@@ -1223,7 +1204,6 @@ function createStandaloneHTML() {
             .item-total:before { content: "Total: "; }
         }
 
-        /* Additional utility classes */
         .w-full { width: 100%; }
         .w-half { width: 50%; }
         .w-quarter { width: 25%; }
@@ -1296,7 +1276,6 @@ function createStandaloneHTML() {
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        /* Enhanced print styles for PDF */
         @media print {
             * {
                 -webkit-print-color-adjust: exact !important;
@@ -1447,8 +1426,7 @@ function createStandaloneHTML() {
             }
         }
     `;
-    
-    // Return only the database HTML content with global.css styles applied
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
