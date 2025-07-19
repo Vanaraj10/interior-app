@@ -7,9 +7,24 @@ export function calculateProjectTotals(projectData) {
   const wallpaperMeasurements = measurements.filter(m => m.interiorType === 'wallpapers');
   const blindsMeasurements = measurements.filter(m => m.interiorType === 'blinds');
   const flooringMeasurements = measurements.filter(m => m.interiorType === 'flooring');
-
   // Calculate totals for each type
-  const curtainTotal = curtainMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
+  let curtainTotal = 0;
+  let curtainClothCostWithGST = 0;
+  let curtainRodCostWithGST = 0;
+  
+  // New curtain calculation with grandTotal from schema
+  curtainMeasurements.forEach(m => {
+    if (m.grandTotal) {
+      // Use the new calculation structure
+      curtainTotal += m.grandTotal;
+      curtainClothCostWithGST += (m.clothCostWithGST || 0);
+      curtainRodCostWithGST += (m.rodCostWithGST || 0);
+    } else {
+      // Fallback to old structure
+      curtainTotal += (m.totalCost || 0);
+    }
+  });
+  
   const netTotal = netMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
   const blindsTotal = blindsMeasurements.reduce((sum, m) => sum + (m.totalCost || 0), 0);
   const flooringTotal = flooringMeasurements.reduce((sum, m) => sum + (m.totalCost || ((m.costOfRoom || 0) + (m.layingCharge || 0))), 0);
@@ -40,8 +55,7 @@ export function calculateProjectTotals(projectData) {
     totalWallpaperRolls += rolls;
     totalWallpaperMaterialCost += totalMaterialCost;
     totalWallpaperImplementationCost += totalImplementationCost;
-  });
-  // Calculate rod cost for curtains only
+  });  // Calculate rod cost for curtains (legacy compatibility)
   let rodLength = 0;
   let rodCost = 0;
   curtainMeasurements.forEach(m => {
@@ -51,12 +65,17 @@ export function calculateProjectTotals(projectData) {
     rodLength += length;
     rodCost += length * rate;
   });
-  const subtotal = curtainTotal + netTotal + wallpaperTotal + blindsTotal + flooringTotal;
-  const grandTotal = subtotal + rodCost;
+  
+  // For new curtain structure, the curtainTotal already includes everything
+  // For other types, add them normally
+  const subtotal = netTotal + wallpaperTotal + blindsTotal + flooringTotal;
+  const grandTotal = curtainTotal + subtotal; // curtainTotal already includes rod costs if using new structure
 
   return {
     ...projectData,
     curtainTotal,
+    curtainClothCostWithGST,
+    curtainRodCostWithGST,
     netTotal,
     wallpaperTotal,
     blindsTotal,

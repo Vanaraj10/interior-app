@@ -17,11 +17,12 @@ import { PDF_ROW_GENERATORS } from '../components/pdfGenerators';
 const INTERIOR_TYPES = [
   {
     key: 'curtains',
-    label: 'CURTAINS',
+    label: 'CURTAINS - CURTAIN COST',
     generator: PDF_ROW_GENERATORS.curtains,
     columns: [
-      'S.No', 'Room Label', 'Width', 'Height', 'Pieces', 'Meters', 'Type', 'Cloth Price', 'Stitching Price', 'Lining', 'Total Price'
+      'S.No', 'Room', 'Width', 'Height', 'Part', 'Stitching Model', 'Main Metre', 'Cloth Cost', 'Stitching Cost', 'Lining Metre', 'Lining Cost', 'Total Curtain Cost'
     ],
+    hasRodCost: true, // Flag to indicate this type needs rod cost table
   },
   {
     key: 'mosquito-nets',
@@ -115,8 +116,7 @@ export default function PDFPreview() {
   };
 
   const generatePDFContent = () => {
-    if (!project) return '';
-    let htmlSections = '';
+    if (!project) return '';    let htmlSections = '';
     INTERIOR_TYPES.forEach(type => {
       const measurements = project.measurements?.filter(m => m.interiorType === type.key) || [];
       if (measurements.length > 0) {
@@ -132,6 +132,30 @@ export default function PDFPreview() {
             </tbody>
           </table>
         `;
+        
+        // Add Rod Cost table for curtains
+        if (type.key === 'curtains' && type.hasRodCost) {
+          htmlSections += `
+            <div class="section-title" style="margin-top: 30px;">ROD COST</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Curtain Wall Bracket</th>
+                  <th>Rod Feet</th>
+                  <th>Clamp Cost</th>
+                  <th>Doom Cost</th>
+                  <th>Total Wall Bracket Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${PDF_ROW_GENERATORS.curtains.generateRodCostRows ? PDF_ROW_GENERATORS.curtains.generateRodCostRows(measurements, formatCurrency) : ''}
+              </tbody>
+            </table>
+            
+            ${PDF_ROW_GENERATORS.curtains.generateTotalCostSummary ? PDF_ROW_GENERATORS.curtains.generateTotalCostSummary(measurements, formatCurrency) : ''}
+          `;
+        }
       }
     });
 
@@ -258,42 +282,7 @@ export default function PDFPreview() {
           <div class="info-row">
             <span><strong>Address:</strong> ${project.address}</span>
           </div>
-        </div>
-
-        ${htmlSections}
-
-        ${project.measurements?.filter(m => m.interiorType === 'curtains').length > 0 ? `
-        <div class="section-title">ROD INSTALLATION</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Room Label</th>
-              <th>Width (in)</th>
-              <th>Length (Units)</th>
-              <th>Rate per Unit (₹)</th>
-              <th>Total Rod Cost</th>
-            </tr>
-          </thead>
-          <tbody>            ${project.measurements.filter(m => m.interiorType === 'curtains').map(m => {
-              const width = m.width || 0;
-              const rate = m.rodRatePerLength || 0; // Use actual rate from measurement
-              const length = width / 12;
-              const cost = length * rate;
-              return `<tr>
-                <td style="padding: 8px; border: 1px solid #ddd;">${m.roomLabel}</td>
-                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${width}</td>
-                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${length.toFixed(2)}</td>
-                <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₹${rate}</td>
-                <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(cost)}</td>
-              </tr>`;
-            }).join('')}
-            <tr>
-              <td colspan="4" style="text-align: right; font-weight: bold;">Total Rod Cost</td>
-              <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(project.rodCost || 0)}</td>
-            </tr>
-          </tbody>
-        </table>
-        ` : ''}
+        </div>        ${htmlSections}
 
         <div class="cost-summary">
           <h3 style="margin-top: 0; color: #3B82F6;">COST SUMMARY</h3>
