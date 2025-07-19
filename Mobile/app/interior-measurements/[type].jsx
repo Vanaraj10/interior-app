@@ -939,16 +939,25 @@ const RodCostTable = ({ measurements, styles }) => {
             <Text style={styles.cellText}>
               {m.rodFeet?.toFixed(2) || m.rodLength?.toFixed(2) || "-"}
             </Text>
-          </View>
-          <View style={[styles.tableCell, styles.mediumColumn]}>
+          </View>          <View style={[styles.tableCell, styles.mediumColumn]}>
             <Text style={styles.cellText}>
               ₹{m.clampCost?.toLocaleString("en-IN") || "0"}
             </Text>
+            {m.clampRequired && m.clampRatePerPiece && (
+              <Text style={[styles.cellText, { fontSize: 10, color: '#666' }]}>
+                {m.clampRequired} × ₹{m.clampRatePerPiece}
+              </Text>
+            )}
           </View>
           <View style={[styles.tableCell, styles.mediumColumn]}>
             <Text style={styles.cellText}>
               ₹{m.doomCost?.toLocaleString("en-IN") || "0"}
             </Text>
+            {m.doomRequired && m.doomRatePerPiece && (
+              <Text style={[styles.cellText, { fontSize: 10, color: '#666' }]}>
+                {m.doomRequired} × ₹{m.doomRatePerPiece}
+              </Text>
+            )}
           </View>
           <View style={[styles.tableCell, styles.totalColumn]}>
             <Text style={[styles.cellText, styles.totalCostText]}>

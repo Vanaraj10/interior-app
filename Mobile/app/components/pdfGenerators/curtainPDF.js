@@ -61,9 +61,14 @@ export function generateRodCostRows(measurements, formatCurrency) {
       <tr>
         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${index + 1}</td>
         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.curtainBracketModel || '-'}</td>
-        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${rodFeet.toFixed(2)}</td>
-        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${formatCurrency(clampCost)}</td>
-        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${formatCurrency(doomCost)}</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${rodFeet.toFixed(2)}</td>        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
+          <div style="font-weight: bold;">${formatCurrency(clampCost)}</div>
+          ${m.clampRequired && m.clampRatePerPiece ? `<div style="font-size: 11px; color: #666;">${m.clampRequired} × ${formatCurrency(m.clampRatePerPiece)}</div>` : ''}
+        </td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
+          <div style="font-weight: bold;">${formatCurrency(doomCost)}</div>
+          ${m.doomRequired && m.doomRatePerPiece ? `<div style="font-size: 11px; color: #666;">${m.doomRequired} × ${formatCurrency(m.doomRatePerPiece)}</div>` : ''}
+        </td>
         <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(totalWallBracketCost)}</td>
       </tr>
     `;
