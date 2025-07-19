@@ -77,7 +77,7 @@ func WorkerLogin(c *gin.Context) {
 		"user_id":  worker.ID,
 		"role":     "worker",
 		"admin_id": worker.AdminID,
-		"exp":      time.Now().Add(24 * time.Hour).Unix(),
+		"exp":      time.Now().Add( 30 * 24 * time.Hour ).Unix(),
 	})
 	tokenString, _ := token.SignedString(jwtSecret)
 	c.JSON(http.StatusOK, LoginResponse{Token: tokenString})
