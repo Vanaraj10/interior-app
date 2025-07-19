@@ -9,9 +9,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
+  Dimensions
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from './styles/colors';
+
+const { width, height } = Dimensions.get('window');
 
 export default function NewProject() {
   const [formData, setFormData] = useState({
@@ -65,162 +69,304 @@ export default function NewProject() {
       console.error('Error creating project:', error);
       Alert.alert('Error', 'Failed to create project');
     }
-  };
-  return (
-    <View style={styles.container}>
+  };  return (
+    <LinearGradient
+      colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+      style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      {/* Background Pattern */}
+      <View style={styles.backgroundPattern}>
+        {[...Array(6)].map((_, i) => (
+          <View key={i} style={[styles.patternCircle, { 
+            top: Math.random() * height,
+            left: Math.random() * width,
+            opacity: 0.05 + Math.random() * 0.1,
+          }]} />
+        ))}
+      </View>
+
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <View>
-          <Text style={styles.headerTitle}>New Project</Text>
-          <Text style={styles.headerSubtitle}>Create new quotation</Text>
+        <View style={styles.headerContent}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerTitle}>New Project</Text>
+            <Text style={styles.headerSubtitle}>Create new quotation</Text>
+          </View>
+          <View style={styles.headerIcon}>
+            <Ionicons name="add-circle-outline" size={24} color="white" />
+          </View>
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView}>
-        {/* Client Information */}
+      <ScrollView 
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Client Information Card */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Client Information</Text>
-            <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Client Name *</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.clientName}
-              onChangeText={(text) => updateField('clientName', text)}
-              placeholder="Enter client name"
-              placeholderTextColor={COLORS.inputPlaceholder}
-            />
-          </View>
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0.98)', 'rgba(255, 255, 255, 0.95)']}
+            style={styles.sectionGradient}
+          >
+            <View style={styles.sectionHeader}>
+              <View style={styles.sectionIconContainer}>
+                <Ionicons name="person-outline" size={24} color={COLORS.primary} />
+              </View>
+              <Text style={styles.sectionTitle}>Client Information</Text>
+            </View>
 
-          <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Phone Number *</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.phone}
-              onChangeText={(text) => updateField('phone', text)}
-              placeholder="Enter phone number"
-              placeholderTextColor={COLORS.inputPlaceholder}
-              keyboardType="phone-pad"
-            />
-          </View>
+            <View style={styles.fieldsContainer}>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>
+                  <Ionicons name="person" size={14} color={COLORS.primary} /> Client Name *
+                </Text>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.input}
+                    value={formData.clientName}
+                    onChangeText={(text) => updateField('clientName', text)}
+                    placeholder="Enter client name"
+                    placeholderTextColor={COLORS.gray400}
+                  />
+                </View>
+              </View>
 
-          <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Address *</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              value={formData.address}
-              onChangeText={(text) => updateField('address', text)}
-              placeholder="Enter complete address"
-              placeholderTextColor={COLORS.inputPlaceholder}
-              multiline
-              textAlignVertical="top"
-            />
-          </View>
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>
+                  <Ionicons name="call" size={14} color={COLORS.primary} /> Phone Number *
+                </Text>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.input}
+                    value={formData.phone}
+                    onChangeText={(text) => updateField('phone', text)}
+                    placeholder="Enter phone number"
+                    placeholderTextColor={COLORS.gray400}
+                    keyboardType="phone-pad"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.fieldContainer}>
+                <Text style={styles.label}>
+                  <Ionicons name="location" size={14} color={COLORS.primary} /> Address *
+                </Text>
+                <View style={[styles.inputContainer, styles.textAreaContainer]}>
+                  <TextInput
+                    style={[styles.input, styles.textArea]}
+                    value={formData.address}
+                    onChangeText={(text) => updateField('address', text)}
+                    placeholder="Enter complete address"
+                    placeholderTextColor={COLORS.gray400}
+                    multiline
+                    textAlignVertical="top"
+                  />
+                </View>
+              </View>
+            </View>
+          </LinearGradient>
         </View>
 
         {/* Create Button */}
         <TouchableOpacity
           style={styles.createButton}
           onPress={createProject}
+          activeOpacity={0.8}
         >
-          <Text style={styles.createButtonText}>Create Project</Text>
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+            style={styles.createButtonGradient}
+          >
+            <Ionicons name="add-circle" size={24} color={COLORS.primary} />
+            <Text style={styles.createButtonText}>Create Project</Text>
+          </LinearGradient>
         </TouchableOpacity>
+
+        {/* Additional spacing for better scroll experience */}
+        <View style={styles.bottomSpacing} />
       </ScrollView>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+  },
+  backgroundPattern: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  patternCircle: {
+    position: 'absolute',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'white',
   },
   header: {
-    backgroundColor: COLORS.primary,
     paddingTop: 48,
     paddingBottom: 24,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   backButton: {
-    marginRight: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  headerTextContainer: {
+    flex: 1,
+    alignItems: 'center',
   },
   headerTitle: {
-    color: COLORS.textInverse,
-    fontSize: 20,
+    color: 'white',
+    fontSize: 22,
     fontWeight: 'bold',
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   headerSubtitle: {
-    color: COLORS.accentLight,
+    color: 'rgba(255, 255, 255, 0.9)',
     fontSize: 14,
+    textAlign: 'center',
+    marginTop: 2,
+  },
+  headerIcon: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0.7,
   },
   scrollView: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 24,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
   section: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 8,
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    padding: 16,
+    borderRadius: 20,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+    overflow: 'hidden',
+  },
+  sectionGradient: {
+    padding: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 24,
   },
+  sectionIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+    borderWidth: 2,
+    borderColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.2)',
+  },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: COLORS.textPrimary,
-    marginBottom: 16,
+    flex: 1,
+  },
+  fieldsContainer: {
+    gap: 20,
   },
   fieldContainer: {
-    marginBottom: 16,
+    gap: 8,
   },
   label: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
     color: COLORS.textSecondary,
     marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  inputContainer: {
+    backgroundColor: COLORS.gray100,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   input: {
-    borderWidth: 1,
-    borderColor: COLORS.inputBorder,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     fontSize: 16,
-    backgroundColor: COLORS.inputBackground,
-    color: COLORS.inputText,
+    color: COLORS.textPrimary,
+    minHeight: 50,
+  },
+  textAreaContainer: {
+    minHeight: 100,
   },
   textArea: {
-    height: 80,
+    minHeight: 100,
     textAlignVertical: 'top',
-  },
-  helpText: {
-    fontSize: 12,
-    color: COLORS.textMuted,
-    marginTop: 4,
+    paddingTop: 14,
   },
   createButton: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 8,
-    paddingVertical: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 8,
+    marginTop: 8,
+  },
+  createButtonGradient: {
+    flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    justifyContent: 'center',
+    paddingVertical: 18,
+    paddingHorizontal: 32,
+    gap: 12,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   createButtonText: {
-    color: COLORS.textInverse,
+    color: COLORS.primary,
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'bold',
+  },
+  bottomSpacing: {
+    height: 40,
   },
 });
