@@ -9,9 +9,13 @@ import {
   View,
   ScrollView,
   Alert,
+  Dimensions,
 } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
 import { INTERIOR_SCHEMAS } from "../components/interiorSchemas";
 import { COLORS } from "../styles/colors";
+
+const { width, height } = Dimensions.get('window');
 
 // TableHeader component
 const TableHeader = ({ type }) => {
@@ -1268,90 +1272,154 @@ export default function InteriorMeasurements() {
   const getInteriorTypeLabel = () => {
     return INTERIOR_SCHEMAS[type]?.label || type;
   };
-
   if (!project) {
     return (
-      <View style={styles.centered}>
-        <Text>Loading...</Text>
-      </View>
+      <LinearGradient
+        colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+        style={styles.loadingContainer}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <View style={styles.loadingContent}>
+          <View style={styles.loadingSpinner} />
+          <Text style={styles.loadingText}>Loading Project...</Text>
+        </View>
+      </LinearGradient>
     );
-  }
-  return (
-    <View style={styles.container}>
+  }  return (
+    <LinearGradient
+      colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+      style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      {/* Background Pattern */}
+      <View style={styles.backgroundPattern}>
+        {[...Array(8)].map((_, i) => (
+          <View key={i} style={[styles.patternCircle, { 
+            top: Math.random() * height,
+            left: Math.random() * width,
+            opacity: 0.03 + Math.random() * 0.07,
+          }]} />
+        ))}
+      </View>
+
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>{project.clientName}</Text>
-          <Text style={styles.headerSubtitle}>
-            {getInteriorTypeLabel()} • {measurements.length}{" "}
-            {measurements.length === 1 ? "measurement" : "measurements"}
-          </Text>        </View>
+        <View style={styles.headerContent}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerTitle}>{project.clientName}</Text>
+            <Text style={styles.headerSubtitle}>
+              {getInteriorTypeLabel()} • {measurements.length}{" "}
+              {measurements.length === 1 ? "measurement" : "measurements"}
+            </Text>
+          </View>
+        </View>
       </View>
+
       {/* Measurements Table */}
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={true}>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.tableContainer}>
           {measurements.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Ionicons name="document-outline" size={64} color="#9CA3AF" />
-              <Text style={styles.emptyMessage}>No measurements yet</Text>              <Text style={styles.emptySubMessage}>
-                Add your first measurement to get started
-              </Text>
-              <View style={styles.emptyHint}>
-                <Text style={styles.emptyHintText}>
-                  💡 Tip: Use the button below to add your first{" "}
-                  {getInteriorTypeLabel().toLowerCase()} measurement
+            <View style={styles.emptyCard}>
+              <LinearGradient
+                colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+                style={styles.emptyCardGradient}
+              >
+                <Ionicons name="document-outline" size={64} color={COLORS.gray400} />
+                <Text style={styles.emptyMessage}>No measurements yet</Text>
+                <Text style={styles.emptySubMessage}>
+                  Add your first measurement to get started
                 </Text>
-              </View>
+                <View style={styles.emptyHint}>
+                  <Ionicons name="bulb-outline" size={16} color={COLORS.primary} />
+                  <Text style={styles.emptyHintText}>
+                    Use the button below to add your first{" "}
+                    {getInteriorTypeLabel().toLowerCase()} measurement
+                  </Text>
+                </View>
+              </LinearGradient>
             </View>
           ) : (
             <>
               {/* Scroll hint for complex tables */}
               {(type === "curtains" || type === "wallpapers") && (
-                <View style={styles.scrollHint}>
-                  <Ionicons name="arrow-forward" size={16} color="#64748b" />
-                  <Text style={styles.scrollHintText}>
-                    Scroll horizontally to view all columns
-                  </Text>
-                </View>              )}
-              {/* Horizontal scroll wrapper for tables */}
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={true}
-                style={styles.horizontalScrollView}
-              >
-                {renderTable({
-                  type,
-                  measurements,
-                  id,
-                  router,
-                  deleteMeasurement,
-                  styles,
-                })}              </ScrollView>
-              {/* Add Rod Cost Table and Total Cost Summary for curtains */}
-              {type === "curtains" && measurements.length > 0 && (
-                <>
+                <View style={styles.scrollHintCard}>
+                  <LinearGradient
+                    colors={['rgba(255, 255, 255, 0.9)', 'rgba(255, 255, 255, 0.8)']}
+                    style={styles.scrollHintGradient}
+                  >
+                    <Ionicons name="arrow-forward" size={16} color={COLORS.primary} />
+                    <Text style={styles.scrollHintText}>
+                      Scroll horizontally to view all columns
+                    </Text>
+                  </LinearGradient>
+                </View>
+              )}
+              
+              {/* Table Card */}
+              <View style={styles.tableCard}>
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+                  style={styles.tableCardGradient}
+                >
+                  {/* Horizontal scroll wrapper for tables */}
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={true}
                     style={styles.horizontalScrollView}
                   >
-                    <RodCostTable measurements={measurements} styles={styles} />
+                    {renderTable({
+                      type,
+                      measurements,
+                      id,
+                      router,
+                      deleteMeasurement,
+                      styles,
+                    })}
                   </ScrollView>
-                  <TotalCostSummary
-                    measurements={measurements}
-                    styles={styles}
-                  />
+                </LinearGradient>
+              </View>
+
+              {/* Add Rod Cost Table and Total Cost Summary for curtains */}
+              {type === "curtains" && measurements.length > 0 && (
+                <>
+                  <View style={styles.tableCard}>
+                    <LinearGradient
+                      colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+                      style={styles.tableCardGradient}
+                    >
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={true}
+                        style={styles.horizontalScrollView}
+                      >
+                        <RodCostTable measurements={measurements} styles={styles} />
+                      </ScrollView>
+                    </LinearGradient>
+                  </View>
+                  
+                  <View style={styles.tableCard}>
+                    <LinearGradient
+                      colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+                      style={styles.tableCardGradient}
+                    >
+                      <TotalCostSummary
+                        measurements={measurements}
+                        styles={styles}
+                      />
+                    </LinearGradient>
+                  </View>
                 </>
               )}
             </>
-          )}        </View>
+          )}
+        </View>
       </ScrollView>
+
       {/* Add Measurement Button */}
       <TouchableOpacity
         style={styles.addButton}
@@ -1361,76 +1429,209 @@ export default function InteriorMeasurements() {
             params: { id, type },
           })
         }
+        activeOpacity={0.8}
       >
-        <Ionicons name="add" size={24} color="white" />
-        <Text style={styles.addButtonText}>Add Measurement</Text>
+        <LinearGradient
+          colors={[COLORS.accent, COLORS.secondary]}
+          style={styles.addButtonGradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <Ionicons name="add" size={24} color="white" />
+          <Text style={styles.addButtonText}>Add Measurement</Text>
+        </LinearGradient>
       </TouchableOpacity>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+  },
+  backgroundPattern: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  patternCircle: {
+    position: 'absolute',
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: 'white',
+  },
+  loadingContainer: {
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+  },
+  loadingContent: {
+    alignItems: 'center',
+    padding: 40,
+  },
+  loadingSpinner: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderTopColor: 'white',
+    marginBottom: 16,
+  },
+  loadingText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center',
   },
   header: {
-    backgroundColor: COLORS.primary,
     paddingTop: 48,
-    paddingBottom: 16,
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    elevation: 4,
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    paddingBottom: 24,
+    paddingHorizontal: 20,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
     marginRight: 16,
-    padding: 4,
   },
-  headerInfo: {
+  headerTextContainer: {
     flex: 1,
   },
   headerTitle: {
-    color: COLORS.textInverse,
-    fontSize: 20,
-    fontWeight: "bold",
+    color: 'white',
+    fontSize: 22,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   headerSubtitle: {
-    color: COLORS.accentLight,
+    color: 'rgba(255, 255, 255, 0.9)',
     fontSize: 14,
     marginTop: 2,
-  },
-  pdfHeaderButton: {
-    backgroundColor: COLORS.secondary,
-    padding: 10,
-    borderRadius: 8,
-    marginLeft: 12,
-    elevation: 2,
   },
   scrollView: {
     flex: 1,
   },
+  tableContainer: {
+    padding: 20,
+  },
+  
+  // Empty State Card
+  emptyCard: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+    marginBottom: 20,
+  },
+  emptyCardGradient: {
+    padding: 40,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  emptyMessage: {
+    fontSize: 20,
+    color: COLORS.textPrimary,
+    textAlign: 'center',
+    marginTop: 16,
+    marginBottom: 8,
+    fontWeight: '600',
+  },
+  emptySubMessage: {
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 20,
+  },
+  emptyHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.1)',
+    borderRadius: 12,
+    padding: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: COLORS.primary,
+    gap: 8,
+  },
+  emptyHintText: {
+    flex: 1,
+    fontSize: 13,
+    color: COLORS.primary,
+    fontWeight: '500',
+  },
+
+  // Scroll Hint Card
+  scrollHintCard: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  scrollHintGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    gap: 8,
+  },
+  scrollHintText: {
+    fontSize: 13,
+    color: COLORS.primary,
+    fontWeight: '500',
+  },
+
+  // Table Card
+  tableCard: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+    marginBottom: 20,
+  },
+  tableCardGradient: {
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
   horizontalScrollView: {
     flexGrow: 0,
   },
-  tableContainer: {
-    padding: 16,
-  },
   table: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 12,
-    elevation: 3,
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
+    backgroundColor: 'transparent',
+    borderRadius: 0,
+    elevation: 0,
+    shadowOpacity: 0,
     overflow: "hidden",
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    borderWidth: 0,
     minWidth: 1000, // Ensure table is wide enough to scroll horizontally
   },
   tableTitle: {
@@ -1438,9 +1639,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.textPrimary,
     padding: 16,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.1)',
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.2)',
   },
   tableHeader: {
     flexDirection: "row",
@@ -1454,7 +1655,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 4,
     borderRightWidth: 1,
-    borderRightColor: COLORS.primaryLight,
+    borderRightColor: 'rgba(255, 255, 255, 0.2)',
   },
   headerText: {
     color: COLORS.textInverse,
@@ -1466,20 +1667,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     minHeight: 60,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.1)',
   },
   summaryRow: {
     flexDirection: "row",
     minHeight: 50,
-    backgroundColor: COLORS.gray100,
+    backgroundColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.05)',
     borderTopWidth: 2,
     borderTopColor: COLORS.primary,
   },
   evenRow: {
-    backgroundColor: COLORS.background,
+    backgroundColor: "transparent",
   },
   oddRow: {
-    backgroundColor: COLORS.surface,
+    backgroundColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.02)',
   },
   tableCell: {
     paddingVertical: 8,
@@ -1487,7 +1688,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRightWidth: 1,
-    borderRightColor: COLORS.border,
+    borderRightColor: 'rgba(' + COLORS.primary.slice(1).match(/.{2}/g).map(x => parseInt(x, 16)).join(',') + ', 0.1)',
   },
   cellText: {
     fontSize: 12,
@@ -1559,7 +1760,8 @@ const styles = StyleSheet.create({
   actionColumn: {
     width: 90,
     borderRightWidth: 0,
-  },  snoColumn: {
+  },  
+  snoColumn: {
     width: 50,
   },
 
@@ -1591,129 +1793,57 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   editButton: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: COLORS.primary,
     padding: 8,
     borderRadius: 6,
     elevation: 2,
-    shadowColor: "#3b82f6",
+    shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
   },
   deleteButton: {
-    backgroundColor: "#ef4444",
+    backgroundColor: COLORS.error,
     padding: 8,
     borderRadius: 6,
     elevation: 2,
-    shadowColor: "#ef4444",
+    shadowColor: COLORS.error,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
   },
 
-  // Empty state
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 80,
-    paddingHorizontal: 40,
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  emptyMessage: {
-    fontSize: 18,
-    color: "#6b7280",
-    textAlign: "center",
-    marginTop: 16,
-    marginBottom: 8,
-    fontWeight: "600",
-  },
-  emptySubMessage: {
-    fontSize: 14,
-    color: "#9ca3af",
-    textAlign: "center",
-    lineHeight: 20,
-  },
-  emptyHint: {
-    backgroundColor: "#f0f9ff",
-    borderRadius: 8,
-    padding: 12,
-    marginTop: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: "#3b82f6",
-  },
-  emptyHintText: {
-    fontSize: 12,
-    color: "#1e40af",
-    textAlign: "center",
-    fontStyle: "italic",
-  },
-
-  // Scroll hint
-  scrollHint: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f1f5f9",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#cbd5e1",
-  },
-  scrollHintText: {
-    fontSize: 12,
-    color: "#64748b",
-    marginLeft: 4,
-    fontStyle: "italic",
-  },
-
   // Add button
   addButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.primary,
+    borderRadius: 16,
+    overflow: 'hidden',
+    margin: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  addButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 16,
     paddingHorizontal: 24,
-    borderRadius: 12,
-    margin: 16,
-    elevation: 4,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    gap: 8,
   },
   addButtonText: {
-    color: COLORS.textInverse,
-    fontWeight: "bold",
+    color: 'white',
+    fontWeight: 'bold',
     fontSize: 16,
-    marginLeft: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
 
-  // Centered loading/error state
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: COLORS.background,
-  },
-
-  // Remove unused styles
-  totalCostCell: {
-    fontWeight: "bold",
-    color: "#059669",
-  },
-  infoColumn: {
-    width: 70,
-  },
+  // Remove unused styles that are no longer needed with the new design
   measurementCard: {
     backgroundColor: "#fff",
     borderRadius: 12,
