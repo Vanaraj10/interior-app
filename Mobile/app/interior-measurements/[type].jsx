@@ -12,7 +12,7 @@ import {
   Dimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { INTERIOR_SCHEMAS } from "../components/interiorSchemas";
+import { INTERIOR_SCHEMAS, calculateRods } from "../components/interiorSchemas";
 import { COLORS } from "../styles/colors";
 
 const { width, height } = Dimensions.get("window");
@@ -1038,21 +1038,22 @@ const TotalCostSummary = ({ measurements, styles }) => {
   const wallBracketTotal = measurements.reduce(
     (sum, m) => sum + (m.totalWallBracketCost || 0),
     0
-  );
-  const rodCalculationTotal = measurements.reduce(
+  );  const rodCalculationTotal = measurements.reduce(
     (sum, m) =>
       sum + (m.totalRodsRequired || 0) * parseFloat(m.rodRatePerLength || 0),
     0
   );
-  // Calculate total rods required
-  const totalRodsRequired = measurements.reduce(
-    (sum, m) => sum + (m.totalRodsRequired || 0),
-    0
-  );
-
+  // Calculate total rods required using project-level optimization
+  const widths = measurements.map(m => parseFloat(m.width) || 0);
+  const rodCalc = calculateRods(widths);
+  const totalRodsRequired = rodCalc.totalRods;
+  
+  // Calculate project-level rod cost
+  const rodRatePerLength = measurements.length > 0 ? (parseFloat(measurements[0].rodRatePerLength) || 0) : 0;
+  const projectLevelRodCost = totalRodsRequired * rodRatePerLength;
   // Calculate GST
   const clothGST = curtainTotal * 0.05; // 5% GST on cloth
-  const totalRodCostBeforeGST = wallBracketTotal + rodCalculationTotal;
+  const totalRodCostBeforeGST = wallBracketTotal + projectLevelRodCost; // Use project-level rod cost
   const rodGST = totalRodCostBeforeGST * 0.18; // 18% GST on rod
 
   const clothCostWithGST = curtainTotal + clothGST;
@@ -1072,9 +1073,7 @@ const TotalCostSummary = ({ measurements, styles }) => {
             {totalRodsRequired} rods
           </Text>
         </View>
-      </View>
-
-      {/* Total Wall Brackets Cost */}
+      </View>      {/* Total Wall Brackets Cost */}
       <View style={styles.tableRow}>
         <View style={[styles.tableCell, { flex: 2 }]}>
           <Text style={styles.cellText}>Total Wall Brackets Cost</Text>
@@ -1082,6 +1081,18 @@ const TotalCostSummary = ({ measurements, styles }) => {
         <View style={[styles.tableCell, { flex: 1 }]}>
           <Text style={[styles.cellText, styles.costText]}>
             ₹{wallBracketTotal.toLocaleString("en-IN")}
+          </Text>
+        </View>
+      </View>
+
+      {/* Rod Calculation Cost */}
+      <View style={styles.tableRow}>
+        <View style={[styles.tableCell, { flex: 2 }]}>
+          <Text style={styles.cellText}>Rod Calculation Cost</Text>
+        </View>
+        <View style={[styles.tableCell, { flex: 1 }]}>
+          <Text style={[styles.cellText, styles.costText]}>
+            ₹{projectLevelRodCost.toLocaleString("en-IN")}
           </Text>
         </View>
       </View>

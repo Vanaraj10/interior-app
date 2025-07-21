@@ -206,13 +206,12 @@ export const INTERIOR_SCHEMAS = {
 
       const clampCost = clampRequired * clampRatePerPiece;
       const doomCost = doomRequired * doomRatePerPiece;
-      const totalWallBracketCost = clampCost + doomCost;
-
-      // Calculate rod requirements using the helper function
-      const rodCalc = calculateRods([width]);
-      const totalRodsRequired = rodCalc.totalRods;
+      const totalWallBracketCost = clampCost + doomCost;      // Note: Rod calculation should be done at project level, not individual measurement
+      // For individual measurements, we'll set totalRodsRequired to 0 as placeholder
+      // The actual rod calculation happens at project level using all widths
+      const totalRodsRequired = 0; // Project-level calculation required
       const rodRatePerLength = parseFloat(data.rodRatePerLength) || 0;
-      const totalRodCost = totalRodsRequired * rodRatePerLength;
+      const totalRodCost = 0; // Will be calculated at project level
 
       // Final rod cost including wall bracket cost
       const totalRodCostComplete = totalWallBracketCost + totalRodCost;
