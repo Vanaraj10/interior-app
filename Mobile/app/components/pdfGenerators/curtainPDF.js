@@ -29,18 +29,19 @@ export function generateCurtainRows(measurements, formatCurrency) {
       <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.height}"</td>
       <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.parts || m.pieces || '-'}</td>
       <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.stitchingModel || m.curtainType || 'N/A'}</td>
-      <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${(m.mainMetre || m.totalMeters || 0).toFixed(2)}m</td>
-      <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
+      <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${(m.mainMetre || m.totalMeters || 0).toFixed(2)}m</td>      <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
         <div style="font-weight: bold;">${formatCurrency(m.clothCost || 0)}</div>
+        ${m.mainMetre && m.clothRatePerMeter ? `<div style="font-size: 11px; color: #666;">${(m.mainMetre).toFixed(2)}m × ${formatCurrency(m.clothRatePerMeter)}</div>` : ''}
       </td>
       <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
         <div style="font-weight: bold;">${formatCurrency(m.stitchingCost || 0)}</div>
+        ${m.parts && m.stitchingCostPerPart ? `<div style="font-size: 11px; color: #666;">${m.parts} × ${formatCurrency(m.stitchingCostPerPart)}</div>` : ''}
       </td>
       <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
         ${m.hasLining ? `<div style='font-weight: bold;'>${(m.liningMetre || m.totalLiningMeters || 0).toFixed(2)}m</div>` : '-'}
-      </td>
-      <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
+      </td>      <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
         ${m.hasLining ? `<div style='font-weight: bold;'>${formatCurrency(m.liningCost || m.totalLiningCost || 0)}</div>` : '-'}
+        ${m.hasLining && m.liningMetre && m.liningRatePerMeter ? `<div style="font-size: 11px; color: #666;">${(m.liningMetre).toFixed(2)}m × ${formatCurrency(m.liningRatePerMeter)}</div>` : ''}
       </td>
       <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(m.totalCurtainCost || m.totalCost || 0)}</td>
     </tr>
@@ -115,10 +116,9 @@ export function generateRodCostRows(measurements, formatCurrency) {
 // Generate Total Cost Summary
 export function generateTotalCostSummary(measurements, formatCurrency) {
   if (!measurements.length) return '';
-  
-  // Calculate cloth cost total (with 5% GST)
+    // Calculate cloth cost total (with 5% GST)
   const totalCurtainCost = measurements.reduce((sum, m) => sum + (parseFloat(m.totalCurtainCost) || parseFloat(m.totalCost) || 0), 0);
-  const clothCostWithGST = totalCurtainCost * 1.05;
+  const clothCostWithGST = Math.ceil(totalCurtainCost * 1.05);
   
   // Calculate rod cost total (with 18% GST)
   const totalWallBracketCost = measurements.reduce((sum, m) => {
@@ -126,14 +126,13 @@ export function generateTotalCostSummary(measurements, formatCurrency) {
     const doomCost = (parseFloat(m.doomRequired) || 0) * (parseFloat(m.doomRatePerPiece) || 0);
     return sum + clampCost + doomCost;
   }, 0);
-  
-  const widths = measurements.map(m => parseFloat(m.width) || 0);
+    const widths = measurements.map(m => parseFloat(m.width) || 0);
   const rodCalc = calculateRods(widths);
   const rodRatePerLength = measurements.length > 0 ? (parseFloat(measurements[0].rodRatePerLength) || 0) : 0;
-  const totalRodCost = rodCalc.totalRods * rodRatePerLength;
-  const totalRodCostWithGST = (totalWallBracketCost + totalRodCost) * 1.18;
+  const totalRodCost = Math.ceil(rodCalc.totalRods * rodRatePerLength);
+  const totalRodCostWithGST = Math.ceil((totalWallBracketCost + totalRodCost) * 1.18);
   
-  const grandTotal = clothCostWithGST + totalRodCostWithGST;  return `
+  const grandTotal = clothCostWithGST + totalRodCostWithGST;return `
     <div style="margin-top: 20px;">
       <h4 style="margin: 0 0 10px 0;">Cost Summary</h4>
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">

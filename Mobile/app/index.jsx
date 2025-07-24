@@ -196,7 +196,7 @@ export default function Home() {
               <Ionicons name="home" size={24} color="white" />
             </View>
             <View>
-              <Text style={styles.headerTitle}>ROYAL CURTAIN</Text>
+              <Text style={styles.headerTitle}>Zyntriq Curtains</Text>
               <Text style={styles.headerSubtitle}>Interior Solutions</Text>
             </View>
           </View>

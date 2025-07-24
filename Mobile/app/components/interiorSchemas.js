@@ -177,24 +177,21 @@ export const INTERIOR_SCHEMAS = {
       const parts = pieces;
 
       // Calculate Main Metre: ((Height+12)*Part)/39
-      const mainMetre = ((height + 12) * parts) / 39;
-
-      // Calculate costs
+      const mainMetre = ((height + 12) * Math.ceil(parts)) / 39; // Calculate costs
       const clothRatePerMeter = parseFloat(data.clothRatePerMeter) || 0;
       const stitchingCostPerPart = parseFloat(data.stitchingCostPerPart) || 0;
 
-      const clothCost = mainMetre * clothRatePerMeter;
-      const stitchingCost = parts * stitchingCostPerPart;
+      const clothCost = Math.ceil(mainMetre * clothRatePerMeter);
+      const stitchingCost = Math.ceil(parts * stitchingCostPerPart);
 
       // Lining calculations
       let liningMetre = 0;
       let liningCost = 0;
       let totalCurtainCost = clothCost + stitchingCost;
-
       if (data.hasLining) {
         liningMetre = mainMetre; // Same as Main Metre
         const liningRatePerMeter = parseFloat(data.liningRatePerMeter) || 0;
-        liningCost = liningMetre * liningRatePerMeter;
+        liningCost = Math.ceil(liningMetre * liningRatePerMeter);
         totalCurtainCost = clothCost + stitchingCost + liningCost;
       }
       // Rod calculations
@@ -203,10 +200,9 @@ export const INTERIOR_SCHEMAS = {
       const clampRatePerPiece = parseFloat(data.clampRatePerPiece) || 0;
       const doomRequired = parseFloat(data.doomRequired) || 0;
       const doomRatePerPiece = parseFloat(data.doomRatePerPiece) || 0;
-
-      const clampCost = clampRequired * clampRatePerPiece;
-      const doomCost = doomRequired * doomRatePerPiece;
-      const totalWallBracketCost = clampCost + doomCost;      // Note: Rod calculation should be done at project level, not individual measurement
+      const clampCost = Math.ceil(clampRequired * clampRatePerPiece);
+      const doomCost = Math.ceil(doomRequired * doomRatePerPiece);
+      const totalWallBracketCost = clampCost + doomCost; // Note: Rod calculation should be done at project level, not individual measurement
       // For individual measurements, we'll set totalRodsRequired to 0 as placeholder
       // The actual rod calculation happens at project level using all widths
       const totalRodsRequired = 0; // Project-level calculation required
@@ -214,10 +210,9 @@ export const INTERIOR_SCHEMAS = {
       const totalRodCost = 0; // Will be calculated at project level
 
       // Final rod cost including wall bracket cost
-      const totalRodCostComplete = totalWallBracketCost + totalRodCost;
-      // Final calculations with GST
-      const clothCostWithGST = totalCurtainCost * 1.05; // 5% GST on cloth
-      const rodCostWithGST = totalRodCostComplete * 1.18; // 18% GST on rod
+      const totalRodCostComplete = totalWallBracketCost + totalRodCost; // Final calculations with GST
+      const clothCostWithGST = Math.ceil(totalCurtainCost * 1.05); // 5% GST on cloth
+      const rodCostWithGST = Math.ceil(totalRodCostComplete * 1.18); // 18% GST on rod
       const grandTotal = clothCostWithGST + rodCostWithGST;
 
       return {
@@ -320,7 +315,7 @@ export const INTERIOR_SCHEMAS = {
       const heightFeet = Math.round((heightInches / 12) * 10) / 10;
       const totalSqft = widthFeet * heightFeet;
       const materialRate = parseFloat(data.materialRatePerSqft) || 0;
-      const materialCost = totalSqft * materialRate;
+      const materialCost = Math.ceil(totalSqft * materialRate);
       return {
         widthFeet,
         heightFeet,
@@ -381,10 +376,11 @@ export const INTERIOR_SCHEMAS = {
         rolls = Math.ceil(rolls);
       } else {
         rolls = Math.max(1, Math.floor(rolls));
-      }
-      // Step 4: Total cost
-      const totalMaterialCost = rolls * costPerRoll;
-      const totalImplementationCost = rolls * implementationCostPerRoll;
+      } // Step 4: Total cost
+      const totalMaterialCost = Math.ceil(rolls * costPerRoll);
+      const totalImplementationCost = Math.ceil(
+        rolls * implementationCostPerRoll
+      );
       const totalCost = totalMaterialCost + totalImplementationCost;
       return {
         squareInches,
@@ -465,11 +461,9 @@ export const INTERIOR_SCHEMAS = {
     calculate: (data) => {
       const height = parseFloat(data.height) || 0;
       const width = parseFloat(data.width) || 0;
-      const costPerSqft = parseFloat(data.costPerSqft) || 0;
-
-      // Basic calculations for all blinds
+      const costPerSqft = parseFloat(data.costPerSqft) || 0; // Basic calculations for all blinds
       const totalSqft = (height * width) / 144;
-      const blindsCost = totalSqft * costPerSqft;
+      const blindsCost = Math.ceil(totalSqft * costPerSqft);
 
       let totalCost = blindsCost;
       let part = 1;
@@ -494,12 +488,10 @@ export const INTERIOR_SCHEMAS = {
           else if (width <= 100) part = 2;
           else if (width <= 150) part = 3;
           else part = Math.ceil(width / 50);
-        }
-
-        // Calculate cloth required and costs
+        } // Calculate cloth required and costs
         clothRequired = ((height + 12) / 39) * part;
-        clothCost = clothRequired * clothCostPerSqft;
-        stitchingCost = part * stitchingCostPerPart;
+        clothCost = Math.ceil(clothRequired * clothCostPerSqft);
+        stitchingCost = Math.ceil(part * stitchingCostPerPart);
 
         totalCost = blindsCost + clothCost + stitchingCost;
       }
@@ -528,8 +520,12 @@ export const INTERIOR_SCHEMAS = {
       const height = parseFloat(m.height) || 0;
       const width = parseFloat(m.width) || 0;
       const totalSqft = (height * width) / 144;
-      const costOfRoom = totalSqft * (parseFloat(m.costPerSqft) || 0);
-      const layingCharge = totalSqft * (parseFloat(m.layingPerSqft) || 0);
+      const costOfRoom = Math.ceil(
+        totalSqft * (parseFloat(m.costPerSqft) || 0)
+      );
+      const layingCharge = Math.ceil(
+        totalSqft * (parseFloat(m.layingPerSqft) || 0)
+      );
       return {
         ...m,
         totalSqft,

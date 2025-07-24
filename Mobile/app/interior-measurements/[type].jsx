@@ -262,16 +262,25 @@ const TableRow = ({
         </View>
         <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>{m.totalSqft?.toFixed(2) || "-"}</Text>
-        </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        </View>        <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>
             ₹{m.costOfRoom?.toLocaleString("en-IN") || "-"}
           </Text>
+          {m.totalSqft && m.costPerSqft && (
+            <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
+              {m.totalSqft?.toFixed(2)} sqft × ₹{m.costPerSqft}
+            </Text>
+          )}
         </View>
         <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>
             ₹{m.layingCharge?.toLocaleString("en-IN") || "-"}
           </Text>
+          {m.totalSqft && m.layingPerSqft && (
+            <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
+              {m.totalSqft?.toFixed(2)} sqft × ₹{m.layingPerSqft}
+            </Text>
+          )}
         </View>
         <View style={[styles.tableCell, styles.totalColumn]}>
           <Text style={[styles.cellText, styles.totalCostText]}>
@@ -335,16 +344,25 @@ const TableRow = ({
           <Text style={styles.cellText}>
             {m.mainMetre?.toFixed(2) || m.totalMeters?.toFixed(2) || "-"}
           </Text>
-        </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        </View>        <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>
             ₹{m.clothCost?.toLocaleString("en-IN") || "-"}
           </Text>
+          {m.mainMetre && m.clothRatePerMeter && (
+            <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
+              {m.mainMetre?.toFixed(2)}m × ₹{m.clothRatePerMeter}
+            </Text>
+          )}
         </View>
         <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>
             ₹{m.stitchingCost?.toLocaleString("en-IN") || "-"}
           </Text>
+          {m.parts && m.stitchingCostPerPart && (
+            <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
+              {m.parts} × ₹{m.stitchingCostPerPart}
+            </Text>
+          )}
         </View>
         <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>
@@ -354,8 +372,7 @@ const TableRow = ({
                 "-"
               : "-"}
           </Text>
-        </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        </View>        <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>
             {m.hasLining
               ? `₹${
@@ -365,6 +382,11 @@ const TableRow = ({
                 }`
               : "-"}
           </Text>
+          {m.hasLining && m.liningMetre && m.liningRatePerMeter && (
+            <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
+              {m.liningMetre?.toFixed(2)}m × ₹{m.liningRatePerMeter}
+            </Text>
+          )}
         </View>
         <View style={[styles.tableCell, styles.totalColumn]}>
           <Text style={[styles.cellText, styles.totalCostText]}>
@@ -422,11 +444,15 @@ const TableRow = ({
         </View>
         <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>{m.totalSqft?.toFixed(2) || "-"}</Text>
-        </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        </View>        <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>
             ₹{m.blindsCost?.toLocaleString("en-IN") || "-"}
           </Text>
+          {m.totalSqft && m.costPerSqft && (
+            <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
+              {m.totalSqft?.toFixed(2)} sqft × ₹{m.costPerSqft}
+            </Text>
+          )}
         </View>
         <View style={[styles.tableCell, styles.typeColumn]}>
           <Text style={styles.cellText}>{m.blindType || "-"}</Text>
@@ -438,16 +464,25 @@ const TableRow = ({
           <Text style={styles.cellText}>
             {isRoman ? m.clothRequired?.toFixed(2) || "-" : "-"}
           </Text>
-        </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        </View>        <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>
             {isRoman ? `₹${m.clothCost?.toLocaleString("en-IN")}` : "-"}
           </Text>
+          {isRoman && m.clothRequired && m.clothCostPerSqft && (
+            <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
+              {m.clothRequired?.toFixed(2)}m × ₹{m.clothCostPerSqft}
+            </Text>
+          )}
         </View>
         <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>
             {isRoman ? `₹${m.stitchingCost?.toLocaleString("en-IN")}` : "-"}
           </Text>
+          {isRoman && m.part && m.stitchingCostPerPart && (
+            <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
+              {m.part} × ₹{m.stitchingCostPerPart}
+            </Text>
+          )}
         </View>
         <View style={[styles.tableCell, styles.totalColumn]}>
           <Text style={[styles.cellText, styles.totalCostText]}>
@@ -507,11 +542,15 @@ const TableRow = ({
         </View>
         <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>{m.totalSqft?.toFixed(2) || "-"}</Text>
-        </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        </View>        <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>
             ₹{m.materialCost?.toLocaleString("en-IN") || "-"}
           </Text>
+          {m.totalSqft && m.materialRatePerSqft && (
+            <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
+              {m.totalSqft?.toFixed(2)} sqft × ₹{m.materialRatePerSqft}
+            </Text>
+          )}
         </View>
         <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>{m.customDescription || "-"}</Text>
@@ -589,16 +628,25 @@ const TableRow = ({
         </View>
         <View style={[styles.tableCell, styles.smallColumn]}>
           <Text style={styles.cellText}>{rolls}</Text>
-        </View>
-        <View style={[styles.tableCell, styles.mediumColumn]}>
+        </View>        <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>
             ₹{Math.floor(materialCost).toLocaleString("en-IN")}
           </Text>
+          {rolls && m.costPerRoll && (
+            <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
+              {rolls} rolls × ₹{m.costPerRoll}
+            </Text>
+          )}
         </View>
         <View style={[styles.tableCell, styles.mediumColumn]}>
           <Text style={styles.cellText}>
             ₹{Math.floor(implementationCost).toLocaleString("en-IN")}
           </Text>
+          {rolls && m.implementationCostPerRoll && (
+            <Text style={[styles.cellText, { fontSize: 10, color: "#666" }]}>
+              {rolls} rolls × ₹{m.implementationCostPerRoll}
+            </Text>
+          )}
         </View>
         <View style={[styles.tableCell, styles.totalColumn]}>
           <Text style={[styles.cellText, styles.totalCostText]}>
@@ -1047,14 +1095,13 @@ const TotalCostSummary = ({ measurements, styles }) => {
   const widths = measurements.map(m => parseFloat(m.width) || 0);
   const rodCalc = calculateRods(widths);
   const totalRodsRequired = rodCalc.totalRods;
-  
-  // Calculate project-level rod cost
+    // Calculate project-level rod cost
   const rodRatePerLength = measurements.length > 0 ? (parseFloat(measurements[0].rodRatePerLength) || 0) : 0;
-  const projectLevelRodCost = totalRodsRequired * rodRatePerLength;
+  const projectLevelRodCost = Math.ceil(totalRodsRequired * rodRatePerLength);
   // Calculate GST
-  const clothGST = curtainTotal * 0.05; // 5% GST on cloth
+  const clothGST = Math.ceil(curtainTotal * 0.05); // 5% GST on cloth
   const totalRodCostBeforeGST = wallBracketTotal + projectLevelRodCost; // Use project-level rod cost
-  const rodGST = totalRodCostBeforeGST * 0.18; // 18% GST on rod
+  const rodGST = Math.ceil(totalRodCostBeforeGST * 0.18); // 18% GST on rod
 
   const clothCostWithGST = curtainTotal + clothGST;
   const rodCostWithGST = totalRodCostBeforeGST + rodGST;

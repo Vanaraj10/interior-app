@@ -9,7 +9,10 @@ export function generateMosquitoNetRows(measurements, formatCurrency) {
       <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.materialType || ''}</td>
       <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">₹${m.materialRatePerSqft || 0}</td>
       <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${m.totalSqft ? m.totalSqft.toFixed(2) : 0}</td>
-      <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(m.materialCost || 0)}</td>
+      <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">
+        <div>${formatCurrency(m.materialCost || 0)}</div>
+        ${m.totalSqft && m.materialRatePerSqft ? `<div style="font-size: 11px; color: #666;">${m.totalSqft.toFixed(2)} sqft × ₹${m.materialRatePerSqft}</div>` : ''}
+      </td>
       <td style="padding: 8px; border: 1px solid #ddd;">${m.customDescription || ''}</td>
     </tr>
   `).join('');

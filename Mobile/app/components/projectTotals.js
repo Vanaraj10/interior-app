@@ -47,9 +47,8 @@ export function calculateProjectTotals(projectData) {
       rolls = Math.ceil(rolls);
     } else {
       rolls = Math.max(1, Math.floor(rolls));
-    }
-    const totalMaterialCost = rolls * costPerRoll;
-    const totalImplementationCost = rolls * implementationCostPerRoll;
+    }    const totalMaterialCost = Math.ceil(rolls * costPerRoll);
+    const totalImplementationCost = Math.ceil(rolls * implementationCostPerRoll);
     const totalCost = totalMaterialCost + totalImplementationCost;
     wallpaperTotal += totalCost;
     totalWallpaperRolls += rolls;

@@ -14,9 +14,8 @@ export function generateWallpaperRows(measurements, formatCurrency) {
       rolls = Math.ceil(rolls);
     } else {
       rolls = Math.max(1, Math.floor(rolls));
-    }
-    const totalMaterialCost = rolls * costPerRoll;
-    const totalImplementationCost = rolls * implementationCostPerRoll;
+    }    const totalMaterialCost = Math.ceil(rolls * costPerRoll);
+    const totalImplementationCost = Math.ceil(rolls * implementationCostPerRoll);
     const totalCost = totalMaterialCost + totalImplementationCost;
     return `
       <tr>
@@ -25,9 +24,14 @@ export function generateWallpaperRows(measurements, formatCurrency) {
         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${width}"</td>
         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${height}"</td>
         <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${squareFeet.toFixed(2)}</td>
-        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${rolls}</td>
-        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${formatCurrency(totalMaterialCost)}</td>
-        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${formatCurrency(totalImplementationCost)}</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${rolls}</td>        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
+          <div style="font-weight: bold;">${formatCurrency(totalMaterialCost)}</div>
+          <div style="font-size: 11px; color: #666;">${rolls} rolls × ₹${costPerRoll}</div>
+        </td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">
+          <div style="font-weight: bold;">${formatCurrency(totalImplementationCost)}</div>
+          <div style="font-size: 11px; color: #666;">${rolls} rolls × ₹${implementationCostPerRoll}</div>
+        </td>
         <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(totalCost)}</td>
       </tr>
     `;
@@ -49,12 +53,11 @@ generateWallpaperRows.totals = (measurements, formatCurrency) => {
       rolls = Math.ceil(rolls);
     } else {
       rolls = Math.max(1, Math.floor(rolls));
-    }
-    totalSqft += squareFeet;
+    }    totalSqft += squareFeet;
     totalRolls += rolls;
-    totalMaterialCost += rolls * costPerRoll;
-    totalImplementationCost += rolls * implementationCostPerRoll;
-    totalCost += (rolls * costPerRoll) + (rolls * implementationCostPerRoll);
+    totalMaterialCost += Math.ceil(rolls * costPerRoll);
+    totalImplementationCost += Math.ceil(rolls * implementationCostPerRoll);
+    totalCost += Math.ceil(rolls * costPerRoll) + Math.ceil(rolls * implementationCostPerRoll);
   });
   return `<tr style=\"background:#f0f9ff;font-weight:bold;\">
     <td colspan=\"4\" style=\"text-align:right;\">TOTAL</td>
