@@ -10,7 +10,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Dimensions
+  Dimensions,
+  SafeAreaView
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from './styles/colors';
@@ -70,128 +71,130 @@ export default function NewProject() {
       Alert.alert('Error', 'Failed to create project');
     }
   };  return (
-    <LinearGradient
-      colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-    >
-      {/* Background Pattern */}
-      <View style={styles.backgroundPattern}>
-        {[...Array(6)].map((_, i) => (
-          <View key={i} style={[styles.patternCircle, { 
-            top: Math.random() * height,
-            left: Math.random() * width,
-            opacity: 0.05 + Math.random() * 0.1,
-          }]} />
-        ))}
-      </View>
-
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.headerTitle}>New Project</Text>
-            <Text style={styles.headerSubtitle}>Create new quotation</Text>
-          </View>
-          <View style={styles.headerIcon}>
-            <Ionicons name="add-circle-outline" size={24} color="white" />
-          </View>
-        </View>
-      </View>
-
-      <ScrollView 
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+    <SafeAreaView style={{ flex: 1 }}>
+      <LinearGradient
+        colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+        style={styles.container}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
       >
-        {/* Client Information Card */}
-        <View style={styles.section}>
-          <LinearGradient
-            colors={['rgba(255, 255, 255, 0.98)', 'rgba(255, 255, 255, 0.95)']}
-            style={styles.sectionGradient}
-          >
-            <View style={styles.sectionHeader}>
-              <View style={styles.sectionIconContainer}>
-                <Ionicons name="person-outline" size={24} color={COLORS.primary} />
-              </View>
-              <Text style={styles.sectionTitle}>Client Information</Text>
-            </View>
-
-            <View style={styles.fieldsContainer}>
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>
-                  <Ionicons name="person" size={14} color={COLORS.primary} /> Client Name *
-                </Text>
-                <View style={styles.inputContainer}>
-                  <TextInput
-                    style={styles.input}
-                    value={formData.clientName}
-                    onChangeText={(text) => updateField('clientName', text)}
-                    placeholder="Enter client name"
-                    placeholderTextColor={COLORS.gray400}
-                  />
-                </View>
-              </View>
-
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>
-                  <Ionicons name="call" size={14} color={COLORS.primary} /> Phone Number *
-                </Text>
-                <View style={styles.inputContainer}>
-                  <TextInput
-                    style={styles.input}
-                    value={formData.phone}
-                    onChangeText={(text) => updateField('phone', text)}
-                    placeholder="Enter phone number"
-                    placeholderTextColor={COLORS.gray400}
-                    keyboardType="phone-pad"
-                  />
-                </View>
-              </View>
-
-              <View style={styles.fieldContainer}>
-                <Text style={styles.label}>
-                  <Ionicons name="location" size={14} color={COLORS.primary} /> Address *
-                </Text>
-                <View style={[styles.inputContainer, styles.textAreaContainer]}>
-                  <TextInput
-                    style={[styles.input, styles.textArea]}
-                    value={formData.address}
-                    onChangeText={(text) => updateField('address', text)}
-                    placeholder="Enter complete address"
-                    placeholderTextColor={COLORS.gray400}
-                    multiline
-                    textAlignVertical="top"
-                  />
-                </View>
-              </View>
-            </View>
-          </LinearGradient>
+        {/* Background Pattern */}
+        <View style={styles.backgroundPattern}>
+          {[...Array(6)].map((_, i) => (
+            <View key={i} style={[styles.patternCircle, { 
+              top: Math.random() * height,
+              left: Math.random() * width,
+              opacity: 0.05 + Math.random() * 0.1,
+            }]} />
+          ))}
         </View>
 
-        {/* Create Button */}
-        <TouchableOpacity
-          style={styles.createButton}
-          onPress={createProject}
-          activeOpacity={0.8}
-        >
-          <LinearGradient
-            colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
-            style={styles.createButtonGradient}
-          >
-            <Ionicons name="add-circle" size={24} color={COLORS.primary} />
-            <Text style={styles.createButtonText}>Create Project</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerContent}>
+            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+            <View style={styles.headerTextContainer}>
+              <Text style={styles.headerTitle}>New Project</Text>
+              <Text style={styles.headerSubtitle}>Create new quotation</Text>
+            </View>
+            <View style={styles.headerIcon}>
+              <Ionicons name="add-circle-outline" size={24} color="white" />
+            </View>
+          </View>
+        </View>
 
-        {/* Additional spacing for better scroll experience */}
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
-    </LinearGradient>
+        <ScrollView 
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {/* Client Information Card */}
+          <View style={styles.section}>
+            <LinearGradient
+              colors={['rgba(255, 255, 255, 0.98)', 'rgba(255, 255, 255, 0.95)']}
+              style={styles.sectionGradient}
+            >
+              <View style={styles.sectionHeader}>
+                <View style={styles.sectionIconContainer}>
+                  <Ionicons name="person-outline" size={24} color={COLORS.primary} />
+                </View>
+                <Text style={styles.sectionTitle}>Client Information</Text>
+              </View>
+
+              <View style={styles.fieldsContainer}>
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>
+                    <Ionicons name="person" size={14} color={COLORS.primary} /> Client Name *
+                  </Text>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      style={styles.input}
+                      value={formData.clientName}
+                      onChangeText={(text) => updateField('clientName', text)}
+                      placeholder="Enter client name"
+                      placeholderTextColor={COLORS.gray400}
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>
+                    <Ionicons name="call" size={14} color={COLORS.primary} /> Phone Number *
+                  </Text>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      style={styles.input}
+                      value={formData.phone}
+                      onChangeText={(text) => updateField('phone', text)}
+                      placeholder="Enter phone number"
+                      placeholderTextColor={COLORS.gray400}
+                      keyboardType="phone-pad"
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.fieldContainer}>
+                  <Text style={styles.label}>
+                    <Ionicons name="location" size={14} color={COLORS.primary} /> Address *
+                  </Text>
+                  <View style={[styles.inputContainer, styles.textAreaContainer]}>
+                    <TextInput
+                      style={[styles.input, styles.textArea]}
+                      value={formData.address}
+                      onChangeText={(text) => updateField('address', text)}
+                      placeholder="Enter complete address"
+                      placeholderTextColor={COLORS.gray400}
+                      multiline
+                      textAlignVertical="top"
+                    />
+                  </View>
+                </View>
+              </View>
+            </LinearGradient>
+          </View>
+
+          {/* Create Button */}
+          <TouchableOpacity
+            style={styles.createButton}
+            onPress={createProject}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+              style={styles.createButtonGradient}
+            >
+              <Ionicons name="add-circle" size={24} color={COLORS.primary} />
+              <Text style={styles.createButtonText}>Create Project</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          {/* Additional spacing for better scroll experience */}
+          <View style={styles.bottomSpacing} />
+        </ScrollView>
+      </LinearGradient>
+    </SafeAreaView>
   );
 }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Dimensions, SafeAreaView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { COLORS } from './styles/colors';
@@ -51,118 +51,120 @@ export default function Login() {
     }
   };
   return (
-    <LinearGradient
-      colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-    >
-      {/* Background Pattern */}
-      <View style={styles.backgroundPattern}>
-        {[...Array(6)].map((_, i) => (
-          <View key={i} style={[styles.patternCircle, { 
-            top: Math.random() * height,
-            left: Math.random() * width,
-            opacity: 0.1 + Math.random() * 0.15,
-          }]} />
-        ))}
-      </View>
-
-      {/* Main Content */}
-      <View style={styles.content}>
-        {/* Logo/Brand Section */}
-        <View style={styles.logoContainer}>
-          <View style={styles.logoBackground}>
-            <Ionicons name="home" size={40} color={COLORS.primary} />
-          </View>
-          <Text style={styles.brandTitle}>ROYAL CURTAIN</Text>
-          <Text style={styles.brandSubtitle}>Interior Solutions & Custom Designs</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <LinearGradient
+        colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+        style={styles.container}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        {/* Background Pattern */}
+        <View style={styles.backgroundPattern}>
+          {[...Array(6)].map((_, i) => (
+            <View key={i} style={[styles.patternCircle, { 
+              top: Math.random() * height,
+              left: Math.random() * width,
+              opacity: 0.1 + Math.random() * 0.15,
+            }]} />
+          ))}
         </View>
 
-        {/* Login Card */}
-        <View style={styles.loginCard}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.welcomeTitle}>Welcome Back</Text>
-            <Text style={styles.welcomeSubtitle}>Sign in to access your workspace</Text>
+        {/* Main Content */}
+        <View style={styles.content}>
+          {/* Logo/Brand Section */}
+          <View style={styles.logoContainer}>
+            <View style={styles.logoBackground}>
+              <Ionicons name="home" size={40} color={COLORS.primary} />
+            </View>
+            <Text style={styles.brandTitle}>BENTLEI CURTAIN</Text>
+            <Text style={styles.brandSubtitle}>Designed With Luxary & Comfort</Text>
           </View>
 
-          {/* Username Input */}
-          <View style={styles.inputContainer}>
-            <View style={styles.inputIconContainer}>
-              <Ionicons name="person-outline" size={20} color={COLORS.gray500} />
+          {/* Login Card */}
+          <View style={styles.loginCard}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.welcomeTitle}>Welcome Back</Text>
+              <Text style={styles.welcomeSubtitle}>Sign in to access your workspace</Text>
             </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Username"
-              placeholderTextColor={COLORS.gray400}
-              value={username}
-              onChangeText={setUsername}
-              autoCapitalize="none"
-            />
-          </View>
 
-          {/* Password Input */}
-          <View style={styles.inputContainer}>
-            <View style={styles.inputIconContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color={COLORS.gray500} />
-            </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor={COLORS.gray400}
-              secureTextEntry={!showPassword}
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity 
-              style={styles.passwordToggle}
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <Ionicons 
-                name={showPassword ? "eye-outline" : "eye-off-outline"} 
-                size={20} 
-                color={COLORS.gray500} 
+            {/* Username Input */}
+            <View style={styles.inputContainer}>
+              <View style={styles.inputIconContainer}>
+                <Ionicons name="person-outline" size={20} color={COLORS.gray500} />
+              </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Username"
+                placeholderTextColor={COLORS.gray400}
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
               />
+            </View>
+
+            {/* Password Input */}
+            <View style={styles.inputContainer}>
+              <View style={styles.inputIconContainer}>
+                <Ionicons name="lock-closed-outline" size={20} color={COLORS.gray500} />
+              </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor={COLORS.gray400}
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
+              />
+              <TouchableOpacity 
+                style={styles.passwordToggle}
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                <Ionicons 
+                  name={showPassword ? "eye-outline" : "eye-off-outline"} 
+                  size={20} 
+                  color={COLORS.gray500} 
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Login Button */}
+            <TouchableOpacity 
+              style={[styles.loginButton, loading && styles.loginButtonDisabled]} 
+              onPress={handleLogin} 
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              <LinearGradient
+                colors={loading ? [COLORS.gray400, COLORS.gray500] : [COLORS.primary, COLORS.primaryLight]}
+                style={styles.buttonGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              >
+                {loading ? (
+                  <View style={styles.loadingContainer}>
+                    <View style={styles.loadingSpinner} />
+                    <Text style={styles.buttonText}>Signing in...</Text>
+                  </View>
+                ) : (
+                  <>
+                    <Ionicons name="log-in-outline" size={20} color={COLORS.textInverse} />
+                    <Text style={styles.buttonText}>Sign In</Text>
+                  </>
+                )}
+              </LinearGradient>
             </TouchableOpacity>
+
           </View>
 
-          {/* Login Button */}
-          <TouchableOpacity 
-            style={[styles.loginButton, loading && styles.loginButtonDisabled]} 
-            onPress={handleLogin} 
-            disabled={loading}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={loading ? [COLORS.gray400, COLORS.gray500] : [COLORS.primary, COLORS.primaryLight]}
-              style={styles.buttonGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              {loading ? (
-                <View style={styles.loadingContainer}>
-                  <View style={styles.loadingSpinner} />
-                  <Text style={styles.buttonText}>Signing in...</Text>
-                </View>
-              ) : (
-                <>
-                  <Ionicons name="log-in-outline" size={20} color={COLORS.textInverse} />
-                  <Text style={styles.buttonText}>Sign In</Text>
-                </>
-              )}
-            </LinearGradient>
-          </TouchableOpacity>
-
+          {/* Bottom Decoration */}
+          <View style={styles.bottomDecoration}>
+            <View style={styles.decorationLine} />
+            <Text style={styles.decorationText}>Secure Login</Text>
+            <View style={styles.decorationLine} />
+          </View>
         </View>
-
-        {/* Bottom Decoration */}
-        <View style={styles.bottomDecoration}>
-          <View style={styles.decorationLine} />
-          <Text style={styles.decorationText}>Secure Login</Text>
-          <View style={styles.decorationLine} />
-        </View>
-      </View>
-    </LinearGradient>
+      </LinearGradient>
+    </SafeAreaView>
   );
 }
 

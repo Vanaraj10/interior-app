@@ -10,7 +10,9 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
   Dimensions,
+  SafeAreaView,
 } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from "./styles/colors";
@@ -171,102 +173,109 @@ export default function Home() {
     })();
   }, []);
   return (
-    <LinearGradient
-      colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-    >
-      {/* Background Pattern */}
-      <View style={styles.backgroundPattern}>
-        {[...Array(8)].map((_, i) => (
-          <View key={i} style={[styles.patternCircle, { 
-            top: Math.random() * height,
-            left: Math.random() * width,
-            opacity: 0.05 + Math.random() * 0.1,
-          }]} />
-        ))}
-      </View>
-
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <View style={styles.brandSection}>
-            <View style={styles.logoContainer}>
-              <Ionicons name="home" size={24} color="white" />
-            </View>
-            <View>
-              <Text style={styles.headerTitle}>Zyntriq Curtains</Text>
-              <Text style={styles.headerSubtitle}>Interior Solutions</Text>
-            </View>
-          </View>
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Ionicons name="log-out-outline" size={18} color="white" />
-            <Text style={styles.logoutText}>Logout</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Projects List */}
-      <ScrollView
-        style={styles.scrollView}
-        refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
-            onRefresh={onRefresh}
-            tintColor="white"
-            colors={[COLORS.primary]}
-          />
-        }
-        showsVerticalScrollIndicator={false}
+    <SafeAreaView style={{ flex: 1 }}>
+      <LinearGradient
+        colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+        style={styles.container}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
       >
-        <View style={styles.listContainer}>
-          {projects.length === 0 ? (
-            <View style={styles.emptyState}>
-              <View style={styles.emptyIconContainer}>
-                <Ionicons
-                  name="document-text-outline"
-                  size={64}
-                  color="rgba(255, 255, 255, 0.7)"
+        {/* Background Pattern */}
+        <View style={styles.backgroundPattern}>
+          {[...Array(8)].map((_, i) => (
+            <View key={i} style={[styles.patternCircle, { 
+              top: Math.random() * height,
+              left: Math.random() * width,
+              opacity: 0.05 + Math.random() * 0.1,
+            }]} />
+          ))}
+        </View>
+
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerContent}>
+            <View style={styles.brandSection}>
+              <View style={styles.logoContainer}>
+                <Image
+                  source={require('../assets/images/logo.png')}
+                  style={{ width: 50, height: 50 }}
+                  resizeMode="contain"
+                  backgroundColor='transparent'
                 />
               </View>
-              <Text style={styles.emptyTitle}>No projects yet</Text>
-              <Text style={styles.emptySubtitle}>Create your first quote!</Text>
-              <TouchableOpacity
-                style={styles.createFirstButton}
-                onPress={() => router.push("/new-project")}
-              >
-                <LinearGradient
-                  colors={['rgba(255, 255, 255, 0.2)', 'rgba(255, 255, 255, 0.1)']}
-                  style={styles.createFirstGradient}
-                >
-                  <Ionicons name="add-circle-outline" size={20} color="white" />
-                  <Text style={styles.createFirstText}>Create Project</Text>
-                </LinearGradient>
-              </TouchableOpacity>
+              <View>
+                <Text style={styles.headerTitle}>BENTLEI Interiors</Text>
+                <Text style={styles.headerSubtitle}>Interior Solutions</Text>
+              </View>
             </View>
-          ) : (
-            projects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))
-          )}
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+              <Ionicons name="log-out-outline" size={18} color="white" />
+              <Text style={styles.logoutText}>Logout</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </ScrollView>
 
-      {/* Floating Action Button */}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => router.push("/new-project")}
-        activeOpacity={0.8}
-      >
-        <LinearGradient
-          colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
-          style={styles.fabGradient}
+        {/* Projects List */}
+        <ScrollView
+          style={styles.scrollView}
+          refreshControl={
+            <RefreshControl 
+              refreshing={refreshing} 
+              onRefresh={onRefresh}
+              tintColor="white"
+              colors={[COLORS.primary]}
+            />
+          }
+          showsVerticalScrollIndicator={false}
         >
-          <Ionicons name="add" size={28} color={COLORS.primary} />
-        </LinearGradient>
-      </TouchableOpacity>
-    </LinearGradient>
+          <View style={styles.listContainer}>
+            {projects.length === 0 ? (
+              <View style={styles.emptyState}>
+                <View style={styles.emptyIconContainer}>
+                  <Ionicons
+                    name="document-text-outline"
+                    size={64}
+                    color="rgba(255, 255, 255, 0.7)"
+                  />
+                </View>
+                <Text style={styles.emptyTitle}>No projects yet</Text>
+                <Text style={styles.emptySubtitle}>Create your first quote!</Text>
+                <TouchableOpacity
+                  style={styles.createFirstButton}
+                  onPress={() => router.push("/new-project")}
+                >
+                  <LinearGradient
+                    colors={['rgba(255, 255, 255, 0.2)', 'rgba(255, 255, 255, 0.1)']}
+                    style={styles.createFirstGradient}
+                  >
+                    <Ionicons name="add-circle-outline" size={20} color="white" />
+                    <Text style={styles.createFirstText}>Create Project</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              projects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))
+            )}
+          </View>
+        </ScrollView>
+
+        {/* Floating Action Button */}
+        <TouchableOpacity
+          style={styles.fab}
+          onPress={() => router.push("/new-project")}
+          activeOpacity={0.8}
+        >
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+            style={styles.fabGradient}
+          >
+            <Ionicons name="add" size={28} color={COLORS.primary} />
+          </LinearGradient>
+        </TouchableOpacity>
+      </LinearGradient>
+    </SafeAreaView>
   );
 }
 

@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   View,
   ScrollView,
-  Dimensions
+  Dimensions,
+  SafeAreaView
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS } from '../styles/colors';
@@ -20,13 +21,14 @@ const { width, height } = Dimensions.get('window');
 export default function ProjectDetails() {
   const { id } = useLocalSearchParams();
   const [project, setProject] = useState(null);
-  // Define INTERIOR_TYPES for the cards
+
   const INTERIOR_TYPES = [
     { key: 'curtains', label: INTERIOR_SCHEMAS.curtains.label, icon: 'logo-windows', color: '#2563eb' },
     { key: 'mosquito-nets', label: INTERIOR_SCHEMAS['mosquito-nets'].label, icon: 'bug', color: '#059669' },
     { key: 'wallpapers', label: INTERIOR_SCHEMAS.wallpapers.label, icon: 'image', color: '#dc2626' },
     { key: 'blinds', label: INTERIOR_SCHEMAS.blinds.label, icon: 'layers', color: '#7c3aed' },
     { key: "flooring", label: "Flooring", icon: "layers-outline", color: '#ea580c' },
+    
   ];const loadProject = useCallback(async () => {
     try {
       const projectsData = await AsyncStorage.getItem('projects');
@@ -45,7 +47,6 @@ export default function ProjectDetails() {
     }
   }, [id]);
 
-  // Use useFocusEffect to reload data when screen comes into focus
   useFocusEffect(
     useCallback(() => {
       loadProject();
@@ -57,113 +58,118 @@ export default function ProjectDetails() {
   };
   if (!project) {
     return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <LinearGradient
+          colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+          style={styles.loadingContainer}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View style={styles.loadingContent}>
+            <View style={styles.loadingSpinner} />
+            <Text style={styles.loadingText}>Loading Project...</Text>
+          </View>
+        </LinearGradient>
+      </SafeAreaView>
+    );
+  }
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
         colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
-        style={styles.loadingContainer}
+        style={styles.container}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <View style={styles.loadingContent}>
-          <View style={styles.loadingSpinner} />
-          <Text style={styles.loadingText}>Loading Project...</Text>
+        {/* Background Pattern */}
+        <View style={styles.backgroundPattern}>
+          {[...Array(8)].map((_, i) => (
+            <View key={i} style={[styles.patternCircle, { 
+              top: Math.random() * height,
+              left: Math.random() * width,
+              opacity: 0.03 + Math.random() * 0.07,
+            }]} />
+          ))}
         </View>
-      </LinearGradient>
-    );
-  }  return (
-    <LinearGradient
-      colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-    >
-      {/* Background Pattern */}
-      <View style={styles.backgroundPattern}>
-        {[...Array(8)].map((_, i) => (
-          <View key={i} style={[styles.patternCircle, { 
-            top: Math.random() * height,
-            left: Math.random() * width,
-            opacity: 0.03 + Math.random() * 0.07,
-          }]} />
-        ))}
-      </View>
 
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.headerTitle}>{project.clientName}</Text>
-            <Text style={styles.headerSubtitle}>Project Dashboard</Text>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerContent}>
+            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+            <View style={styles.headerTextContainer}>
+              <Text style={styles.headerTitle}>{project.clientName}</Text>
+              <Text style={styles.headerSubtitle}>Project Dashboard</Text>
+            </View>
+            <TouchableOpacity style={styles.headerPdfButton} onPress={generatePDF}>
+              <Ionicons name="document-text-outline" size={20} color="white" />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.headerPdfButton} onPress={generatePDF}>
-            <Ionicons name="document-text-outline" size={20} color="white" />
-          </TouchableOpacity>
         </View>
-      </View>
 
-      <ScrollView 
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      > 
-        {/* Services Section */}
-        <View style={styles.servicesSection}>
-          <Text style={styles.sectionTitle}>Available Services</Text>
-          <View style={styles.interiorTypesGrid}>
-            {INTERIOR_TYPES.map((type, index) => (
-              <TouchableOpacity
-                key={type.key}
-                style={styles.interiorTypeCard}
-                onPress={() => router.push({ pathname: '/interior-measurements/[type]', params: { id, type: type.key } })}
-                activeOpacity={0.8}
-              >
-                <LinearGradient
-                  colors={['rgba(255, 255, 255, 0.98)', 'rgba(255, 255, 255, 0.95)']}
-                  style={styles.cardGradient}
+        <ScrollView 
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        > 
+          {/* Services Section */}
+          <View style={styles.servicesSection}>
+            <Text style={styles.sectionTitle}>Available Services</Text>
+            <View style={styles.interiorTypesGrid}>
+              {INTERIOR_TYPES.map((type, index) => (
+                <TouchableOpacity
+                  key={type.key}
+                  style={styles.interiorTypeCard}
+                  onPress={() => router.push({ pathname: '/interior-measurements/[type]', params: { id, type: type.key } })}
+                  activeOpacity={0.8}
                 >
-                  <View style={[styles.cardIconContainer, { backgroundColor: type.color }]}>
-                    <Ionicons name={type.icon} size={28} color="white" />
-                  </View>
-                  <View style={styles.cardContent}>
-                    <Text style={styles.interiorTypeLabel}>{type.label}</Text>
-                    <Text style={styles.interiorTypeDescription}>
-                      Add measurements and get quotes
-                    </Text>
-                  </View>
-                  <View style={styles.cardArrow}>
-                    <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
-                  </View>
-                </LinearGradient>
-              </TouchableOpacity>
-            ))}
+                  <LinearGradient
+                    colors={['rgba(255, 255, 255, 0.98)', 'rgba(255, 255, 255, 0.95)']}
+                    style={styles.cardGradient}
+                  >
+                    <View style={[styles.cardIconContainer, { backgroundColor: type.color }]}>
+                      <Ionicons name={type.icon} size={28} color="white" />
+                    </View>
+                    <View style={styles.cardContent}>
+                      <Text style={styles.interiorTypeLabel}>{type.label}</Text>
+                      <Text style={styles.interiorTypeDescription}>
+                        Add measurements and get quotes
+                      </Text>
+                    </View>
+                    <View style={styles.cardArrow}>
+                      <Ionicons name="chevron-forward" size={20} color={COLORS.gray400} />
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-        </View>
 
-        {/* Quick Actions */}
-        <View style={styles.quickActionsSection}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <TouchableOpacity style={styles.pdfButton} onPress={generatePDF} activeOpacity={0.8}>
-            <LinearGradient
-              colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
-              style={styles.pdfButtonGradient}
-            >
-              <View style={styles.pdfIconContainer}>
-                <Ionicons name="document-text" size={24} color={COLORS.success} />
-              </View>
-              <View style={styles.pdfButtonContent}>
-                <Text style={styles.pdfButtonText}>Generate PDF Report</Text>
-                <Text style={styles.pdfButtonSubtext}>Export complete quotation</Text>
-              </View>
-              <Ionicons name="download-outline" size={20} color={COLORS.success} />
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+          {/* Quick Actions */}
+          <View style={styles.quickActionsSection}>
+            <Text style={styles.sectionTitle}>Quick Actions</Text>
+            <TouchableOpacity style={styles.pdfButton} onPress={generatePDF} activeOpacity={0.8}>
+              <LinearGradient
+                colors={['rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.85)']}
+                style={styles.pdfButtonGradient}
+              >
+                <View style={styles.pdfIconContainer}>
+                  <Ionicons name="document-text" size={24} color={COLORS.success} />
+                </View>
+                <View style={styles.pdfButtonContent}>
+                  <Text style={styles.pdfButtonText}>Generate PDF Report</Text>
+                  <Text style={styles.pdfButtonSubtext}>Export complete quotation</Text>
+                </View>
+                <Ionicons name="download-outline" size={20} color={COLORS.success} />
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
-    </LinearGradient>
+          <View style={styles.bottomSpacing} />
+        </ScrollView>
+      </LinearGradient>
+    </SafeAreaView>
   );
 }
 

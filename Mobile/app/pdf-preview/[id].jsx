@@ -11,7 +11,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Dimensions
+  Dimensions,
+  SafeAreaView
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { PDF_ROW_GENERATORS } from '../components/pdfGenerators';
@@ -161,6 +162,7 @@ export default function PDFPreview() {
       }
     });
 
+
     return `
       <!DOCTYPE html>
       <html>
@@ -268,8 +270,8 @@ export default function PDFPreview() {
       </head>
       <body>
         <div class="header">
-          <div class="company-name">ROYAL CURTAIN</div>
-          <div class="company-subtitle">Interior Solutions & Custom Designs</div>
+          <div class="company-name">BENTLEI CURTAIN</div>
+          <div class="company-subtitle">Designed With Luxary & Comfort</div>
         </div>
 
         <div class="client-info">
@@ -352,179 +354,183 @@ export default function PDFPreview() {
     }
   };  if (!project) {
     return (
-      <LinearGradient
-        colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
-        style={styles.loadingContainer}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <View style={styles.loadingContent}>
-          <View style={styles.loadingSpinner} />
-          <Text style={styles.loadingText}>Loading Project...</Text>
-        </View>
-      </LinearGradient>
+      <SafeAreaView style={{ flex: 1 }}>
+        <LinearGradient
+          colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+          style={styles.loadingContainer}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          <View style={styles.loadingContent}>
+            <View style={styles.loadingSpinner} />
+            <Text style={styles.loadingText}>Loading Project...</Text>
+          </View>
+        </LinearGradient>
+      </SafeAreaView>
     );
   }
   return (
-    <LinearGradient
-      colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
-      style={styles.container}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-    >
-      {/* Background Pattern */}
-      <View style={styles.backgroundPattern}>
-        {[...Array(8)].map((_, i) => (
-          <View key={i} style={[styles.patternCircle, { 
-            top: Math.random() * height,
-            left: Math.random() * width,
-            opacity: 0.03 + Math.random() * 0.07,
-          }]} />
-        ))}
-      </View>
-
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.headerTitle}>PDF Preview</Text>
-            <Text style={styles.headerSubtitle}>{project.clientName}</Text>
-          </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <LinearGradient
+        colors={[COLORS.primary, COLORS.primaryLight, COLORS.accent]}
+        style={styles.container}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        {/* Background Pattern */}
+        <View style={styles.backgroundPattern}>
+          {[...Array(8)].map((_, i) => (
+            <View key={i} style={[styles.patternCircle, { 
+              top: Math.random() * height,
+              left: Math.random() * width,
+              opacity: 0.03 + Math.random() * 0.07,
+            }]} />
+          ))}
         </View>
-      </View>      {/* Preview Content */}
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.previewCard}>
-          {/* Short PDF summary: Grand Total and breakdown */}
-          <Text style={styles.sectionTitle}>Quotation Summary</Text>
-          <View style={styles.costSummary}>
-            <Text style={styles.costSummaryTitle}>Cost Breakdown</Text>
-            {project.curtainTotal > 0 && (
-              <View style={styles.costRow}>
-                <Text>Curtains:</Text>
-                <Text style={styles.costValue}>{formatCurrency(project.curtainTotal)}</Text>
-              </View>
-            )}
-            {project.netTotal > 0 && (
-              <View style={styles.costRow}>
-                <Text>Mosquito Nets:</Text>
-                <Text style={styles.costValue}>{formatCurrency(project.netTotal)}</Text>
-              </View>
-            )}
-            {project.wallpaperTotal > 0 && (
-              <View style={styles.costRow}>
-                <Text>Wallpapers:</Text>
-                <Text style={styles.costValue}>{formatCurrency(project.wallpaperTotal)}</Text>
-              </View>
-            )}
-            {project.blindsTotal > 0 && (
-              <View style={styles.costRow}>
-                <Text>Blinds:</Text>
-                <Text style={styles.costValue}>{formatCurrency(project.blindsTotal)}</Text>
-              </View>
-            )}
-            {project.flooringTotal > 0 && (
-              <View style={styles.costRow}>
-                <Text>Flooring:</Text>
-                <Text style={styles.costValue}>{formatCurrency(project.flooringTotal)}</Text>
-              </View>
-            )}
-            {project.rodCost > 0 && (
-              <View style={styles.costRow}>
-                <Text>Rod Installation:</Text>
-                <Text style={styles.costValue}>{formatCurrency(project.rodCost)}</Text>
-              </View>
-            )}
-            <View style={styles.grandTotalRow}>
-              <View style={styles.totalRowContent}>
-                <Text style={styles.grandTotalLabel}>GRAND TOTAL:</Text>
-                <Text style={styles.grandTotalValue}>{formatCurrency(project.grandTotal || 0)}</Text>
-              </View>
+
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerContent}>
+            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+            <View style={styles.headerTextContainer}>
+              <Text style={styles.headerTitle}>PDF Preview</Text>
+              <Text style={styles.headerSubtitle}>{project.clientName}</Text>
             </View>
           </View>
-          {/* Action Buttons */}
-          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 24, gap: 12 }}>
-            <TouchableOpacity style={[styles.button, { flex: 1, minWidth: 0 }]} onPress={printPDF}>
-              <Ionicons name="print" size={20} color="white" />
-              <Text style={styles.buttonText}>Print</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, { flex: 1, minWidth: 0 }]} onPress={generateAndSharePDF}>
-              <Ionicons name="share" size={20} color="white" />
-              <Text style={styles.buttonText}>Share</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 0, gap: 12 }}>
-            <TouchableOpacity style={[styles.button, { flex: 1, minWidth: 0 }]} onPress={async () => {
-              // Upload logic as before
-              try {
-                const token = await AsyncStorage.getItem('token');
-                if (!token) {
-                  Alert.alert('Not Authenticated', 'Please login first.');
-                  router.replace('/login');
-                  return;
+        </View>      {/* Preview Content */}
+        <ScrollView style={styles.scrollView}>
+          <View style={styles.previewCard}>
+            {/* Short PDF summary: Grand Total and breakdown */}
+            <Text style={styles.sectionTitle}>Quotation Summary</Text>
+            <View style={styles.costSummary}>
+              <Text style={styles.costSummaryTitle}>Cost Breakdown</Text>
+              {project.curtainTotal > 0 && (
+                <View style={styles.costRow}>
+                  <Text>Curtains:</Text>
+                  <Text style={styles.costValue}>{formatCurrency(project.curtainTotal)}</Text>
+                </View>
+              )}
+              {project.netTotal > 0 && (
+                <View style={styles.costRow}>
+                  <Text>Mosquito Nets:</Text>
+                  <Text style={styles.costValue}>{formatCurrency(project.netTotal)}</Text>
+                </View>
+              )}
+              {project.wallpaperTotal > 0 && (
+                <View style={styles.costRow}>
+                  <Text>Wallpapers:</Text>
+                  <Text style={styles.costValue}>{formatCurrency(project.wallpaperTotal)}</Text>
+                </View>
+              )}
+              {project.blindsTotal > 0 && (
+                <View style={styles.costRow}>
+                  <Text>Blinds:</Text>
+                  <Text style={styles.costValue}>{formatCurrency(project.blindsTotal)}</Text>
+                </View>
+              )}
+              {project.flooringTotal > 0 && (
+                <View style={styles.costRow}>
+                  <Text>Flooring:</Text>
+                  <Text style={styles.costValue}>{formatCurrency(project.flooringTotal)}</Text>
+                </View>
+              )}
+              {project.rodCost > 0 && (
+                <View style={styles.costRow}>
+                  <Text>Rod Installation:</Text>
+                  <Text style={styles.costValue}>{formatCurrency(project.rodCost)}</Text>
+                </View>
+              )}
+              <View style={styles.grandTotalRow}>
+                <View style={styles.totalRowContent}>
+                  <Text style={styles.grandTotalLabel}>GRAND TOTAL:</Text>
+                  <Text style={styles.grandTotalValue}>{formatCurrency(project.grandTotal || 0)}</Text>
+                </View>
+              </View>
+            </View>
+            {/* Action Buttons */}
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 24, gap: 12 }}>
+              <TouchableOpacity style={[styles.button, { flex: 1, minWidth: 0 }]} onPress={printPDF}>
+                <Ionicons name="print" size={20} color="white" />
+                <Text style={styles.buttonText}>Print</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, { flex: 1, minWidth: 0 }]} onPress={generateAndSharePDF}>
+                <Ionicons name="share" size={20} color="white" />
+                <Text style={styles.buttonText}>Share</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 0, gap: 12 }}>
+              <TouchableOpacity style={[styles.button, { flex: 1, minWidth: 0 }]} onPress={async () => {
+                // Upload logic as before
+                try {
+                  const token = await AsyncStorage.getItem('token');
+                  if (!token) {
+                    Alert.alert('Not Authenticated', 'Please login first.');
+                    router.replace('/login');
+                    return;
+                  }
+                  const htmlContent = generatePDFContent();
+                  const cleanedHtmlContent = htmlContent
+                    .replace(/\\/g, '')
+                    .replace(/>\s+</g, '><')
+                    .replace(/[\n\r\t]+/g, ' ')
+                    .replace(/\s{2,}/g, ' ')
+                    .replace(/\"/g, '"')
+                    .trim();
+                  const response = await fetch('https://interior-app.onrender.com/api/worker/projects', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                      clientName: project.clientName,
+                      phone: project.phone,
+                      address: project.address,
+                      html: cleanedHtmlContent,
+                    })
+                  });
+                  if (response.ok) {
+                    setShowSuccess(true);
+                    setTimeout(() => {
+                      setShowSuccess(false);
+                      router.replace('/');
+                    }, 4000);
+                  } else if (response.status === 401) {
+                    Alert.alert('Session Expired', 'Please login again.');
+                    router.replace('/login');
+                  } else {
+                    const data = await response.json();
+                    Alert.alert('Upload Failed', data.error || 'Failed to upload project');
+                  }
+                } catch (_error) {
+                  Alert.alert('Error', 'Could not upload project');
                 }
-                const htmlContent = generatePDFContent();
-                const cleanedHtmlContent = htmlContent
-                  .replace(/\\/g, '')
-                  .replace(/>\s+</g, '><')
-                  .replace(/[\n\r\t]+/g, ' ')
-                  .replace(/\s{2,}/g, ' ')
-                  .replace(/\"/g, '"')
-                  .trim();
-                const response = await fetch('https://interior-app.onrender.com/api/worker/projects', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                  },
-                  body: JSON.stringify({
-                    clientName: project.clientName,
-                    phone: project.phone,
-                    address: project.address,
-                    html: cleanedHtmlContent,
-                  })
-                });
-                if (response.ok) {
-                  setShowSuccess(true);
-                  setTimeout(() => {
-                    setShowSuccess(false);
-                    router.replace('/');
-                  }, 4000);
-                } else if (response.status === 401) {
-                  Alert.alert('Session Expired', 'Please login again.');
-                  router.replace('/login');
-                } else {
-                  const data = await response.json();
-                  Alert.alert('Upload Failed', data.error || 'Failed to upload project');
-                }
-              } catch (_error) {
-                Alert.alert('Error', 'Could not upload project');
-              }
-            }}>
-              <Ionicons name="cloud-upload" size={20} color="white" />
-              <Text style={styles.buttonText}>Upload</Text>
-            </TouchableOpacity>
+              }}>
+                <Ionicons name="cloud-upload" size={20} color="white" />
+                <Text style={styles.buttonText}>Upload</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
 
-      {showSuccess && (
-        <View style={styles.successOverlay}>
-          <View style={styles.successModal}>
-            <LinearGradient
-              colors={['rgba(34, 197, 94, 0.1)', 'rgba(34, 197, 94, 0.05)']}
-              style={styles.successModalGradient}
-            >
-              <Ionicons name="checkmark-circle" size={64} color="#22c55e" style={{ marginBottom: 12 }} />
-              <Text style={styles.successText}>Quotation uploaded successfully!</Text>
-              <Text style={styles.successSubtext}>Redirecting to home...</Text>
-            </LinearGradient>
+        {showSuccess && (
+          <View style={styles.successOverlay}>
+            <View style={styles.successModal}>
+              <LinearGradient
+                colors={['rgba(34, 197, 94, 0.1)', 'rgba(34, 197, 94, 0.05)']}
+                style={styles.successModalGradient}
+              >
+                <Ionicons name="checkmark-circle" size={64} color="#22c55e" style={{ marginBottom: 12 }} />
+                <Text style={styles.successText}>Quotation uploaded successfully!</Text>
+                <Text style={styles.successSubtext}>Redirecting to home...</Text>
+              </LinearGradient>
+            </View>
           </View>
-        </View>
-      )}
-    </LinearGradient>
+        )}
+      </LinearGradient>
+    </SafeAreaView>
   );
 }
 
