@@ -121,7 +121,15 @@ export default function ProjectDetails() {
                 <TouchableOpacity
                   key={type.key}
                   style={styles.interiorTypeCard}
-                  onPress={() => router.push({ pathname: '/interior-measurements/[type]', params: { id, type: type.key } })}
+                  onPress={() => {
+                    // Special handling for curtains - go to rooms page first
+                    if (type.key === 'curtains') {
+                      router.push({ pathname: '/curtain-rooms/[id]', params: { id } });
+                    } else {
+                      // For other types, use the original flow
+                      router.push({ pathname: '/interior-measurements/[type]', params: { id, type: type.key } });
+                    }
+                  }}
                   activeOpacity={0.8}
                 >
                   <LinearGradient
@@ -134,7 +142,7 @@ export default function ProjectDetails() {
                     <View style={styles.cardContent}>
                       <Text style={styles.interiorTypeLabel}>{type.label}</Text>
                       <Text style={styles.interiorTypeDescription}>
-                        Add measurements and get quotes
+                        {type.key === 'curtains' ? 'Manage rooms and measurements' : 'Add measurements and get quotes'}
                       </Text>
                     </View>
                     <View style={styles.cardArrow}>
