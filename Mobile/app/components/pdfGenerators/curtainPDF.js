@@ -146,19 +146,62 @@ export function generateRodCostRows(measurements, formatCurrency) {
   let html = [];
   let globalIndex = 1;
   
+  // Track totals across all rooms
+  let totalClampCost = 0;
+  let totalDoomCost = 0;
+  let totalClampRequired = 0;
+  let totalDoomRequired = 0;
+  let totalRodFeet = 0;
+  let totalRodsRequired = 0;
+  let totalRodCost = 0;
+  
   // Process legacy measurements (without roomId) first if they exist
   if (measurementsByRoom.legacy && measurementsByRoom.legacy.length > 0) {
+    const legacyMeasurements = measurementsByRoom.legacy;
+    
     html.push(`
       <tr style="background-color: #f0f9ff;">
-        <td colspan="6" style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Other Measurements</td>
+        <td colspan="7" style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Other Measurements</td>
       </tr>
     `);
     
-    measurementsByRoom.legacy.forEach(m => {
+    // Calculate rod requirements for legacy measurements
+    const legacyWidths = legacyMeasurements.map(m => parseFloat(m.width) || 0);
+    const legacyRodCalc = calculateRods(legacyWidths);
+    const legacyRodsRequired = legacyRodCalc.totalRods;
+    const rodRatePerLength = legacyMeasurements.length > 0 ? (parseFloat(legacyMeasurements[0].rodRatePerLength) || 0) : 0;
+    const legacyRodCost = legacyRodsRequired * rodRatePerLength;
+    
+    // Track for grand totals
+    totalRodsRequired += legacyRodsRequired;
+    totalRodCost += legacyRodCost;
+    
+    // Add rod calculation row for legacy measurements
+    html.push(`
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;" colspan="2">Rod Calculation</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;" colspan="2">${legacyRodsRequired} rods required</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;" colspan="2">
+          <div style="font-weight: bold;">${formatCurrency(legacyRodCost)}</div>
+          <div style="font-size: 11px; color: #666;">${legacyRodsRequired} × ${formatCurrency(rodRatePerLength)}</div>
+        </td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(legacyRodCost)}</td>
+      </tr>
+    `);
+    
+    // Add individual measurement rows for legacy
+    legacyMeasurements.forEach(m => {
       const rodFeet = (parseFloat(m.width) || 0) / 12;
       const clampCost = (parseFloat(m.clampRequired) || 0) * (parseFloat(m.clampRatePerPiece) || 0);
       const doomCost = (parseFloat(m.doomRequired) || 0) * (parseFloat(m.doomRatePerPiece) || 0);
-      const totalWallBracketCost = clampCost + doomCost;
+      const itemWallBracketCost = clampCost + doomCost;
+      
+      // Track for totals
+      totalRodFeet += rodFeet;
+      totalClampRequired += parseFloat(m.clampRequired) || 0;
+      totalDoomRequired += parseFloat(m.doomRequired) || 0;
+      totalClampCost += clampCost;
+      totalDoomCost += doomCost;
       
       html.push(`
         <tr>
@@ -173,10 +216,29 @@ export function generateRodCostRows(measurements, formatCurrency) {
             <div style="font-weight: bold;">${formatCurrency(doomCost)}</div>
             ${m.doomRequired && m.doomRatePerPiece ? `<div style="font-size: 11px; color: #666;">${m.doomRequired} × ${formatCurrency(m.doomRatePerPiece)}</div>` : ''}
           </td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(totalWallBracketCost)}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(itemWallBracketCost)}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(itemWallBracketCost)}</td>
         </tr>
       `);
     });
+    
+    // Calculate total wall bracket cost for legacy section
+    const legacyWallBracketCost = legacyMeasurements.reduce((sum, m) => {
+      const clampCost = (parseFloat(m.clampRequired) || 0) * (parseFloat(m.clampRatePerPiece) || 0);
+      const doomCost = (parseFloat(m.doomRequired) || 0) * (parseFloat(m.doomRatePerPiece) || 0);
+      return sum + clampCost + doomCost;
+    }, 0);
+    
+    // Add subtotal row for legacy measurements
+    html.push(`
+      <tr style="background:#f0f8fa;">
+        <td style="padding:8px;border:1px solid #ddd;text-align:center;" colspan="2">Subtotal</td>
+        <td style="padding:8px;border:1px solid #ddd;text-align:center;">${legacyMeasurements.reduce((sum, m) => sum + ((parseFloat(m.width) || 0) / 12), 0).toFixed(2)} ft</td>
+        <td style="padding:8px;border:1px solid #ddd;text-align:right;" colspan="2">Wall Brackets: ${formatCurrency(legacyWallBracketCost)}</td>
+        <td style="padding:8px;border:1px solid #ddd;text-align:right;">Rods: ${formatCurrency(legacyRodCost)}</td>
+        <td style="padding:8px;border:1px solid #ddd;text-align:right;font-weight:bold;">${formatCurrency(legacyWallBracketCost + legacyRodCost)}</td>
+      </tr>
+    `);
   }
   
   // Process each room group
@@ -189,7 +251,31 @@ export function generateRodCostRows(measurements, formatCurrency) {
     
     html.push(`
       <tr style="background-color: #f0f9ff;">
-        <td colspan="6" style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Room: ${roomName}</td>
+        <td colspan="7" style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Room: ${roomName}</td>
+      </tr>
+    `);
+    
+    // Calculate rod requirements for this room
+    const roomWidths = roomMeasurements.map(m => parseFloat(m.width) || 0);
+    const roomRodCalc = calculateRods(roomWidths);
+    const roomRodsRequired = roomRodCalc.totalRods;
+    const rodRatePerLength = roomMeasurements.length > 0 ? (parseFloat(roomMeasurements[0].rodRatePerLength) || 0) : 0;
+    const roomRodCost = roomRodsRequired * rodRatePerLength;
+    
+    // Track for grand totals
+    totalRodsRequired += roomRodsRequired;
+    totalRodCost += roomRodCost;
+    
+    // Add rod calculation row for this room
+    html.push(`
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;" colspan="2">Rod Calculation</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: center;" colspan="2">${roomRodsRequired} rods required</td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;" colspan="2">
+          <div style="font-weight: bold;">${formatCurrency(roomRodCost)}</div>
+          <div style="font-size: 11px; color: #666;">${roomRodsRequired} × ${formatCurrency(rodRatePerLength)}</div>
+        </td>
+        <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(roomRodCost)}</td>
       </tr>
     `);
     
@@ -197,7 +283,14 @@ export function generateRodCostRows(measurements, formatCurrency) {
       const rodFeet = (parseFloat(m.width) || 0) / 12;
       const clampCost = (parseFloat(m.clampRequired) || 0) * (parseFloat(m.clampRatePerPiece) || 0);
       const doomCost = (parseFloat(m.doomRequired) || 0) * (parseFloat(m.doomRatePerPiece) || 0);
-      const totalWallBracketCost = clampCost + doomCost;
+      const itemWallBracketCost = clampCost + doomCost;
+      
+      // Track for totals
+      totalRodFeet += rodFeet;
+      totalClampRequired += parseFloat(m.clampRequired) || 0;
+      totalDoomRequired += parseFloat(m.doomRequired) || 0;
+      totalClampCost += clampCost;
+      totalDoomCost += doomCost;
       
       html.push(`
         <tr>
@@ -212,67 +305,63 @@ export function generateRodCostRows(measurements, formatCurrency) {
             <div style="font-weight: bold;">${formatCurrency(doomCost)}</div>
             ${m.doomRequired && m.doomRatePerPiece ? `<div style="font-size: 11px; color: #666;">${m.doomRequired} × ${formatCurrency(m.doomRatePerPiece)}</div>` : ''}
           </td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(totalWallBracketCost)}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(itemWallBracketCost)}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: right; font-weight: bold;">${formatCurrency(itemWallBracketCost)}</td>
         </tr>
       `);
     });
+    
+    // Calculate total wall bracket cost for this room
+    const roomWallBracketCost = roomMeasurements.reduce((sum, m) => {
+      const clampCost = (parseFloat(m.clampRequired) || 0) * (parseFloat(m.clampRatePerPiece) || 0);
+      const doomCost = (parseFloat(m.doomRequired) || 0) * (parseFloat(m.doomRatePerPiece) || 0);
+      return sum + clampCost + doomCost;
+    }, 0);
+    
+    // Add subtotal row for this room
+    html.push(`
+      <tr style="background:#f0f8fa;">
+        <td style="padding:8px;border:1px solid #ddd;text-align:center;" colspan="2">Subtotal</td>
+        <td style="padding:8px;border:1px solid #ddd;text-align:center;">${roomMeasurements.reduce((sum, m) => sum + ((parseFloat(m.width) || 0) / 12), 0).toFixed(2)} ft</td>
+        <td style="padding:8px;border:1px solid #ddd;text-align:right;" colspan="2">Wall Brackets: ${formatCurrency(roomWallBracketCost)}</td>
+        <td style="padding:8px;border:1px solid #ddd;text-align:right;">Rods: ${formatCurrency(roomRodCost)}</td>
+        <td style="padding:8px;border:1px solid #ddd;text-align:right;font-weight:bold;">${formatCurrency(roomWallBracketCost + roomRodCost)}</td>
+      </tr>
+    `);
   });
   
-  return html.join('');
-  
-  // Calculate rod requirements
-  const widths = measurements.map(m => parseFloat(m.width) || 0);
-  const rodCalc = calculateRods(widths);
-  const totalRodsRequired = rodCalc.totalRods;
-  const rodRatePerLength = measurements.length > 0 ? (parseFloat(measurements[0].rodRatePerLength) || 0) : 0;
-  const totalRodCost = totalRodsRequired * rodRatePerLength;
-    const totalWallBracketCost = measurements.reduce((sum, m) => {
-    const clampCost = (parseFloat(m.clampRequired) || 0) * (parseFloat(m.clampRatePerPiece) || 0);
-    const doomCost = (parseFloat(m.doomRequired) || 0) * (parseFloat(m.doomRatePerPiece) || 0);
-    return sum + clampCost + doomCost;
-  }, 0);
-  
-  // Calculate totals for summary row
-  const totalRodFeet = measurements.reduce((sum, m) => sum + ((parseFloat(m.width) || 0) / 12), 0);
-  const totalClampRequired = measurements.reduce((sum, m) => sum + (parseFloat(m.clampRequired) || 0), 0);
-  const totalDoomRequired = measurements.reduce((sum, m) => sum + (parseFloat(m.doomRequired) || 0), 0);
-  const totalClampCost = measurements.reduce((sum, m) => sum + ((parseFloat(m.clampRequired) || 0) * (parseFloat(m.clampRatePerPiece) || 0)), 0);
-  const totalDoomCost = measurements.reduce((sum, m) => sum + ((parseFloat(m.doomRequired) || 0) * (parseFloat(m.doomRatePerPiece) || 0)), 0);
+  // Calculate the total wall bracket cost
+  const totalWallBracketCost = totalClampCost + totalDoomCost;
   
   // Calculate the number of rooms for summary
-  const roomIds = new Set();
-  measurements.forEach(m => {
-    if (m.roomId) {
-      roomIds.add(m.roomId);
-    }
-  });
+  const roomCount = Object.keys(measurementsByRoom).filter(key => key !== 'legacy').length + 
+                   (measurementsByRoom.legacy && measurementsByRoom.legacy.length > 0 ? 1 : 0);
   
-  const roomCount = roomIds.size || 1; // Default to 1 if no room IDs found
-  
-  const summaryRow = `
-    <tr style="background:#f0f9ff;font-weight:bold;">
-      <td style="padding:8px;border:1px solid #ddd;text-align:center;">Total</td>
-      <td style="padding:8px;border:1px solid #ddd;text-align:center;">(${roomCount} ${roomCount > 1 ? 'rooms' : 'room'}, ${measurements.length} ${measurements.length > 1 ? 'items' : 'item'})</td>
+  // Grand total row
+  html.push(`
+    <tr style="background:#f0f0f0;font-weight:bold;">
+      <td style="padding:8px;border:1px solid #ddd;text-align:center;" colspan="2">GRAND TOTAL</td>
       <td style="padding:8px;border:1px solid #ddd;text-align:center;">${totalRodFeet.toFixed(2)} ft</td>
-      <td style="padding:8px;border:1px solid #ddd;text-align:right;">
-        <div style="font-weight: bold;">${formatCurrency(totalClampCost)}</div>
-        <div style="font-size: 11px; color: #666;">Total: ${totalClampRequired} pieces</div>
+      <td style="padding:8px;border:1px solid #ddd;text-align:right;" colspan="2">
+        <div style="font-weight: bold;">Wall Brackets: ${formatCurrency(totalWallBracketCost)}</div>
+        <div style="font-size: 11px; color: #666;">Clamps: ${totalClampRequired}, Dooms: ${totalDoomRequired}</div>
       </td>
       <td style="padding:8px;border:1px solid #ddd;text-align:right;">
-        <div style="font-weight: bold;">${formatCurrency(totalDoomCost)}</div>
-        <div style="font-size: 11px; color: #666;">Total: ${totalDoomRequired} pieces</div>
+        <div style="font-weight: bold;">Rods: ${formatCurrency(totalRodCost)}</div>
+        <div style="font-size: 11px; color: #666;">Total: ${totalRodsRequired} rods</div>
       </td>
-      <td style="padding:8px;border:1px solid #ddd;text-align:right;font-weight:bold;">${formatCurrency(totalWallBracketCost)}</td>
+      <td style="padding:8px;border:1px solid #ddd;text-align:right;font-weight:bold;">${formatCurrency(totalWallBracketCost + totalRodCost)}</td>
     </tr>
-  `;
+  `);
   
-  return rodData + summaryRow;
+  return html.join('');
 }
 
 // Generate Total Cost Summary
 export function generateTotalCostSummary(measurements, formatCurrency) {
   if (!measurements.length) return '';
-    // Calculate cloth cost total (with 5% GST)
+  
+  // Calculate cloth cost total (with 5% GST)
   const totalCurtainCost = measurements.reduce((sum, m) => sum + (parseFloat(m.totalCurtainCost) || parseFloat(m.totalCost) || 0), 0);
   const clothCostWithGST = Math.ceil(totalCurtainCost * 1.05);
   
@@ -282,10 +371,48 @@ export function generateTotalCostSummary(measurements, formatCurrency) {
     const doomCost = (parseFloat(m.doomRequired) || 0) * (parseFloat(m.doomRatePerPiece) || 0);
     return sum + clampCost + doomCost;
   }, 0);
-    const widths = measurements.map(m => parseFloat(m.width) || 0);
-  const rodCalc = calculateRods(widths);
-  const rodRatePerLength = measurements.length > 0 ? (parseFloat(measurements[0].rodRatePerLength) || 0) : 0;
-  const totalRodCost = Math.ceil(rodCalc.totalRods * rodRatePerLength);
+  
+  // Group measurements by room
+  const measurementsByRoom = measurements.reduce((acc, m) => {
+    if (!m.roomId) {
+      if (!acc.legacy) acc.legacy = [];
+      acc.legacy.push(m);
+    } else {
+      if (!acc[m.roomId]) acc[m.roomId] = [];
+      acc[m.roomId].push(m);
+    }
+    return acc;
+  }, {});
+  
+  // Calculate total rods needed (room by room)
+  let totalRodsRequired = 0;
+  let totalRodCost = 0;
+  
+  // Process legacy measurements (without roomId) if they exist
+  if (measurementsByRoom.legacy && measurementsByRoom.legacy.length > 0) {
+    const legacyWidths = measurementsByRoom.legacy.map(m => parseFloat(m.width) || 0);
+    const legacyRodCalc = calculateRods(legacyWidths);
+    const rodRatePerLength = measurementsByRoom.legacy.length > 0 ? 
+      (parseFloat(measurementsByRoom.legacy[0].rodRatePerLength) || 0) : 0;
+    
+    totalRodsRequired += legacyRodCalc.totalRods;
+    totalRodCost += legacyRodCalc.totalRods * rodRatePerLength;
+  }
+  
+  // Process each room group
+  Object.entries(measurementsByRoom).forEach(([roomId, roomMeasurements]) => {
+    if (roomId === 'legacy') return; // Skip legacy, already handled
+    
+    const roomWidths = roomMeasurements.map(m => parseFloat(m.width) || 0);
+    const roomRodCalc = calculateRods(roomWidths);
+    const rodRatePerLength = roomMeasurements.length > 0 ? 
+      (parseFloat(roomMeasurements[0].rodRatePerLength) || 0) : 0;
+    
+    totalRodsRequired += roomRodCalc.totalRods;
+    totalRodCost += roomRodCalc.totalRods * rodRatePerLength;
+  });
+  
+  totalRodCost = Math.ceil(totalRodCost);
   const totalRodCostWithGST = Math.ceil((totalWallBracketCost + totalRodCost) * 1.18);
   
   const grandTotal = clothCostWithGST + totalRodCostWithGST;return `
@@ -294,7 +421,7 @@ export function generateTotalCostSummary(measurements, formatCurrency) {
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
         <tr>
           <td style="padding: 4px 8px; border: 1px solid #ddd;">Total Rods Required:</td>
-          <td style="padding: 4px 8px; border: 1px solid #ddd; text-align: right;">${rodCalc.totalRods} rods</td>
+          <td style="padding: 4px 8px; border: 1px solid #ddd; text-align: right;">${totalRodsRequired} rods</td>
         </tr>
         <tr>
           <td style="padding: 4px 8px; border: 1px solid #ddd;">Rod Calculation Cost:</td>

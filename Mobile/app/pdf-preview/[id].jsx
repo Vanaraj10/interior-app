@@ -221,7 +221,8 @@ export default function PDFPreview() {
                   <th>Rod Feet</th>
                   <th>Clamp Cost</th>
                   <th>Doom Cost</th>
-                  <th>Total Wall Bracket Cost</th>
+                  <th>Wall Bracket Cost</th>
+                  <th>Total Cost</th>
                 </tr>
               </thead>
               <tbody>
