@@ -10,25 +10,40 @@ import { calculateProjectTotals } from '../components/projectTotals';
 const { width, height } = Dimensions.get('window');
 
 export default function NewMeasurement() {
-  const { id, type, editId } = useLocalSearchParams();
+  const { id, type, editId, roomId, roomName } = useLocalSearchParams();
+  const isCurtainRoom = type === 'curtains' && roomId && roomName;
   const [editingMeasurement, setEditingMeasurement] = useState(null);
+  
   const loadMeasurement = useCallback(async () => {
     try {
       const projectsData = await AsyncStorage.getItem('projects');
       if (projectsData) {
         const projects = JSON.parse(projectsData);
         const project = projects.find(p => p.id === id);
+        
         if (project) {
-          const measurement = project.measurements?.find(m => m.id === editId);
-          if (measurement) {
-            setEditingMeasurement(measurement);
+          if (isCurtainRoom) {
+            // Find the room and measurement within it
+            const room = project.curtainRooms?.find(r => r.id === roomId);
+            if (room) {
+              const measurement = room.measurements?.find(m => m.id === editId);
+              if (measurement) {
+                setEditingMeasurement(measurement);
+              }
+            }
+          } else {
+            // Regular flow for other types
+            const measurement = project.measurements?.find(m => m.id === editId);
+            if (measurement) {
+              setEditingMeasurement(measurement);
+            }
           }
         }
       }
     } catch (error) {
       console.error('Error loading measurement:', error);
     }
-  }, [id, editId]);
+  }, [id, editId, roomId, isCurtainRoom]);
 
   useEffect(() => {
     if (editId) {
@@ -43,21 +58,76 @@ export default function NewMeasurement() {
       const projectIndex = projects.findIndex(p => p.id === id);
       
       if (projectIndex !== -1) {
-        if (editingMeasurement) {
-          // Update existing measurement
-          const measurementIndex = projects[projectIndex].measurements.findIndex(
-            m => m.id === editingMeasurement.id
+        if (isCurtainRoom) {
+          // Handle curtain room measurement saving
+          if (!projects[projectIndex].curtainRooms) {
+            projects[projectIndex].curtainRooms = [];
+          }
+          
+          // Find the room
+          const roomIndex = projects[projectIndex].curtainRooms.findIndex(
+            r => r.id === roomId
           );
-          if (measurementIndex !== -1) {
-            projects[projectIndex].measurements[measurementIndex] = measurementData;
+          
+          if (roomIndex !== -1) {
+            if (!projects[projectIndex].curtainRooms[roomIndex].measurements) {
+              projects[projectIndex].curtainRooms[roomIndex].measurements = [];
+            }
+            
+            if (editingMeasurement) {
+              // Update existing measurement in the room
+              const measurementIndex = projects[projectIndex].curtainRooms[roomIndex].measurements.findIndex(
+                m => m.id === editingMeasurement.id
+              );
+              
+              if (measurementIndex !== -1) {
+                projects[projectIndex].curtainRooms[roomIndex].measurements[measurementIndex] = {
+                  ...measurementData,
+                  id: editingMeasurement.id,
+                  roomId: roomId,
+                  roomName: roomName
+                };
+              }
+            } else {
+              // Add new measurement to the room
+              projects[projectIndex].curtainRooms[roomIndex].measurements.push({
+                ...measurementData,
+                id: Date.now().toString(),
+                roomId: roomId,
+                roomName: roomName
+              });
+            }
+          } else {
+            // Create the room if it doesn't exist
+            projects[projectIndex].curtainRooms.push({
+              id: roomId,
+              name: roomName,
+              measurements: [{
+                ...measurementData,
+                id: Date.now().toString(),
+                roomId: roomId,
+                roomName: roomName
+              }]
+            });
           }
         } else {
-          // Add new measurement
-          projects[projectIndex].measurements = projects[projectIndex].measurements || [];
-          projects[projectIndex].measurements.push({
-            ...measurementData,
-            id: Date.now().toString()
-          });
+          // Regular flow for other interior types
+          if (editingMeasurement) {
+            // Update existing measurement
+            const measurementIndex = projects[projectIndex].measurements.findIndex(
+              m => m.id === editingMeasurement.id
+            );
+            if (measurementIndex !== -1) {
+              projects[projectIndex].measurements[measurementIndex] = measurementData;
+            }
+          } else {
+            // Add new measurement
+            projects[projectIndex].measurements = projects[projectIndex].measurements || [];
+            projects[projectIndex].measurements.push({
+              ...measurementData,
+              id: Date.now().toString()
+            });
+          }
         }
         
         // Recalculate project totals

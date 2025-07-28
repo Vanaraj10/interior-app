@@ -216,7 +216,7 @@ const TableRow = ({
   deleteMeasurement,
   styles,
 }) => {
-  // Helper functions for custom logic
+
   const getMosquitoWidth = () =>
     `${m.width || "-"}" (${m.widthFeet?.toFixed(1) || "-"}ft)`;
   const getMosquitoHeight = () =>
@@ -1223,9 +1223,10 @@ function renderTable({
 }
 
 export default function InteriorMeasurements() {
-  const { id, type } = useLocalSearchParams();
+  const { id, type, roomId, roomName } = useLocalSearchParams();
   const [project, setProject] = useState(null);
   const [measurements, setMeasurements] = useState([]);
+  const isCurtainRoom = type === 'curtains' && roomId && roomName;
 
   const loadProject = useCallback(async () => {
     try {
@@ -1233,13 +1234,34 @@ export default function InteriorMeasurements() {
       if (projectsData) {
         const projects = JSON.parse(projectsData);
         const currentProject = projects.find((p) => p.id === id);
+        
         if (currentProject) {
           setProject(currentProject);
-          setMeasurements(
-            currentProject?.measurements?.filter(
-              (m) => m.interiorType === type
-            ) || []
-          );
+          
+          if (isCurtainRoom) {
+            // Special handling for curtain rooms
+            if (!currentProject.curtainRooms) {
+              currentProject.curtainRooms = [];
+            }
+            
+            const room = currentProject.curtainRooms.find(r => r.id === roomId);
+            if (room) {
+              if (!room.measurements) {
+                room.measurements = [];
+              }
+              setMeasurements(room.measurements);
+            } else {
+              Alert.alert("Error", "Room not found");
+              router.back();
+            }
+          } else {
+            // Regular flow for other interior types
+            setMeasurements(
+              currentProject?.measurements?.filter(
+                (m) => m.interiorType === type
+              ) || []
+            );
+          }
         } else {
           Alert.alert("Error", "Project not found");
           router.back();
@@ -1248,7 +1270,7 @@ export default function InteriorMeasurements() {
     } catch (error) {
       console.error("Error loading project:", error);
     }
-  }, [id, type]);
+  }, [id, type, roomId, isCurtainRoom]);
 
   // Use useFocusEffect to reload data when screen comes into focus
   useFocusEffect(
@@ -1271,14 +1293,37 @@ export default function InteriorMeasurements() {
               const projectsData = await AsyncStorage.getItem("projects");
               const projects = JSON.parse(projectsData);
               const projectIndex = projects.findIndex((p) => p.id === id);
+              
               if (projectIndex !== -1) {
-                projects[projectIndex].measurements = projects[
-                  projectIndex
-                ].measurements.filter((m) => m.id !== measurementId);
-                await AsyncStorage.setItem(
-                  "projects",
-                  JSON.stringify(projects)
-                );
+                if (isCurtainRoom) {
+                  // Handle curtain room measurement deletion
+                  const roomIndex = projects[projectIndex].curtainRooms.findIndex(
+                    (r) => r.id === roomId
+                  );
+                  
+                  if (roomIndex !== -1) {
+                    projects[projectIndex].curtainRooms[roomIndex].measurements = 
+                      projects[projectIndex].curtainRooms[roomIndex].measurements.filter(
+                        (m) => m.id !== measurementId
+                      );
+                    
+                    await AsyncStorage.setItem(
+                      "projects",
+                      JSON.stringify(projects)
+                    );
+                  }
+                } else {
+                  // Regular flow for other interior types
+                  projects[projectIndex].measurements = projects[
+                    projectIndex
+                  ].measurements.filter((m) => m.id !== measurementId);
+                  
+                  await AsyncStorage.setItem(
+                    "projects",
+                    JSON.stringify(projects)
+                  );
+                }
+                
                 loadProject(); // Reload the data
               }
             } catch (error) {
@@ -1344,7 +1389,7 @@ export default function InteriorMeasurements() {
           <View style={styles.headerTextContainer}>
             <Text style={styles.headerTitle}>{project.clientName}</Text>
             <Text style={styles.headerSubtitle}>
-              {getInteriorTypeLabel()} • {measurements.length}{" "}
+              {isCurtainRoom ? `${roomName} Room • ` : ''}{getInteriorTypeLabel()} • {measurements.length}{" "}
               {measurements.length === 1 ? "measurement" : "measurements"}
             </Text>
           </View>
@@ -1469,7 +1514,9 @@ export default function InteriorMeasurements() {
         onPress={() =>
           router.push({
             pathname: "/new-measurement/[type]",
-            params: { id, type },
+            params: isCurtainRoom 
+              ? { id, type, roomId, roomName } 
+              : { id, type },
           })
         }
         activeOpacity={0.8}

@@ -123,6 +123,22 @@ export default function PDFPreview() {
         const projects = JSON.parse(projectsData);
         const currentProject = projects.find((p) => p.id === id);
         if (currentProject) {
+          // Ensure measurements have roomName and roomId for curtains
+          if (currentProject.measurements && currentProject.curtainRooms) {
+            currentProject.measurements = currentProject.measurements.map(m => {
+              // Only process curtain measurements
+              if (m.interiorType === "curtains" && m.roomId) {
+                const room = currentProject.curtainRooms.find(r => r.id === m.roomId);
+                if (room) {
+                  return {
+                    ...m,
+                    roomName: room.name
+                  };
+                }
+              }
+              return m;
+            });
+          }
           setProject(currentProject);
         } else {
           Alert.alert("Error", "Project not found");
@@ -146,8 +162,36 @@ export default function PDFPreview() {
     if (!project) return "";
     let htmlSections = "";
     INTERIOR_TYPES.forEach((type) => {
-      const measurements =
-        project.measurements?.filter((m) => m.interiorType === type.key) || [];
+      let measurements = [];
+      
+      // For curtains, we need to collect all measurements including those in rooms
+      if (type.key === "curtains") {
+        // Get regular measurements (backward compatibility)
+        const regularMeasurements = project.measurements?.filter(m => m.interiorType === "curtains") || [];
+        
+        // Get measurements from curtain rooms
+        const roomMeasurements = [];
+        if (project.curtainRooms && Array.isArray(project.curtainRooms)) {
+          project.curtainRooms.forEach(room => {
+            if (room.measurements && Array.isArray(room.measurements)) {
+              const measurementsWithRoomInfo = room.measurements.map(m => ({
+                ...m,
+                roomId: room.id,
+                roomName: room.name,
+                interiorType: "curtains"
+              }));
+              roomMeasurements.push(...measurementsWithRoomInfo);
+            }
+          });
+        }
+        
+        // Combine all measurements
+        measurements = [...regularMeasurements, ...roomMeasurements];
+      } else {
+        // For other interior types, use the standard filtering
+        measurements = project.measurements?.filter(m => m.interiorType === type.key) || [];
+      }
+      
       if (measurements.length > 0) {
         htmlSections += `
           <div class="section-title">${type.label}</div>
@@ -166,7 +210,7 @@ export default function PDFPreview() {
           </table>
         `;
         // Add Rod Cost table for curtains
-        if (type.key === "curtains" && type.hasRodCost) {
+        if (type.key === "curtains" && type.hasRodCost && measurements.length > 0) {
           htmlSections += `
             <div class="section-title" style="margin-top: 30px;">ROD COST</div>
             <table>
@@ -177,7 +221,8 @@ export default function PDFPreview() {
                   <th>Rod Feet</th>
                   <th>Clamp Cost</th>
                   <th>Doom Cost</th>
-                  <th>Total Wall Bracket Cost</th>
+                  <th>Wall Bracket Cost</th>
+                  <th>Total Cost</th>
                 </tr>
               </thead>
               <tbody>
@@ -322,24 +367,44 @@ export default function PDFPreview() {
         </div>        ${htmlSections}
 
         ${
-          project.measurements?.some((m) => m.curtainType || m.stitchingModel)
-            ? PDF_ROW_GENERATORS.curtains.generateTotalCostSummary
-              ? PDF_ROW_GENERATORS.curtains.generateTotalCostSummary(
-                  project.measurements.filter(
-                    (m) => m.curtainType || m.stitchingModel
-                  ),
-                  formatCurrency
-                )
-              : ""
-            : `<div class="cost-summary">
-              <h3 style="margin-top: 0; color: #3B82F6;">COST SUMMARY</h3>
-              ${
-                project.curtainTotal > 0
-                  ? `<div class="cost-row"><span>Curtains Subtotal:</span><span>${formatCurrency(
-                      project.curtainTotal
-                    )}</span></div>`
-                  : ""
-              }
+          // Check if we have any curtain measurements (either in project.measurements or in rooms)
+          (() => {
+            // Collect all curtain measurements including those in rooms
+            let allCurtainMeasurements = [];
+            
+            // Get regular measurements (backward compatibility)
+            const regularMeasurements = project.measurements?.filter(
+              m => m.interiorType === "curtains" || m.curtainType || m.stitchingModel
+            ) || [];
+            allCurtainMeasurements = [...regularMeasurements];
+            
+            // Get measurements from curtain rooms
+            if (project.curtainRooms && Array.isArray(project.curtainRooms)) {
+              project.curtainRooms.forEach(room => {
+                if (room.measurements && Array.isArray(room.measurements)) {
+                  const roomMeasurements = room.measurements.map(m => ({
+                    ...m,
+                    roomId: room.id,
+                    roomName: room.name,
+                    interiorType: "curtains"
+                  }));
+                  allCurtainMeasurements.push(...roomMeasurements);
+                }
+              });
+            }
+            
+            // Generate cost summary if we have curtain measurements
+            if (allCurtainMeasurements.length > 0 && PDF_ROW_GENERATORS.curtains.generateTotalCostSummary) {
+              return PDF_ROW_GENERATORS.curtains.generateTotalCostSummary(
+                allCurtainMeasurements,
+                formatCurrency
+              );
+            } else {
+              // Default cost summary if we don't have the generator
+              return '<div class="cost-summary"><h3 style="margin-top: 0; color: #3B82F6;">COST SUMMARY</h3>';
+            }
+          })()
+        }
               ${
                 project.netTotal > 0
                   ? `<div class="cost-row"><span>Mosquito Nets Subtotal:</span><span>${formatCurrency(
@@ -372,9 +437,8 @@ export default function PDFPreview() {
                 <span>GRAND TOTAL:</span>
                 <span>${formatCurrency(project.grandTotal || 0)}</span>
               </div>
-            </div>`
-        }
-      </body>
+            </div>
+        </body>
       </html>
     `;
   };
@@ -680,7 +744,7 @@ export default function PDFPreview() {
                       .replace(/\"/g, '"')
                       .trim();
                     const response = await fetch(
-                      "https://interior-app.onrender.com/api/worker/projects",
+                      "https://interior-app-production.up.railway.app/api/worker/projects",
                       {
                         method: "POST",
                         headers: {

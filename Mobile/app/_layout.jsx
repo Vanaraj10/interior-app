@@ -11,6 +11,7 @@ export default function RootLayout() {
       <Stack.Screen name="new-project" />
       <Stack.Screen name="project/[id]" />
       <Stack.Screen name="pdf-preview/[id]" />
+      <Stack.Screen name="curtain-rooms/[id]" />
     </Stack>
   );
 }

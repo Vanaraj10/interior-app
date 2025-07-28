@@ -1,19 +1,42 @@
 // Shared project total calculation logic
 export function calculateProjectTotals(projectData) {
   const measurements = projectData.measurements || [];
-  // Group measurements by interior type
-  const curtainMeasurements = measurements.filter(m => m.interiorType === 'curtains');
+  
+  // Collect all curtain measurements including those in rooms
+  let allCurtainMeasurements = [];
+  
+  // Get regular measurements (backward compatibility)
+  const regularCurtainMeasurements = measurements.filter(m => m.interiorType === 'curtains');
+  allCurtainMeasurements = [...regularCurtainMeasurements];
+  
+  // Get measurements from curtain rooms
+  if (projectData.curtainRooms && Array.isArray(projectData.curtainRooms)) {
+    projectData.curtainRooms.forEach(room => {
+      if (room.measurements && Array.isArray(room.measurements)) {
+        const roomMeasurements = room.measurements.map(m => ({
+          ...m,
+          roomId: room.id,
+          roomName: room.name,
+          interiorType: "curtains"
+        }));
+        allCurtainMeasurements.push(...roomMeasurements);
+      }
+    });
+  }
+  
+  // Group other measurements by interior type
   const netMeasurements = measurements.filter(m => m.interiorType === 'mosquito-nets');
   const wallpaperMeasurements = measurements.filter(m => m.interiorType === 'wallpapers');
   const blindsMeasurements = measurements.filter(m => m.interiorType === 'blinds');
   const flooringMeasurements = measurements.filter(m => m.interiorType === 'flooring');
+  
   // Calculate totals for each type
   let curtainTotal = 0;
   let curtainClothCostWithGST = 0;
   let curtainRodCostWithGST = 0;
   
   // New curtain calculation with grandTotal from schema
-  curtainMeasurements.forEach(m => {
+  allCurtainMeasurements.forEach(m => {
     if (m.grandTotal) {
       // Use the new calculation structure
       curtainTotal += m.grandTotal;
@@ -21,7 +44,7 @@ export function calculateProjectTotals(projectData) {
       curtainRodCostWithGST += (m.rodCostWithGST || 0);
     } else {
       // Fallback to old structure
-      curtainTotal += (m.totalCost || 0);
+      curtainTotal += (m.totalCost || m.totalCurtainCost || 0);
     }
   });
   
@@ -57,7 +80,7 @@ export function calculateProjectTotals(projectData) {
   });  // Calculate rod cost for curtains (legacy compatibility)
   let rodLength = 0;
   let rodCost = 0;
-  curtainMeasurements.forEach(m => {
+  allCurtainMeasurements.forEach(m => {
     const width = m.width || 0;
     const rate = m.rodRatePerLength || 0;
     const length = width / 12;

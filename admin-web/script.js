@@ -3,7 +3,7 @@ let currentProject = null;
 let workers = [];
 let projects = [];
 
-const API_BASE_URL = 'https://interior-app.onrender.com/api';
+const API_BASE_URL = 'https://interior-app-production.up.railway.app/api';
 
 document.addEventListener('DOMContentLoaded', function() {
     if (window.location.pathname.includes('dashboard.html')) {
