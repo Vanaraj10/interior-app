@@ -33,7 +33,7 @@ export default function Login() {
     setLoading(true);
     try {
       // Backend expects { username, password } for worker login
-      const response = await fetch('https://interior-app.onrender.com/api/worker/login', {
+      const response = await fetch('https://interior-app-production.up.railway.app/api/worker/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
