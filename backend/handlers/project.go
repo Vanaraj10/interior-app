@@ -3,8 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"regexp"
-	"strings"
 
 	"github.com/Vanaraj10/interior-backend/config"
 	"github.com/Vanaraj10/interior-backend/models"
