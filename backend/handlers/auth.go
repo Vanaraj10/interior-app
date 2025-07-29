@@ -49,7 +49,7 @@ func AdminLogin(c *gin.Context) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": admin.ID,
 		"role":    "admin",
-		"exp":     time.Now().Add(24 * time.Hour).Unix(),
+		"exp":     time.Now().Add(30 * 24 * time.Hour).Unix(),
 	})
 	tokenString, _ := token.SignedString(jwtSecret)
 	c.JSON(http.StatusOK, LoginResponse{Token: tokenString})
