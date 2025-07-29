@@ -330,48 +330,7 @@ async function viewProject(projectId) {
     
     // Load HTML content with global.css applied
     const htmlContainer = document.getElementById('projectHtmlContainer');
-    if (project.html) {
-        // Create iframe for isolated HTML rendering
-        const iframe = document.createElement('iframe');
-        iframe.style.width = '100%';
-        iframe.style.minHeight = '400px';
-        iframe.style.border = 'none';
-        iframe.style.borderRadius = '0.5rem';
-        
-        htmlContainer.innerHTML = '';
-        htmlContainer.appendChild(iframe);
-        
-        // Write HTML content to iframe with global.css
-        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        const htmlWithStyles = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <link rel="stylesheet" href="./global.css">
-                <style>
-                    body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
-                </style>
-            </head>
-            <body>
-                ${project.html}
-            </body>
-            </html>
-        `;
-        
-        iframeDoc.open();
-        iframeDoc.write(htmlWithStyles);
-        iframeDoc.close();
-        
-        // Adjust iframe height after content loads
-        iframe.onload = function() {
-            const body = iframeDoc.body;
-            const height = Math.max(body.scrollHeight, body.offsetHeight, 400);
-            iframe.style.height = height + 'px';
-        };
-    } else {
-        htmlContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 2rem;">No HTML content available</p>';
-    }
+    PDFUtils.displayProjectHTML(project, htmlContainer);
     
     showModal('projectViewModal');
 }
@@ -833,87 +792,15 @@ async function downloadQuotation(format) {
     const filename = `Quotation_${clientName}_${timestamp}`;
 
     if (format === 'html') {
-        downloadAsHTML(filename);
+        PDFUtils.downloadAsHTML(currentProject, filename);
     } else if (format === 'pdf') {
-        await downloadAsPDF(filename);
-    }
-}
-
-async function downloadAsPDF(filename) {
-    try {
-        showLoading(true);
-        
-        // Create a printable version of the content
-        const printWindow = window.open('', '_blank', 'width=800,height=600');
-        const fullHtml = createStandaloneHTML();
-        
-        // Write the HTML content
-        printWindow.document.open();
-        printWindow.document.write(fullHtml);
-        printWindow.document.close();
-        
-        await new Promise(resolve => {
-            const checkLoaded = () => {
-                if (printWindow.document.readyState === 'complete') {
-                    setTimeout(resolve, 1500);
-                } else {
-                    setTimeout(checkLoaded, 100);
-                }
-            };
-            
-            if (printWindow.document.readyState === 'complete') {
-                setTimeout(resolve, 1500);
-            } else {
-                printWindow.addEventListener('load', () => {
-                    setTimeout(resolve, 1500);
-                });
-
-                setTimeout(resolve, 3000);
-            }
-        });
-
-        printWindow.focus();
-        setTimeout(() => {
-            printWindow.print();
-            showToast('Print dialog opened. Choose "Save as PDF" to download as PDF', 'info', 7000);
-            setTimeout(() => {
-                if (printWindow && !printWindow.closed) {
-                    printWindow.close();
-                }
-            }, 5000);
-        }, 500);
-        
-    } catch (error) {
-        console.error('Error creating PDF:', error);
-        showToast('Failed to create PDF. Please try downloading as HTML instead.', 'error');
-    } finally {
-        showLoading(false);
+        await PDFUtils.downloadAsPDF(currentProject, filename);
     }
 }
 
 function createStandaloneHTML() {
-    const project = currentProject;
-    
-    // Get the exact global.css styles
-    const globalCSS = `
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #fff;
-        }
-
-        .header {
-            background-color: #f0f9ff;
-            padding: 10px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #e0e7ff;
-        }
-
+    return PDFUtils.createStandaloneHTML(currentProject);
+`
         .client-info {
             margin: 20px 0;
             padding: 15px;
