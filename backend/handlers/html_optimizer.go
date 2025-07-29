@@ -1,12 +1,8 @@
 package handlers
 
 import (
-	"net/http"
 	"regexp"
 	"strings"
-
-	"github.com/Vanaraj10/interior-backend/models"
-	"github.com/gin-gonic/gin"
 )
 
 // HTMLOptimizer provides methods for optimizing HTML storage
