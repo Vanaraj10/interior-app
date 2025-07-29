@@ -41,8 +41,6 @@ func CreateProject(c *gin.Context) {
 	html := string(htmlJSON)
 
 	db := config.GetDB()
-	// Upsert logic: if ProjectID is provided, update; else insert new
-	var err error
 	if req.ProjectID > 0 {
 		_, err = db.Exec(`UPDATE projects SET client_name=@p1, phone=@p2, address=@p3, html=@p4, raw_data=@p5, updated_at=GETDATE() WHERE id=@p6 AND worker_id=@p7 AND admin_id=@p8`,
 			req.ClientName, req.Phone, req.Address, html, req.RawData, req.ProjectID, workerId, adminId)
