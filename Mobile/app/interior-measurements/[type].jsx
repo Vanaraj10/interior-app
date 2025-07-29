@@ -399,12 +399,17 @@ const TableRow = ({
         <View style={[styles.tableCell, styles.actionColumn]}>
           <View style={styles.actionContainer}>
             <TouchableOpacity
-              onPress={() =>
+              onPress={() => {
+                // Check if we're in a curtain room context
+                const { roomId, roomName } = m;
+                const isCurtainRoom = type === 'curtains' && roomId && roomName;
                 router.push({
                   pathname: "/new-measurement/[type]",
-                  params: { id, type, editId: m.id },
-                })
-              }
+                  params: isCurtainRoom 
+                    ? { id, type, editId: m.id, roomId, roomName }
+                    : { id, type, editId: m.id },
+                });
+              }}
               style={styles.editButton}
             >
               <Ionicons name="pencil" size={14} color="white" />
@@ -656,12 +661,17 @@ const TableRow = ({
         <View style={[styles.tableCell, styles.actionColumn]}>
           <View style={styles.actionContainer}>
             <TouchableOpacity
-              onPress={() =>
+              onPress={() => {
+                // Check if we're in a curtain room context
+                const { roomId, roomName } = m;
+                const isCurtainRoom = type === 'curtains' && roomId && roomName;
                 router.push({
                   pathname: "/new-measurement/[type]",
-                  params: { id, type, editId: m.id },
-                })
-              }
+                  params: isCurtainRoom 
+                    ? { id, type, editId: m.id, roomId, roomName }
+                    : { id, type, editId: m.id },
+                });
+              }}
               style={styles.editButton}
             >
               <Ionicons name="pencil" size={14} color="white" />

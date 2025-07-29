@@ -449,32 +449,22 @@ export default function PDFPreview() {
     try {
       const htmlContent = generatePDFContent();
       if (Platform.OS === "web") {
-        // Dynamically load html2pdf.js from CDN for web
-        if (!window.html2pdf) {
-          const script = document.createElement("script");
-          script.src =
-            "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
-          script.onload = () => {
-            const element = document.createElement("div");
-            element.innerHTML = htmlContent;
-            window
-              .html2pdf()
-              .from(element)
-              .save(`Quotation-${project.clientName}.pdf`);
-            setIsGenerating(false);
-          };
-          document.body.appendChild(script);
-        } else {
-          const element = document.createElement("div");
-          element.innerHTML = htmlContent;
-          window
-            .html2pdf()
-            .from(element)
-            .save(`Quotation-${project.clientName}.pdf`);
+        try {
+          // Use our improved PDF generator for web
+          const { generateWebPDF } = await import('./improved-pdf');
+          await generateWebPDF(htmlContent, `Quotation-${project.clientName}.pdf`);
+          setShowSuccess(true);
+          setTimeout(() => setShowSuccess(false), 3000);
+        } catch (err) {
+          console.error("Error with improved PDF generation:", err);
+          Alert.alert("PDF Generation Failed", "Please try again or use a different browser.");
+        } finally {
           setIsGenerating(false);
         }
         return;
       }
+      
+      // Native platforms use expo-print
       const { uri } = await Print.printToFileAsync({
         html: htmlContent,
         base64: false,
@@ -502,64 +492,48 @@ export default function PDFPreview() {
     try {
       const htmlContent = generatePDFContent();
       if (Platform.OS === "web") {
-        // Dynamically load html2pdf.js from CDN for web
-        if (!window.html2pdf) {
-          const script = document.createElement("script");
-          script.src =
-            "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
-          script.onload = () => {
-            try {
-              const element = document.createElement("div");
-              element.innerHTML = htmlContent;
-              window
-                .html2pdf()
-                .from(element)
-                .outputPdf()
-                .then((pdf) => {
-                  const blob = new Blob([pdf], { type: "application/pdf" });
-                  const url = URL.createObjectURL(blob);
-                  const printWindow = window.open(url);
-                  printWindow.onload = function () {
-                    printWindow.focus();
-                    printWindow.print();
-                  };
-                  setIsPrinting(false);
-                });
-            } catch (err) {
-              setIsPrinting(false);
-              Alert.alert("Error", "Failed to print PDF");
-            }
-          };
-          script.onerror = () => {
-            setIsPrinting(false);
-            Alert.alert("Error", "Failed to load PDF library");
-          };
-          document.body.appendChild(script);
-        } else {
-          try {
-            const element = document.createElement("div");
-            element.innerHTML = htmlContent;
-            window
-              .html2pdf()
-              .from(element)
-              .outputPdf()
-              .then((pdf) => {
-                const blob = new Blob([pdf], { type: "application/pdf" });
-                const url = URL.createObjectURL(blob);
-                const printWindow = window.open(url);
-                printWindow.onload = function () {
-                  printWindow.focus();
-                  printWindow.print();
-                };
-                setIsPrinting(false);
-              });
-          } catch (err) {
-            setIsPrinting(false);
-            Alert.alert("Error", "Failed to print PDF");
+        // Use our improved PDF printing for web
+        try {
+          // Import the improved PDF module dynamically to avoid issues on non-web platforms
+          const { printWebPDF } = await import('./improved-pdf');
+          await printWebPDF(htmlContent);
+          setIsPrinting(false);
+        } catch (err) {
+          console.error("Error with improved PDF print:", err);
+          // Fallback to direct print
+          const printWindow = window.open('', '_blank');
+          if (!printWindow) {
+            throw new Error('Popup blocked. Please allow popups for this site.');
           }
+          printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>Print - ${project.clientName}</title>
+                <style>
+                  @media print {
+                    body { margin: 0; padding: 0; }
+                    @page { size: A4; margin: 10mm; }
+                  }
+                </style>
+              </head>
+              <body>
+                ${htmlContent}
+                <script>
+                  window.onload = function() {
+                    setTimeout(() => { window.print(); }, 500);
+                  }
+                </script>
+              </body>
+            </html>
+          `);
+          printWindow.document.close();
+          setIsPrinting(false);
         }
         return;
       }
+      
+      // Native platforms use expo-print
       await Print.printAsync({
         html: htmlContent,
       });
