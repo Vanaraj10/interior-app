@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Interiors",
-    "slug": "interior-app",
+    "slug": "zyuquote",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
@@ -43,9 +43,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "706520e9-4262-4682-af75-32e1d7f541a4"
+        "projectId": "446c6446-ccb3-4bb8-b39b-73cfc210255a"
       }
     },
-    "owner": "neutrino10"
+    "owner": "udhayank"
   }
 }
