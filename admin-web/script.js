@@ -307,32 +307,56 @@ function renderWorkersGrid() {
 
 // Project functionality
 async function viewProject(projectId) {
-    const project = projects.find(p => p.id == projectId);
-    if (!project) {
-        showToast('Project not found', 'error');
-        return;
+    try {
+        showLoading(true);
+        
+        // Fetch the specific project to get reconstructed HTML
+        const response = await fetch(`${API_BASE_URL}/admin/projects/${projectId}`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+            },
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                handleUnauthorized();
+                return;
+            }
+            throw new Error('Failed to load project details');
+        }
+        
+        const project = await response.json();
+        currentProject = project;
+        
+        // Debug log
+        console.log('Fetched project:', project);
+        console.log('HTML content preview:', project.html ? project.html.substring(0, 200) : 'No HTML');
+        
+        // Populate modal
+        document.getElementById('modalClientName').textContent = project.clientName;
+        document.getElementById('modalClientPhone').textContent = project.phone;
+        document.getElementById('modalClientAddress').textContent = project.address;
+        
+        const statusBadge = document.getElementById('modalProjectStatus');
+        statusBadge.textContent = project.isCompleted ? 'Completed' : 'Pending';
+        statusBadge.className = `status-badge ${project.isCompleted ? 'status-completed' : 'status-pending'}`;
+        
+        // Update toggle button
+        const toggleBtn = document.getElementById('toggleStatusBtn');
+        toggleBtn.innerHTML = `<i class="fas fa-toggle-${project.isCompleted ? 'on' : 'off'}"></i> ${project.isCompleted ? 'Mark Pending' : 'Mark Complete'}`;
+        
+        // Load HTML content with global.css applied
+        const htmlContainer = document.getElementById('projectHtmlContainer');
+        PDFUtils.displayProjectHTML(project, htmlContainer);
+        
+        showModal('projectViewModal');
+        
+    } catch (error) {
+        console.error('Error loading project:', error);
+        showToast('Failed to load project details', 'error');
+    } finally {
+        showLoading(false);
     }
-    
-    currentProject = project;
-    
-    // Populate modal
-    document.getElementById('modalClientName').textContent = project.clientName;
-    document.getElementById('modalClientPhone').textContent = project.phone;
-    document.getElementById('modalClientAddress').textContent = project.address;
-    
-    const statusBadge = document.getElementById('modalProjectStatus');
-    statusBadge.textContent = project.isCompleted ? 'Completed' : 'Pending';
-    statusBadge.className = `status-badge ${project.isCompleted ? 'status-completed' : 'status-pending'}`;
-    
-    // Update toggle button
-    const toggleBtn = document.getElementById('toggleStatusBtn');
-    toggleBtn.innerHTML = `<i class="fas fa-toggle-${project.isCompleted ? 'on' : 'off'}"></i> ${project.isCompleted ? 'Mark Pending' : 'Mark Complete'}`;
-    
-    // Load HTML content with global.css applied
-    const htmlContainer = document.getElementById('projectHtmlContainer');
-    PDFUtils.displayProjectHTML(project, htmlContainer);
-    
-    showModal('projectViewModal');
 }
 
 async function toggleProjectStatus(projectId, newStatus) {
