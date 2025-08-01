@@ -35,7 +35,7 @@ func (h *HTMLOptimizer) OptimizeHTML(html string) string {
 		headRe := regexp.MustCompile(`(?i)<head.*?>`)
 		html = headRe.ReplaceAllString(html, "$0<link rel='stylesheet' href='/global.css'>")
 	}
-	
+
 	// Remove any remaining <style>...</style> blocks
 	html = styleTagRe.ReplaceAllString(html, "")
 
@@ -52,7 +52,7 @@ func (h *HTMLOptimizer) ExtractBodyContent(html string) string {
 	if !strings.Contains(html, "<body") {
 		return html
 	}
-	
+
 	bodyMatch := regexp.MustCompile(`(?is)<body[^>]*>([\s\S]*?)</body>`).FindStringSubmatch(html)
 	if len(bodyMatch) > 1 {
 		return bodyMatch[1]
@@ -120,7 +120,7 @@ type ProjectHTMLData struct {
 // for more efficient storage and easier templating
 func (h *HTMLOptimizer) OptimizeProjectHTML(html string) *ProjectHTMLData {
 	bodyContent := h.ExtractBodyContent(html)
-	
+
 	// Extract project type from HTML content
 	projectType := "unknown"
 	typeRegex := regexp.MustCompile(`(?i)(curtain|blinds|flooring|wallpaper|mosquito.?net)`)
@@ -128,7 +128,7 @@ func (h *HTMLOptimizer) OptimizeProjectHTML(html string) *ProjectHTMLData {
 	if len(typeMatch) > 1 {
 		projectType = strings.ToLower(typeMatch[1])
 	}
-	
+
 	// Extract client details section
 	clientDetails := ""
 	clientDetailsRegex := regexp.MustCompile(`(?is)<div class=['"]client-details['"]>(.*?)</div>`)
@@ -136,7 +136,7 @@ func (h *HTMLOptimizer) OptimizeProjectHTML(html string) *ProjectHTMLData {
 	if len(clientMatch) > 1 {
 		clientDetails = clientMatch[1]
 	}
-	
+
 	return &ProjectHTMLData{
 		BodyContent:   bodyContent,
 		ProjectType:   projectType,
@@ -146,8 +146,10 @@ func (h *HTMLOptimizer) OptimizeProjectHTML(html string) *ProjectHTMLData {
 
 // CreateProjectHTMLFromData reconstructs full HTML from optimized components
 func (h *HTMLOptimizer) CreateProjectHTMLFromData(data *ProjectHTMLData) string {
-	return `
-<!DOCTYPE html>
+	// Decode HTML entities in the body content
+	bodyContent := h.decodeHTMLEntities(data.BodyContent)
+
+	return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -156,7 +158,30 @@ func (h *HTMLOptimizer) CreateProjectHTMLFromData(data *ProjectHTMLData) string 
     <title>Interior Quotation</title>
 </head>
 <body>
-    ${data.BodyContent}
+    ` + bodyContent + `
 </body>
 </html>`
+}
+
+// decodeHTMLEntities decodes HTML entities in the content
+func (h *HTMLOptimizer) decodeHTMLEntities(content string) string {
+	// Decode common HTML entities
+	content = strings.ReplaceAll(content, "\\u003c", "<")
+	content = strings.ReplaceAll(content, "\\u003e", ">")
+	content = strings.ReplaceAll(content, "\\u0026", "&")
+	content = strings.ReplaceAll(content, "\\u0027", "'")
+	content = strings.ReplaceAll(content, "\\u0022", "\"")
+	content = strings.ReplaceAll(content, "\\n", "\n")
+	content = strings.ReplaceAll(content, "\\t", "\t")
+	content = strings.ReplaceAll(content, "\\r", "\r")
+	content = strings.ReplaceAll(content, "\\/", "/")
+
+	// Decode standard HTML entities
+	content = strings.ReplaceAll(content, "&lt;", "<")
+	content = strings.ReplaceAll(content, "&gt;", ">")
+	content = strings.ReplaceAll(content, "&amp;", "&")
+	content = strings.ReplaceAll(content, "&quot;", "\"")
+	content = strings.ReplaceAll(content, "&#39;", "'")
+
+	return content
 }

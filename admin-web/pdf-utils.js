@@ -327,6 +327,10 @@ function displayProjectHTML(project, container) {
         return null;
     }
     
+    // Debug log
+    console.log('Displaying project HTML (length):', project.html.length);
+    console.log('HTML preview:', project.html.substring(0, 200));
+    
     // Create iframe for isolated HTML rendering
     const iframe = document.createElement('iframe');
     iframe.style.width = '100%';
@@ -336,33 +340,52 @@ function displayProjectHTML(project, container) {
     
     container.appendChild(iframe);
     
-    // Write HTML content to iframe with global.css
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-    const htmlWithStyles = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <link rel="stylesheet" href="./global.css">
-            <style>
-                body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
-            </style>
-        </head>
-        <body>
-            ${project.html}
-        </body>
-        </html>
-    `;
+    // Determine if we need to extract body content or use as-is
+    let htmlContent = project.html;
     
-    iframeDoc.open();
-    iframeDoc.write(htmlWithStyles);
-    iframeDoc.close();
+    // If it looks like a complete HTML document, use it directly
+    if (htmlContent.includes('<!DOCTYPE') || htmlContent.includes('<html')) {
+        // It's already a complete HTML document from backend reconstruction
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(htmlContent);
+        iframeDoc.close();
+    } else {
+        // It's body content only, wrap it properly
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        const htmlWithStyles = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <link rel="stylesheet" href="./global.css">
+                <style>
+                    body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+                </style>
+            </head>
+            <body>
+                ${htmlContent}
+            </body>
+            </html>
+        `;
+        
+        iframeDoc.open();
+        iframeDoc.write(htmlWithStyles);
+        iframeDoc.close();
+    }
     
     // Adjust iframe height after content loads
     iframe.onload = function() {
-        const body = iframeDoc.body;
-        const height = Math.max(body.scrollHeight, body.offsetHeight, 400);
-        iframe.style.height = height + 'px';
+        try {
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            const body = iframeDoc.body;
+            const height = Math.max(body.scrollHeight, body.offsetHeight, 400);
+            iframe.style.height = height + 'px';
+            console.log('Iframe height adjusted to:', height);
+        } catch (e) {
+            console.error('Error adjusting iframe height:', e);
+            iframe.style.height = '600px';
+        }
     };
     
     return iframe;

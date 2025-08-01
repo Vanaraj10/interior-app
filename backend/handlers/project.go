@@ -9,6 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Helper function for min
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
 // Worker submits a project (order)
 func CreateProject(c *gin.Context) {
 	workerId := c.GetInt("worker_id")
@@ -28,7 +36,7 @@ func CreateProject(c *gin.Context) {
 	// Optimize HTML for storage using HTMLOptimizer
 	optimizer := NewHTMLOptimizer()
 	htmlData := optimizer.OptimizeProjectHTML(req.HTML)
-	
+
 	// Serialize the optimized HTML data structure to JSON for storage
 	// This separates repeating content from variable content
 	htmlJSON, err := json.Marshal(htmlData)
@@ -36,7 +44,7 @@ func CreateProject(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process HTML"})
 		return
 	}
-	
+
 	// Use the optimized HTML content for storage
 	html := string(htmlJSON)
 
@@ -87,17 +95,22 @@ func GetProject(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found or not authorized"})
 		return
 	}
-	
+
+	// Debug log the raw HTML from database
+	println("Raw HTML from DB (first 200 chars):", p.HTML[:min(200, len(p.HTML))])
+
 	// Reconstruct full HTML from optimized storage format
 	reconstructedHTML, err := reconstructProjectHTML(p.HTML)
 	if err == nil {
 		p.HTML = reconstructedHTML
+		println("HTML successfully reconstructed (length):", len(reconstructedHTML))
+	} else {
+		println("HTML reconstruction failed:", err.Error())
 	}
-	
+
 	c.JSON(http.StatusOK, p)
 }
 
-// Admin toggles isCompleted for a project
 func ToggleProjectCompleted(c *gin.Context) {
 	adminId := c.GetInt("admin_id")
 	projectId := c.Param("id")
