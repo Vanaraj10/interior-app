@@ -952,6 +952,22 @@ button:hover::before {
   background: #d97706;
 }
 
+.btn-warning {
+  background: #fbbf24;
+  color: #92400e;
+  border: 1px solid #f59e0b;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-warning:hover {
+  background: #f59e0b;
+  color: white;
+}
+
 /* Workers Grid */
 .workers-grid {
   display: grid;
@@ -1001,7 +1017,7 @@ button:hover::before {
 }
 
 .worker-info p {
-  color: var(--text-secondary);
+  color: var (--text-secondary);
   font-size: 0.875rem;
   font-weight: 500;
   margin-bottom: 0.125rem;

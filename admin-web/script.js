@@ -347,13 +347,23 @@ async function viewProject(projectId) {
           // Load HTML content with global.css applied
         const htmlContainer = document.getElementById('projectHtmlContainer');
         PDFUtils.displayProjectHTML(project, htmlContainer);
-        
-        // Check if project contains curtains and show/hide stitching button
+          // Check if project contains curtains and show/hide stitching button
         const stitchingBtn = document.getElementById('stitchingQuotationBtn');
-        if (checkIfProjectHasCurtains(project)) {
+        const hasCurtains = checkIfProjectHasCurtains(project);
+        
+        console.log('Stitching button debug:', {
+            buttonFound: !!stitchingBtn,
+            hasCurtains: hasCurtains,
+            rawDataExists: !!project.rawData,
+            rawDataPreview: project.rawData ? project.rawData.substring(0, 200) : 'No rawData'
+        });
+        
+        if (hasCurtains) {
             stitchingBtn.style.display = 'inline-block';
+            console.log('Stitching button shown');
         } else {
             stitchingBtn.style.display = 'none';
+            console.log('Stitching button hidden - no curtains found');
         }
         
         showModal('projectViewModal');
@@ -836,14 +846,34 @@ function createStandaloneHTML() {
 // Check if project contains curtain measurements
 function checkIfProjectHasCurtains(project) {
     try {
-        if (!project.rawData) return false;
+        console.log('Checking project for curtains:', {
+            projectId: project.id,
+            clientName: project.clientName,
+            hasRawData: !!project.rawData
+        });
+        
+        if (!project.rawData) {
+            console.log('No rawData found in project');
+            return false;
+        }
         
         const rawData = JSON.parse(project.rawData);
         const measurements = rawData.measurements || [];
         
-        return measurements.some(measurement => 
+        console.log('Project measurements:', {
+            measurementsCount: measurements.length,
+            measurements: measurements.map(m => ({
+                interiorType: m.interiorType,
+                roomName: m.roomName || m.room
+            }))
+        });
+        
+        const hasCurtains = measurements.some(measurement => 
             measurement.interiorType === 'curtains'
         );
+        
+        console.log('Curtains found:', hasCurtains);
+        return hasCurtains;
     } catch (error) {
         console.error('Error checking for curtains:', error);
         return false;

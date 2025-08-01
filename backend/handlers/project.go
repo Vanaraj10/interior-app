@@ -203,34 +203,61 @@ func GenerateStitchingQuotation(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found or not authorized"})
 		return
-	}
-
-	// Parse raw data to extract curtain measurements
-	var rawData map[string]interface{}
-	if err := json.Unmarshal([]byte(p.RawData), &rawData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse project data"})
+	}	// Parse raw data to extract curtain measurements
+	if p.RawData == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No raw data found for this project"})
 		return
 	}
 
-	// Check if this is a curtain project
+	// Debug log - show first 200 characters of raw data
+	debugData := p.RawData
+	if len(debugData) > 200 {
+		debugData = debugData[:200] + "..."
+	}
+	fmt.Printf("Raw data for project %s: %s\n", p.ID, debugData)
+
+	var rawData map[string]interface{}
+	if err := json.Unmarshal([]byte(p.RawData), &rawData); err != nil {
+		fmt.Printf("JSON parsing error: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Failed to parse project data: %v", err)})
+		return
+	}	// Check if this is a curtain project
 	measurements, ok := rawData["measurements"].([]interface{})
-	if !ok || len(measurements) == 0 {
+	if !ok {
+		keys := make([]string, 0, len(rawData))
+		for k := range rawData {
+			keys = append(keys, k)
+		}
+		fmt.Printf("Measurements not found or not array. Available keys: %v\n", keys)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No measurements array found in project data"})
+		return
+	}
+	
+	if len(measurements) == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No measurements found"})
 		return
 	}
 
+	fmt.Printf("Found %d measurements\n", len(measurements))
 	// Check if any measurement is for curtains
 	hasCurtains := false
-	for _, m := range measurements {
+	for i, m := range measurements {
 		if measurement, ok := m.(map[string]interface{}); ok {
 			if interiorType, exists := measurement["interiorType"]; exists {
+				fmt.Printf("Measurement %d: interiorType = %v\n", i, interiorType)
 				if interiorType == "curtains" {
 					hasCurtains = true
 					break
 				}
+			} else {
+				fmt.Printf("Measurement %d: no interiorType field\n", i)
 			}
+		} else {
+			fmt.Printf("Measurement %d: not a map\n", i)
 		}
 	}
+
+	fmt.Printf("Has curtains: %v\n", hasCurtains)
 
 	if !hasCurtains {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "This project does not contain curtain measurements"})
