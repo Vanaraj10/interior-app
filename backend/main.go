@@ -31,7 +31,6 @@ func main() {
 	r.GET("/api/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
-
 	r.POST("/api/admin/login", handlers.AdminLogin)
 	r.POST("/api/worker/login", handlers.WorkerLogin)
 	adminGroup := r.Group("/api/admin").Use(middleware.AdminAuthMiddleware())
@@ -41,6 +40,7 @@ func main() {
 		adminGroup.GET("/workers", handlers.ListWorkers)
 		adminGroup.GET("/projects", handlers.ListProjects)
 		adminGroup.GET("/projects/:id", handlers.GetProject)
+		adminGroup.GET("/projects/:id/stitching-quotation", handlers.GenerateStitchingQuotation)
 		adminGroup.PUT("/projects/:id/completed", handlers.ToggleProjectCompleted)
 		adminGroup.DELETE("/projects/:id", handlers.DeleteProject)
 		adminGroup.PUT("/password", handlers.ChangeAdminPassword)

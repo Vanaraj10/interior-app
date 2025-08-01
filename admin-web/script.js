@@ -223,7 +223,7 @@ function loadRecentProjects() {
     }).join('');
 }
 
-function renderProjectsTable() {
+function renderProjectsTable() { 
     const tbody = document.getElementById('projectsTableBody');
     
     if (projects.length === 0) {
@@ -344,10 +344,17 @@ async function viewProject(projectId) {
         // Update toggle button
         const toggleBtn = document.getElementById('toggleStatusBtn');
         toggleBtn.innerHTML = `<i class="fas fa-toggle-${project.isCompleted ? 'on' : 'off'}"></i> ${project.isCompleted ? 'Mark Pending' : 'Mark Complete'}`;
-        
-        // Load HTML content with global.css applied
+          // Load HTML content with global.css applied
         const htmlContainer = document.getElementById('projectHtmlContainer');
         PDFUtils.displayProjectHTML(project, htmlContainer);
+        
+        // Check if project contains curtains and show/hide stitching button
+        const stitchingBtn = document.getElementById('stitchingQuotationBtn');
+        if (checkIfProjectHasCurtains(project)) {
+            stitchingBtn.style.display = 'inline-block';
+        } else {
+            stitchingBtn.style.display = 'none';
+        }
         
         showModal('projectViewModal');
         
@@ -824,588 +831,267 @@ async function downloadQuotation(format) {
 
 function createStandaloneHTML() {
     return PDFUtils.createStandaloneHTML(currentProject);
-`
-        .client-info {
-            margin: 20px 0;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #fafafa;
-        }
+}
 
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 5px 0;
-            border-bottom: 1px solid #eee;
-        }
+// Check if project contains curtain measurements
+function checkIfProjectHasCurtains(project) {
+    try {
+        if (!project.rawData) return false;
+        
+        const rawData = JSON.parse(project.rawData);
+        const measurements = rawData.measurements || [];
+        
+        return measurements.some(measurement => 
+            measurement.interiorType === 'curtains'
+        );
+    } catch (error) {
+        console.error('Error checking for curtains:', error);
+        return false;
+    }
+}
 
-        .info-row:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-
-        .bold { font-weight: bold; }
-        .text-xs { font-size: 10px; }
-        .text-sm { font-size: 12px; }
-        .text-base { font-size: 14px; }
-        .text-lg { font-size: 18px; }
-        .text-xl { font-size: 20px; }
-        .text-2xl { font-size: 24px; }
-        .text-primary { color: #3b82f6; }
-        .text-muted { color: #666; }
-        .text-success { color: #10b981; }
-        .text-warning { color: #f59e0b; }
-        .text-danger { color: #ef4444; }
-        .bg-summary { background-color: #f0f9ff; }
-        .bg-light { background-color: #f8f9fa; }
-        .bg-primary { background-color: #3b82f6; color: white; }
-        .rounded { border-radius: 8px; }
-        .rounded-sm { border-radius: 4px; }
-        .rounded-lg { border-radius: 12px; }
-        .border { border: 1px solid #ddd; }
-        .border-thick { border: 2px solid #ddd; }
-        .p-1 { padding: 4px; }
-        .p-2 { padding: 8px; }
-        .p-3 { padding: 12px; }
-        .p-4 { padding: 16px; }
-        .px-2 { padding-left: 8px; padding-right: 8px; }
-        .px-3 { padding-left: 12px; padding-right: 12px; }
-        .py-2 { padding-top: 8px; padding-bottom: 8px; }
-        .py-3 { padding-top: 12px; padding-bottom: 12px; }
-        .m-1 { margin: 4px; }
-        .m-2 { margin: 8px; }
-        .m-3 { margin: 12px; }
-        .mb-2 { margin-bottom: 8px; }
-        .mb-3 { margin-bottom: 12px; }
-        .mt-2 { margin-top: 8px; }
-        .mt-3 { margin-top: 12px; }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .text-left { text-align: left; }
-
-        .cell-center {
-            padding: 8px;
-            border: 1px solid #ddd;
-            text-align: center;
-            background-color: #fafafa;
-        }
-
-        .cell-right {
-            padding: 8px;
-            border: 1px solid #ddd;
-            text-align: right;
-            background-color: #fafafa;
-        }
-
-        .cell-left {
-            padding: 8px;
-            border: 1px solid #ddd;
-            text-align: left;
-            background-color: #fafafa;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        th {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            padding: 12px 8px;
-            text-align: center;
-            font-weight: bold;
-            border: 1px solid #2563eb;
-            position: relative;
-        }
-
-        th::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
-        }
-
-        td {
-            padding: 10px 8px;
-            border: 1px solid #ddd;
-            background-color: #fff;
-            transition: background-color 0.2s ease;
-        }
-
-        tr:nth-child(even) td {
-            background-color: #f8f9fa;
-        }
-
-        tr:hover td {
-            background-color: #e3f2fd;
-        }
-
-        .cost-summary {
-            margin-top: 20px;
-            padding: 15px;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
-            border-radius: 8px;
-            border: 1px solid #c7d2fe;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .cost-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            padding: 4px 0;
-            border-bottom: 1px solid #e0e7ff;
-        }
-
-        .cost-row:last-child {
-            border-bottom: 2px solid #3b82f6;
-            font-weight: bold;
-            font-size: 16px;
-            padding-top: 8px;
-            margin-top: 8px;
-        }
-
-        .cost-row .cost-label {
-            color: #374151;
-            font-weight: 500;
-        }
-
-        .cost-row .cost-value {
-            color: #1f2937;
-            font-weight: 600;
-        }
-
-        .section-header {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            padding: 12px 16px;
-            margin: 20px 0 10px 0;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 16px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-        }
-
-        .measurement-section {
-            margin-bottom: 30px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .measurement-header {
-            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-            color: white;
-            padding: 10px 15px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .measurement-content {
-            padding: 15px;
-            background-color: #fff;
-        }
-
-        .item-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-            gap: 10px;
-            padding: 8px;
-            border-bottom: 1px solid #e5e7eb;
-            align-items: center;
-        }
-
-        .item-row:last-child {
-            border-bottom: none;
-        }
-
-        .item-row:nth-child(even) {
-            background-color: #f9fafb;
-        }
-
-        .item-description {
-            font-weight: 500;
-            color: #374151;
-        }
-
-        .item-measurement {
-            text-align: center;
-            color: #6b7280;
-            font-family: 'Courier New', monospace;
-        }
-
-        .item-quantity {
-            text-align: center;
-            font-weight: 600;
-            color: #1f2937;
-        }
-
-        .item-rate {
-            text-align: right;
-            color: #059669;
-            font-weight: 500;
-        }
-
-        .item-total {
-            text-align: right;
-            font-weight: 700;
-            color: #1f2937;
-        }
-
-        .summary-table {
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .summary-table th {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-        }
-
-        .summary-table .total-row td {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
-            font-weight: bold;
-            font-size: 14px;
-            color: #1f2937;
-            border-top: 2px solid #3b82f6;
-        }
-
-        @media (max-width: 768px) {
-            table {
-                font-size: 10px;
+// Generate stitching unit quotation
+async function generateStitchingQuotation() {
+    if (!currentProject) {
+        showToast('No project selected', 'error');
+        return;
+    }
+    
+    try {
+        showLoading(true);
+        
+        const response = await fetch(`${API_BASE_URL}/admin/projects/${currentProject.id}/stitching-quotation`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+            },
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                handleUnauthorized();
+                return;
             }
             
-            th, td {
-                padding: 6px 4px;
-            }
-            
-            .item-row {
-                grid-template-columns: 1fr;
-                gap: 4px;
-                text-align: left;
-            }
-            
-            .item-row > div {
-                padding: 2px 0;
-            }
-            
-            .item-row > div:before {
-                font-weight: bold;
-                margin-right: 8px;
-            }
-            
-            .item-description:before { content: "Item: "; }
-            .item-measurement:before { content: "Size: "; }
-            .item-quantity:before { content: "Qty: "; }
-            .item-rate:before { content: "Rate: "; }
-            .item-total:before { content: "Total: "; }
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to generate stitching quotation');
         }
+        
+        const data = await response.json();
+        
+        // Display the stitching quotation in a modal
+        displayStitchingQuotation(data.html, `Stitching Unit Quotation - ${data.clientName}`);
+        
+        showToast('Stitching quotation generated successfully!', 'success');
+        
+    } catch (error) {
+        console.error('Error generating stitching quotation:', error);
+        showToast(error.message || 'Failed to generate stitching quotation', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
 
-        .w-full { width: 100%; }
-        .w-half { width: 50%; }
-        .w-quarter { width: 25%; }
-        .flex { display: flex; }
-        .flex-col { flex-direction: column; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .justify-center { justify-content: center; }
-        .shadow-sm { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
-        .shadow { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
-        .shadow-lg { box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
-        .opacity-50 { opacity: 0.5; }
-        .opacity-75 { opacity: 0.75; }
+// Display stitching quotation in a modal with print functionality
+function displayStitchingQuotation(stitchingHTML, title = 'Stitching Unit Quotation') {
+    console.log('displayStitchingQuotation called with:', { 
+        htmlLength: stitchingHTML?.length, 
+        title,
+        htmlPreview: stitchingHTML?.substring(0, 200) 
+    });
 
-        /* Custom project-specific classes */
-        .project-title {
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            color: #1f2937;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
-            border-radius: 8px;
-            border: 1px solid #c7d2fe;
-        }
+    // Remove any existing modal
+    const existingModal = document.getElementById('stitching-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
 
-        .client-details {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .client-details h3 {
-            color: #2d3748;
-            margin-bottom: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            border-bottom: 2px solid #3b82f6;
-            padding-bottom: 5px;
-        }
-
-        .measurement-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .total-summary {
-            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        .total-summary h3 {
-            margin-bottom: 15px;
-            font-size: 20px;
-        }
-
-        .grand-total {
-            font-size: 28px;
-            font-weight: bold;
-            color: #0b5cff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        @media print {
-            * {
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            body {
-                background: white !important;
-                color: black !important;
-                margin: 0 !important;
-                padding: 15px !important;
-                font-size: 12px !important;
-            }
-            
-            .header {
-                background-color: #f0f9ff !important;
-                border: 1px solid #e0e7ff !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                page-break-inside: avoid !important;
-            }
-            
-            table {
-                page-break-inside: auto !important;
-                border-collapse: collapse !important;
-                width: 100% !important;
-                font-size: 10px !important;
-                box-shadow: none !important;
-            }
-            
-            th {
-                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-                color: white !important;
-                border: 1px solid #2563eb !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                page-break-inside: avoid !important;
-                page-break-after: avoid !important;
-            }
-            
-            th::after {
-                background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%) !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            td {
-                border: 1px solid #ddd !important;
-                background-color: white !important;
-                page-break-inside: avoid !important;
-            }
-            
-            tr:nth-child(even) td {
-                background-color: #f8f9fa !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            .cost-summary {
-                background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%) !important;
-                border: 1px solid #c7d2fe !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                page-break-inside: avoid !important;
-                box-shadow: none !important;
-            }
-            
-            .section-header {
-                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                page-break-inside: avoid !important;
-                page-break-after: avoid !important;
-                box-shadow: none !important;
-            }
-            
-            .measurement-header {
-                background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                page-break-inside: avoid !important;
-            }
-            
-            .client-info {
-                background-color: #fafafa !important;
-                border: 1px solid #ddd !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                page-break-inside: avoid !important;
-            }
-            
-            .total-summary {
-                background: linear-gradient(135deg, #1f2937 0%, #374151 100%) !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                page-break-inside: avoid !important;
-            }
-            
-            .project-title {
-                background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%) !important;
-                border: 1px solid #c7d2fe !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                page-break-inside: avoid !important;
-            }
-            
-            .client-details {
-                background: #f8fafc !important;
-                border: 1px solid #e2e8f0 !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                page-break-inside: avoid !important;
-            }
-            
-            .summary-table th {
-                background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            .summary-table .total-row td {
-                background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%) !important;
-                border-top: 2px solid #3b82f6 !important;
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-              /* Prevent page breaks in important sections */
-            .measurement-section {
-                page-break-inside: avoid !important;
-            }
-        }
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.id = 'stitching-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
     `;
 
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="light">
-    <meta name="print-color-adjust" content="exact">
-    <title>Interior Quotation - ${project.clientName}</title>
-    <style>
-        ${globalCSS}
-        
-        /* Additional rendering optimizations for PDF */
-        @page {
-            margin: 0.5in;
-            size: A4;
+    // Create modal content
+    const modalContent = document.createElement('div');
+    modalContent.style.cssText = `
+        background: white;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        max-height: 90vh;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    `;
+
+    // Create header with title, print button and close button
+    const header = document.createElement('div');
+    header.style.cssText = `
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8f9fa;
+        border-radius: 8px 8px 0 0;
+    `;
+
+    const titleElement = document.createElement('h3');
+    titleElement.textContent = title;
+    titleElement.style.cssText = 'margin: 0; color: #333; font-size: 18px;';
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.cssText = 'display: flex; gap: 10px; align-items: center;';
+
+    const printButton = document.createElement('button');
+    printButton.innerHTML = '<i class="fas fa-print"></i> Print';
+    printButton.style.cssText = `
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    `;
+    printButton.onclick = () => printStitchingQuotation(stitchingHTML, title);
+
+    const closeButton = document.createElement('button');
+    closeButton.innerHTML = '×';
+    closeButton.style.cssText = `
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+    closeButton.onclick = () => modal.remove();
+
+    buttonContainer.appendChild(printButton);
+    buttonContainer.appendChild(closeButton);
+    header.appendChild(titleElement);
+    header.appendChild(buttonContainer);
+
+    // Create iframe container
+    const iframeContainer = document.createElement('div');
+    iframeContainer.style.cssText = `
+        flex: 1;
+        padding: 20px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    `;
+
+    // Create iframe
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = `
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
+    `;
+
+    // Set iframe content
+    iframe.onload = () => {
+        console.log('Stitching quotation iframe loaded successfully');
+    };
+
+    // Write content to iframe
+    iframe.onload = () => {
+        try {
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(stitchingHTML);
+            iframeDoc.close();
+            console.log('Stitching quotation HTML content written to iframe successfully');
+        } catch (error) {
+            console.error('Error writing to iframe:', error);
+            // Fallback: use srcdoc
+            iframe.srcdoc = stitchingHTML;
         }
-        
-        body {
-            margin: 0 !important;
-            padding: 20px !important;
-            -webkit-print-color-adjust: exact !important;
-            color-adjust: exact !important;
-            print-color-adjust: exact !important;
+    };
+
+    // Also set srcdoc as fallback
+    iframe.srcdoc = stitchingHTML;
+
+    // Assemble modal
+    iframeContainer.appendChild(iframe);
+    modalContent.appendChild(header);
+    modalContent.appendChild(iframeContainer);
+    modal.appendChild(modalContent);
+
+    // Add to document
+    document.body.appendChild(modal);
+
+    // Close modal on escape key
+    const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', handleKeyDown);
         }
-        
-        /* Ensure all elements render colors properly */
-        * {
-            -webkit-print-color-adjust: exact !important;
-            color-adjust: exact !important;
-            print-color-adjust: exact !important;
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Close modal on backdrop click
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            modal.remove();
         }
+    };
+
+    console.log('Stitching quotation modal displayed successfully');
+}
+
+// Print stitching quotation
+function printStitchingQuotation(stitchingHTML, title) {
+    try {
+        // Create a printable version of the content
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
         
-        /* Force gradients and backgrounds to print */
-        th, .section-header, .measurement-header, .total-summary, 
-        .cost-summary, .header, .client-info, .project-title {
-            -webkit-print-color-adjust: exact !important;
-            color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-    </style>
-</head>
-<body>
-    ${project.html}
-    
-    <script>
-        // Ensure styles are fully loaded before any print operation
-        window.addEventListener('beforeprint', function() {
-            // Force style recalculation
-            document.body.offsetHeight;
+        // Write the HTML content
+        printWindow.document.open();
+        printWindow.document.write(stitchingHTML);
+        printWindow.document.close();
+        
+        // Wait for content to load then print
+        printWindow.addEventListener('load', () => {
+            setTimeout(() => {
+                printWindow.focus();
+                printWindow.print();
+                
+                // Show success message
+                showToast('Print dialog opened for stitching quotation', 'success');
+                
+                // Close the print window after some time
+                setTimeout(() => {
+                    if (printWindow && !printWindow.closed) {
+                        printWindow.close();
+                    }
+                }, 5000);
+            }, 1000);
         });
         
-        // Wait for all content to load
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.body.style.visibility = 'visible';
-            }, 100);
-        });
-        
-        // Force color rendering for all elements
-        document.addEventListener('DOMContentLoaded', function() {
-            const elements = document.querySelectorAll('*');
-            elements.forEach(el => {
-                el.style.webkitPrintColorAdjust = 'exact';
-                el.style.colorAdjust = 'exact';
-                el.style.printColorAdjust = 'exact';
-            });
-        });
-    </script>
-</body>
-</html>`;
+    } catch (error) {
+        console.error('Error printing stitching quotation:', error);
+        showToast('Failed to print stitching quotation', 'error');
+    }
 }

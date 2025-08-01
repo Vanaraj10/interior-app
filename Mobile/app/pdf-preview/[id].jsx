@@ -110,6 +110,63 @@ const INTERIOR_TYPES = [
   },
 ];
 
+// Helper function to flatten all measurements including curtain room measurements
+const flattenAllMeasurements = (project) => {
+  let allMeasurements = [...(project.measurements || [])];
+  
+  // Add measurements from curtain rooms
+  if (project.curtainRooms) {
+    project.curtainRooms.forEach(room => {
+      if (room.measurements) {
+        const roomMeasurements = room.measurements.map(measurement => ({
+          ...measurement,
+          interiorType: 'curtains',
+          roomId: room.id,
+          roomName: room.name
+        }));
+        allMeasurements = [...allMeasurements, ...roomMeasurements];
+      }
+    });
+  }
+  
+  return allMeasurements;
+};
+
+// Helper function to get all room data
+const getAllRoomsData = (project) => {
+  const rooms = [];
+  
+  // Add curtain rooms
+  if (project.curtainRooms) {
+    project.curtainRooms.forEach(room => {
+      rooms.push({
+        id: room.id,
+        name: room.name,
+        type: 'curtain'
+      });
+    });
+  }
+  
+  // Add any other room data from regular measurements
+  if (project.measurements) {
+    project.measurements.forEach(measurement => {
+      if (measurement.roomId && measurement.roomName) {
+        // Check if room already exists
+        const existingRoom = rooms.find(r => r.id === measurement.roomId);
+        if (!existingRoom) {
+          rooms.push({
+            id: measurement.roomId,
+            name: measurement.roomName,
+            type: measurement.interiorType || 'general'
+          });
+        }
+      }
+    });
+  }
+  
+  return rooms;
+};
+
 export default function PDFPreview() {
   const { id } = useLocalSearchParams();
   const [project, setProject] = useState(null);
@@ -716,20 +773,26 @@ export default function PDFPreview() {
                       .replace(/[\n\r\t]+/g, " ")
                       .replace(/\s{2,}/g, " ")
                       .replace(/\"/g, '"')
-                      .trim();
-                    const response = await fetch(
+                      .trim();                    const response = await fetch(
                       "https://interior-app-production.up.railway.app/api/worker/projects",
                       {
                         method: "POST",
                         headers: {
                           "Content-Type": "application/json",
                           Authorization: `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({
+                        },                        body: JSON.stringify({
                           clientName: project.clientName,
                           phone: project.phone,
                           address: project.address,
                           html: cleanedHtmlContent,
+                          rawData: JSON.stringify({
+                            measurements: flattenAllMeasurements(project),
+                            rooms: getAllRoomsData(project),
+                            grandTotal: project.grandTotal || 0,
+                            rodCost: project.rodCost || 0,
+                            createdDate: project.createdDate,
+                            projectId: project.id
+                          }),
                         }),
                       }
                     );
