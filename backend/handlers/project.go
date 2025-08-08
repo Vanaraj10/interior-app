@@ -203,7 +203,7 @@ func GenerateStitchingQuotation(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found or not authorized"})
 		return
-	}	// Parse raw data to extract curtain measurements
+	} // Parse raw data to extract curtain measurements
 	if p.RawData == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No raw data found for this project"})
 		return
@@ -214,14 +214,13 @@ func GenerateStitchingQuotation(c *gin.Context) {
 	if len(debugData) > 200 {
 		debugData = debugData[:200] + "..."
 	}
-	fmt.Printf("Raw data for project %s: %s\n", p.ID, debugData)
 
 	var rawData map[string]interface{}
 	if err := json.Unmarshal([]byte(p.RawData), &rawData); err != nil {
 		fmt.Printf("JSON parsing error: %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Failed to parse project data: %v", err)})
 		return
-	}	// Check if this is a curtain project
+	} // Check if this is a curtain project
 	measurements, ok := rawData["measurements"].([]interface{})
 	if !ok {
 		keys := make([]string, 0, len(rawData))
@@ -232,7 +231,7 @@ func GenerateStitchingQuotation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No measurements array found in project data"})
 		return
 	}
-	
+
 	if len(measurements) == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No measurements found"})
 		return
@@ -381,7 +380,7 @@ func generateStitchingHTML(project models.Project, rawData map[string]interface{
 		html += `
     <div class="room-section">
         <div class="room-header">Room: ` + roomName + `</div>
-        
+
         <table>
             <thead>
                 <tr>

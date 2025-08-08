@@ -10,8 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="./cloth-management.css">
 
-   
+
+
 <header class="dashboard-header">
   <div class="header-content">
     <div class="header-left">
@@ -42,6 +44,10 @@
         <i class="fas fa-users"></i>
         <span>Workers</span>
       </a>
+      <a href="#" class="nav-item" data-target="cloth-section">
+        <i class="fas fa-rug"></i>
+        <span>Cloth Management</span>
+      </a>
     </div>
 
     <!-- Bottom nav links -->
@@ -68,7 +74,7 @@
                     <i class="fas fa-sync-alt"></i> Refresh
                 </button>
             </div>
-            
+
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -116,11 +122,143 @@
             </div>
         </section>
 
+        <!-- Cloth Management Section -->
+        <section id="cloth-section" class="content-section">
+            <div class="section-header">
+                <h2>Cloth Management</h2>
+                <button class="btn btn-primary" onclick="showAddBrand()">Add Brand</button>
+            </div>
+
+            <!-- Brands Grid -->
+            <div class="card-grid" id="brandsGrid">
+                <div class="loading">Loading brands...</div>
+            </div>
+
+            <!-- Folders Section (initially hidden) -->
+            <div id="folderSection" class="sub-section" style="display: none;">
+                <div class="section-header">
+                    <h3>Folders in <span id="selectedBrandName">Brand</span></h3>
+                    <button class="btn btn-primary" onclick="showAddFolder()">Add Folder</button>
+                </div>
+
+                <!-- Folders Grid -->
+                <div class="card-grid" id="foldersGrid">
+                    <div class="loading">Loading folders...</div>
+                </div>
+            </div>
+
+            <!-- Cloths Section (initially hidden) -->
+            <div id="clothSection" class="sub-section" style="display: none;">
+                <div class="section-header">
+                    <h3>Cloths in <span id="selectedFolderName">Folder</span></h3>
+                    <button class="btn btn-primary" onclick="showAddCloth()">Add Cloth</button>
+                </div>
+
+                <!-- Cloths Grid -->
+                <div class="card-grid" id="clothsGrid">
+                    <div class="loading">Loading cloths...</div>
+                </div>
+            </div>
+
+            <!-- Add Brand Modal -->
+            <div id="addBrandModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Add New Brand</h3>
+                        <span class="close" onclick="closeModal('addBrandModal')">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addBrandForm">
+                            <div class="form-group">
+                                <label for="name">Brand Name</label>
+                                <input type="text" id="brandName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea id="brandDescription" name="description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="logoUrl">Logo URL</label>
+                                <input type="url" id="brandLogo" name="logoUrl">
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal('addBrandModal')">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add Brand</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Folder Modal -->
+            <div id="addFolderModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Add New Folder</h3>
+                        <span class="close" onclick="closeModal('addFolderModal')">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addFolderForm">
+                            <input type="hidden" id="folderBrandId" name="brandId">
+                            <div class="form-group">
+                                <label for="name">Folder Name</label>
+                                <input type="text" id="folderName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea id="folderDescription" name="description"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal('addFolderModal')">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add Folder</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Cloth Modal -->
+            <div id="addClothModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Add New Cloth</h3>
+                        <span class="close" onclick="closeModal('addClothModal')">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addClothForm">
+                            <input type="hidden" id="clothFolderId" name="folderId">
+                            <input type="hidden" id="clothBrandId" name="brandId">
+                            <div class="form-group">
+                                <label for="name">Cloth Name</label>
+                                <input type="text" id="clothName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="rate">Rate</label>
+                                <input type="number" id="clothRate" name="rate" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea id="clothDescription" name="description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="imageUrl">Image URL</label>
+                                <input type="url" id="clothImage" name="imageUrl">
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal('addClothModal')">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add Cloth</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Projects Section -->
         <section id="projects-section" class="content-section">
             <div class="section-header">
                 <h2>Projects Management</h2>
-                <div class="header-actions">                    
+                <div class="header-actions">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
                         <input type="text" id="projectSearch" placeholder="Search projects..." onkeyup="filterProjects()">
@@ -164,6 +302,91 @@
 
             <div class="workers-grid" id="workersGrid">
                 <!-- Workers will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Cloth Collection Section -->
+        <section id="cloth-section" class="content-section">
+            <div class="section-header">
+                <h2>Cloth Collection Management</h2>
+                <div class="header-actions">
+                    <button class="btn-primary" onclick="showAddBrand()">
+                        <i class="fas fa-plus"></i> Add Brand
+                    </button>
+                    <button class="btn-secondary" onclick="showAddCloth()">
+                        <i class="fas fa-shirt"></i> Add Cloth
+                    </button>
+                </div>
+            </div>
+
+            <div class="cloth-management">
+                <!-- Brands Section -->
+                <div class="brands-section">
+                    <h3>Brands</h3>
+                    <div class="brands-grid" id="brandsGrid">
+                        <!-- Brands will be loaded here -->
+                        <div class="brand-card">
+                            <div class="brand-info">
+                                <h4>Sample Brand</h4>
+                                <p>Premium quality fabrics</p>
+                            </div>
+                            <div class="brand-actions">
+                                <button class="btn-small btn-secondary" onclick="editBrand(1)">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn-small btn-danger" onclick="deleteBrand(1)">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cloth Collection Section -->
+                <div class="cloth-collection-section">
+                    <h3>Cloth Collection</h3>
+                    <div class="cloth-filters">
+                        <select id="brandFilter" onchange="filterClothCollection()">
+                            <option value="all">All Brands</option>
+                            <!-- Brands will be loaded here -->
+                        </select>
+                        <select id="categoryFilter" onchange="filterClothCollection()">
+                            <option value="all">All Categories</option>
+                            <option value="sofa">Sofa</option>
+                            <option value="curtain">Curtain</option>
+                            <option value="cushion">Cushion</option>
+                            <option value="bedding">Bedding</option>
+                        </select>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="clothSearch" placeholder="Search cloth..." onkeyup="filterClothCollection()">
+                        </div>
+                    </div>
+                    <div class="cloth-grid" id="clothGrid">
+                        <!-- Cloth items will be loaded here -->
+                        <div class="cloth-card">
+                            <div class="cloth-image">
+                                <img src="https://via.placeholder.com/200x150" alt="Sample Cloth" />
+                            </div>
+                            <div class="cloth-info">
+                                <h4>Sample Fabric</h4>
+                                <p><strong>Brand:</strong> Sample Brand</p>
+                                <p><strong>Category:</strong> Sofa</p>
+                                <p><strong>Color:</strong> Blue</p>
+                                <p><strong>Price:</strong> ₹50/meter</p>
+                                <p><strong>Stock:</strong> 100 meters</p>
+                            </div>
+                            <div class="cloth-actions">
+                                <button class="btn-small btn-secondary" onclick="editCloth(1)">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn-small btn-danger" onclick="deleteCloth(1)">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -241,6 +464,8 @@
         </div>
     </div>
 
+
+
     <!-- Project View Modal -->
     <div id="projectViewModal" class="modal project-modal">
         <div class="modal-content project-modal-content">
@@ -260,7 +485,7 @@
                         <strong>Address:</strong> <span id="modalClientAddress"></span>
                     </div>
                     <div class="info-row">
-                        <strong>Status:</strong> 
+                        <strong>Status:</strong>
                         <span id="modalProjectStatus" class="status-badge"></span>
                         <button id="toggleStatusBtn" class="btn-small" onclick="toggleProjectStatus()">
                             <i class="fas fa-toggle-off"></i> Toggle Status
@@ -291,6 +516,109 @@
     <!-- Loading Spinner -->
     <div id="loadingSpinner" class="loading-spinner">
         <div class="spinner"></div>
+    </div>
+
+    <!-- Add Brand Modal -->
+    <div id="addBrandModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Brand</h3>
+                <span class="close" onclick="closeModal('addBrandModal')">&times;</span>
+            </div>
+            <form id="addBrandForm">
+                <div class="form-group">
+                    <label for="brandName">Brand Name</label>
+                    <input type="text" id="brandName" name="brandName" placeholder="Enter brand name" required>
+                </div>
+                <div class="form-group">
+                    <label for="brandDescription">Description (Optional)</label>
+                    <textarea id="brandDescription" name="brandDescription" placeholder="Enter brand description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="brandLogo">Logo URL (Optional)</label>
+                    <input type="url" id="brandLogo" name="brandLogo" placeholder="Enter logo URL">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('addBrandModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Brand</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Cloth Modal -->
+    <div id="addClothModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Cloth</h3>
+                <span class="close" onclick="closeModal('addClothModal')">&times;</span>
+            </div>
+            <form id="addClothForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clothName">Cloth Name</label>
+                        <input type="text" id="clothName" name="clothName" placeholder="Enter cloth name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clothBrand">Brand</label>
+                        <select id="clothBrand" name="clothBrand" required>
+                            <option value="">Select Brand</option>
+                            <!-- Brands will be loaded here -->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clothCategory">Category</label>
+                        <select id="clothCategory" name="clothCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="sofa">Sofa</option>
+                            <option value="curtain">Curtain</option>
+                            <option value="cushion">Cushion</option>
+                            <option value="bedding">Bedding</option>
+                            <option value="upholstery">Upholstery</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clothColor">Color</label>
+                        <input type="text" id="clothColor" name="clothColor" placeholder="Enter color" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clothFabric">Fabric Type</label>
+                        <input type="text" id="clothFabric" name="clothFabric" placeholder="e.g., Cotton, Silk, Linen" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clothSize">Size/Dimensions</label>
+                        <input type="text" id="clothSize" name="clothSize" placeholder="e.g., 150cm width" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clothPrice">Price (₹ per meter)</label>
+                        <input type="number" id="clothPrice" name="clothPrice" placeholder="Enter price" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clothStock">Stock (meters)</label>
+                        <input type="number" id="clothStock" name="clothStock" placeholder="Enter stock quantity" min="0" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="clothImage">Image URL</label>
+                    <input type="url" id="clothImage" name="clothImage" placeholder="Enter image URL">
+                </div>
+                <div class="form-group">
+                    <label for="clothDescription">Description</label>
+                    <textarea id="clothDescription" name="clothDescription" placeholder="Enter cloth description" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('addClothModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Cloth</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Toast Notifications -->
@@ -350,9 +678,466 @@
   }
 </script>
 
+<script>
+// Cloth Collection Functions
+function showAddBrand() {
+    document.getElementById('addBrandModal').style.display = 'block';
+}
+
+function showAddFolder() {
+    document.getElementById('addFolderModal').style.display = 'block';
+}
+
+function showAddCloth() {
+    document.getElementById('addClothModal').style.display = 'block';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Global variables to track current selections
+let currentBrandId = null;
+let currentFolderId = null;
+
+// Handle Form Submissions
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize by loading brands
+    loadBrands();
+
+    // Handle Brand Form
+    const addBrandForm = document.getElementById('addBrandForm');
+    if (addBrandForm) {
+        addBrandForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(addBrandForm);
+            const brandData = Object.fromEntries(formData);
+
+            fetch('/api/admin/brands', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(brandData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    showToast(data.message || 'Brand added successfully!', 'success');
+                    addBrandForm.reset();
+                    closeModal('addBrandModal');
+                    loadBrands();
+                })
+                .catch(error => {
+                    console.error('Error adding brand:', error);
+                    showToast('Failed to add brand', 'error');
+                });
+        });
+    }
+
+    // Handle Folder Form
+    const addFolderForm = document.getElementById('addFolderForm');
+    if (addFolderForm) {
+        addFolderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(addFolderForm);
+            const folderData = Object.fromEntries(formData);
+
+            fetch('/api/admin/folders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(folderData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    showToast(data.message || 'Folder added successfully!', 'success');
+                    addFolderForm.reset();
+                    closeModal('addFolderModal');
+                    loadFolders(currentBrandId);
+                })
+                .catch(error => {
+                    console.error('Error adding folder:', error);
+                    showToast('Failed to add folder', 'error');
+                });
+        });
+    }
+
+    // Handle Cloth Form
+    const addClothForm = document.getElementById('addClothForm');
+    if (addClothForm) {
+        addClothForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(addClothForm);
+            const clothData = Object.fromEntries(formData);
+
+            // Convert rate to number
+            clothData.rate = parseFloat(clothData.rate);
+
+            fetch('/api/admin/cloths', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(clothData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    showToast(data.message || 'Cloth added successfully!', 'success');
+                    addClothForm.reset();
+                    closeModal('addClothModal');
+                    loadCloths(currentFolderId);
+                })
+                .catch(error => {
+                    console.error('Error adding cloth:', error);
+                    showToast('Failed to add cloth', 'error');
+                });
+        });
+    }
+});
+
+// Mock functions for loading data (replace with API calls when backend is ready)
+function loadBrands() {
+    const brandsGrid = document.getElementById('brandsGrid');
+    if (brandsGrid) {
+        // Clear previous content
+        brandsGrid.innerHTML = '<div class="loading">Loading brands...</div>';
+
+        // Fetch brands from API
+        fetch('/api/admin/brands')
+            .then(response => response.json())
+            .then(data => {
+                if (data.brands && data.brands.length > 0) {
+                    brandsGrid.innerHTML = '';
+                    data.brands.forEach(brand => {
+                        const brandCard = document.createElement('div');
+                        brandCard.className = 'card brand-card';
+                        brandCard.innerHTML = `
+                            <div class="card-body">
+                                <h3>${brand.name}</h3>
+                                <p>${brand.description || 'No description'}</p>
+                                <div class="card-actions">
+                                    <button class="btn btn-sm btn-primary" onclick="selectBrand(${brand.id}, '${brand.name}')">View Folders</button>
+                                    <button class="btn btn-sm" onclick="editBrand(${brand.id})">Edit</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteBrand(${brand.id})">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                        brandsGrid.appendChild(brandCard);
+                    });
+                } else {
+                    brandsGrid.innerHTML = `
+                        <div class="empty-state">
+                            <p>No brands found. Add your first brand to get started.</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading brands:', error);
+                brandsGrid.innerHTML = `
+                    <div class="error-state">
+                        <p>Failed to load brands. Please try again later.</p>
+                    </div>
+                `;
+                showToast('Failed to load brands', 'error');
+            });
+    }
+}
+
+function selectBrand(brandId, brandName) {
+    // Store the selected brand ID
+    currentBrandId = brandId;
+
+    // Update the UI to show the selected brand name
+    document.getElementById('selectedBrandName').textContent = brandName;
+
+    // Show the folders section
+    document.getElementById('folderSection').style.display = 'block';
+
+    // Hide the cloths section if it's visible
+    document.getElementById('clothSection').style.display = 'none';
+
+    // Set the brand ID for the add folder form
+    document.getElementById('folderBrandId').value = brandId;
+
+    // Load folders for this brand
+    loadFolders(brandId);
+}
+
+function loadFolders(brandId) {
+    const foldersGrid = document.getElementById('foldersGrid');
+    if (foldersGrid) {
+        // Clear previous content
+        foldersGrid.innerHTML = '<div class="loading">Loading folders...</div>';
+
+        // Fetch folders from API for the selected brand
+        fetch(`/api/admin/folders?brandId=${brandId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.folders && data.folders.length > 0) {
+                    foldersGrid.innerHTML = '';
+                    data.folders.forEach(folder => {
+                        const folderCard = document.createElement('div');
+                        folderCard.className = 'card folder-card';
+                        folderCard.innerHTML = `
+                            <div class="card-body">
+                                <h3>${folder.name}</h3>
+                                <p>${folder.description || 'No description'}</p>
+                                <div class="card-actions">
+                                    <button class="btn btn-sm btn-primary" onclick="selectFolder(${folder.id}, '${folder.name}')">View Cloths</button>
+                                    <button class="btn btn-sm" onclick="editFolder(${folder.id})">Edit</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteFolder(${folder.id})">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                        foldersGrid.appendChild(folderCard);
+                    });
+                } else {
+                    foldersGrid.innerHTML = `
+                        <div class="empty-state">
+                            <p>No folders found for this brand. Add your first folder to get started.</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading folders:', error);
+                foldersGrid.innerHTML = `
+                    <div class="error-state">
+                        <p>Failed to load folders. Please try again later.</p>
+                    </div>
+                `;
+                showToast('Failed to load folders', 'error');
+            });
+    }
+}
+
+function selectFolder(folderId, folderName) {
+    // Store the selected folder ID
+    currentFolderId = folderId;
+
+    // Update the UI to show the selected folder name
+    document.getElementById('selectedFolderName').textContent = folderName;
+
+    // Show the cloths section
+    document.getElementById('clothSection').style.display = 'block';
+
+    // Set the folder ID and brand ID for the add cloth form
+    document.getElementById('clothFolderId').value = folderId;
+    document.getElementById('clothBrandId').value = currentBrandId;
+
+    // Load cloths for this folder
+    loadCloths(folderId);
+}
+
+function loadCloths(folderId) {
+    const clothsGrid = document.getElementById('clothsGrid');
+    if (clothsGrid) {
+        // Clear previous content
+        clothsGrid.innerHTML = '<div class="loading">Loading cloths...</div>';
+
+        // Fetch cloths from API for the selected folder
+        fetch(`/api/admin/cloths?folderId=${folderId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.cloths && data.cloths.length > 0) {
+                    clothsGrid.innerHTML = '';
+                    data.cloths.forEach(cloth => {
+                        const clothCard = document.createElement('div');
+                        clothCard.className = 'card cloth-card';
+                        clothCard.innerHTML = `
+                            <div class="card-body">
+                                <h3>${cloth.name}</h3>
+                                <div class="cloth-details">
+                                    <p><strong>ID:</strong> ${cloth.id}</p>
+                                    <p><strong>Rate:</strong> $${cloth.rate.toFixed(2)}</p>
+                                    <p>${cloth.description || 'No description'}</p>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="btn btn-sm" onclick="editCloth(${cloth.id})">Edit</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteCloth(${cloth.id})">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                        clothsGrid.appendChild(clothCard);
+                    });
+                } else {
+                    clothsGrid.innerHTML = `
+                        <div class="empty-state">
+                            <p>No cloths found in this folder. Add your first cloth to get started.</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading cloths:', error);
+                clothsGrid.innerHTML = `
+                    <div class="error-state">
+                        <p>Failed to load cloths. Please try again later.</p>
+                    </div>
+                `;
+                showToast('Failed to load cloths', 'error');
+            });
+    }
+}
+
+function filterClothCollection() {
+    const brandFilter = document.getElementById('brandFilter').value;
+    const categoryFilter = document.getElementById('categoryFilter').value;
+    const searchTerm = document.getElementById('clothSearch').value.toLowerCase();
+
+    console.log('Filtering cloth collection:', { brandFilter, categoryFilter, searchTerm });
+    // Filter logic would go here
+}
+
+function editBrand(brandId) {
+    console.log('Editing brand:', brandId);
+    // Fetch brand details and populate edit form
+    fetch(`/api/admin/brands/${brandId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.brand) {
+                // Populate form and show modal
+                // This would be implemented in a full solution
+                showToast('Brand edit functionality coming soon', 'info');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching brand:', error);
+            showToast('Failed to load brand details', 'error');
+        });
+}
+
+function deleteBrand(brandId) {
+    if (confirm('Are you sure you want to delete this brand? This will also remove all associated folders and cloths.')) {
+        fetch(`/api/admin/brands/${brandId}`, {
+            method: 'DELETE',
+        })
+            .then(response => response.json())
+            .then(data => {
+                showToast(data.message || 'Brand deleted successfully', 'success');
+                loadBrands();
+                // Hide folders and cloths sections
+                document.getElementById('folderSection').style.display = 'none';
+                document.getElementById('clothSection').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error deleting brand:', error);
+                showToast('Failed to delete brand', 'error');
+            });
+    }
+}
+
+function editFolder(folderId) {
+    console.log('Editing folder:', folderId);
+    // Fetch folder details and populate edit form
+    fetch(`/api/admin/folders/${folderId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.folder) {
+                // Populate form and show modal
+                // This would be implemented in a full solution
+                showToast('Folder edit functionality coming soon', 'info');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching folder:', error);
+            showToast('Failed to load folder details', 'error');
+        });
+}
+
+function deleteFolder(folderId) {
+    if (confirm('Are you sure you want to delete this folder? This will also remove all cloths in this folder.')) {
+        fetch(`/api/admin/folders/${folderId}`, {
+            method: 'DELETE',
+        })
+            .then(response => response.json())
+            .then(data => {
+                showToast(data.message || 'Folder deleted successfully', 'success');
+                loadFolders(currentBrandId);
+                // Hide cloths section
+                document.getElementById('clothSection').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('Error deleting folder:', error);
+                showToast('Failed to delete folder', 'error');
+            });
+    }
+}
+
+function editCloth(clothId) {
+    console.log('Editing cloth:', clothId);
+    // Fetch cloth details and populate edit form
+    fetch(`/api/admin/cloths/${clothId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.cloth) {
+                // Populate form and show modal
+                // This would be implemented in a full solution
+                showToast('Cloth edit functionality coming soon', 'info');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching cloth:', error);
+            showToast('Failed to load cloth details', 'error');
+        });
+}
+
+function deleteCloth(clothId) {
+    if (confirm('Are you sure you want to delete this cloth?')) {
+        fetch(`/api/admin/cloths/${clothId}`, {
+            method: 'DELETE',
+        })
+            .then(response => response.json())
+            .then(data => {
+                showToast(data.message || 'Cloth deleted successfully', 'success');
+                loadCloths(currentFolderId);
+            })
+            .catch(error => {
+                console.error('Error deleting cloth:', error);
+                showToast('Failed to delete cloth', 'error');
+            });
+    }
+}
+
+function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toastContainer');
+    if (!toastContainer) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">&times;</button>
+    `;
+
+    toastContainer.appendChild(toast);
+
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.remove();
+        }
+    }, 3000);
+}
+
+// Close modals when clicking outside
+window.addEventListener('click', function(event) {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+});
+</script>
+
 <script src="./pdf-utils.js"></script>
 <script src="./script.js"></script>
 
 </body>
 </html>
-
