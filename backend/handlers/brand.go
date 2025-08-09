@@ -36,7 +36,7 @@ func CreateBrand(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return
@@ -76,7 +76,7 @@ func CreateBrand(c *gin.Context) {
 
 // ListBrands retrieves all brands for the admin
 func ListBrands(c *gin.Context) {
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return
@@ -130,7 +130,7 @@ func GetBrand(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return
@@ -172,7 +172,7 @@ func UpdateBrand(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return
@@ -244,7 +244,7 @@ func DeleteBrand(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return

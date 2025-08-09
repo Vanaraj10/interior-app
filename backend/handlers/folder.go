@@ -36,7 +36,7 @@ func CreateFolder(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return
@@ -89,7 +89,7 @@ func CreateFolder(c *gin.Context) {
 
 // ListFolders retrieves all folders for a specific brand
 func ListFolders(c *gin.Context) {
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return
@@ -152,7 +152,7 @@ func GetFolder(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return
@@ -197,7 +197,7 @@ func UpdateFolder(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return
@@ -284,7 +284,7 @@ func DeleteFolder(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return

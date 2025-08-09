@@ -12,6 +12,55 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="./cloth-management.css">
 
+    <!-- Add debugging console for development -->
+    <script>
+        // Debug flag - set to false in production
+        const DEBUG = true;
+
+        function debugLog(...args) {
+            if (DEBUG) console.log(...args);
+        }
+
+        // API base URL & fetch helpers
+        const API_BASE_URL = window.API_BASE_URL || (location.hostname === 'localhost' ? 'http://localhost:8080' : '');
+
+        function getAuthToken() {
+            return localStorage.getItem('adminToken');
+        }
+
+        function getAuthHeaders() {
+            const token = getAuthToken();
+            return token ? { 'Authorization': `Bearer ${token}` } : {};
+        }
+
+        async function apiFetch(path, options = {}) {
+            const headers = Object.assign(
+                { 'Accept': 'application/json' },
+                options.body ? { 'Content-Type': 'application/json' } : {},
+                options.headers || {},
+                getAuthHeaders()
+            );
+            const resp = await fetch(`${API_BASE_URL}${path}`, {
+                mode: 'cors',
+                ...options,
+                headers
+            });
+            if (!resp.ok) {
+                let detail = '';
+                try {
+                    detail = await resp.text();
+                } catch (_) {}
+                throw new Error(`HTTP ${resp.status} ${detail}`);
+            }
+            // Try JSON, fallback to empty
+            try {
+                return await resp.json();
+            } catch {
+                return {};
+            }
+        }
+    </script>
+
 
 
 <header class="dashboard-header">
@@ -126,7 +175,9 @@
         <section id="cloth-section" class="content-section">
             <div class="section-header">
                 <h2>Cloth Management</h2>
-                <button class="btn btn-primary" onclick="showAddBrand()">Add Brand</button>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="showAddBrand()">Add Brand</button>
+                </div>
             </div>
 
             <!-- Brands Grid -->
@@ -138,7 +189,9 @@
             <div id="folderSection" class="sub-section" style="display: none;">
                 <div class="section-header">
                     <h3>Folders in <span id="selectedBrandName">Brand</span></h3>
-                    <button class="btn btn-primary" onclick="showAddFolder()">Add Folder</button>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="showAddFolder()">Add Folder</button>
+                    </div>
                 </div>
 
                 <!-- Folders Grid -->
@@ -151,7 +204,29 @@
             <div id="clothSection" class="sub-section" style="display: none;">
                 <div class="section-header">
                     <h3>Cloths in <span id="selectedFolderName">Folder</span></h3>
-                    <button class="btn btn-primary" onclick="showAddCloth()">Add Cloth</button>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="showAddCloth()">Add Cloth</button>
+                    </div>
+                </div>
+
+                <!-- Cloth Filter Section -->
+                <div id="clothFilterSection" class="filter-section" style="display: none;">
+                    <div class="filter-controls">
+                        <div class="form-group">
+                            <label for="clothSearchInput">Search</label>
+                            <input type="text" id="clothSearchInput" placeholder="Search cloths...">
+                        </div>
+                        <div class="form-group">
+                            <label for="clothStatusFilter">Status</label>
+                            <select id="clothStatusFilter">
+                                <option value="all">All</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-sm" onclick="filterCloths()">Filter</button>
+                        <button class="btn btn-sm btn-secondary" onclick="resetClothFilters()">Reset</button>
+                    </div>
                 </div>
 
                 <!-- Cloths Grid -->
@@ -705,6 +780,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize by loading brands
     loadBrands();
 
+    // Add event listener for navigation items
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            if (target === 'cloth-section') {
+                // Reset state when navigating to cloth section
+                loadBrands();
+                document.getElementById('folderSection').style.display = 'none';
+                document.getElementById('clothSection').style.display = 'none';
+            }
+        });
+    });
+
     // Handle Brand Form
     const addBrandForm = document.getElementById('addBrandForm');
     if (addBrandForm) {
@@ -721,8 +809,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify(brandData),
             })
-                .then(response => response.json())
+                .then(response => {
+                    debugLog('Add brand response:', response.status);
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            let errorMsg = `Error: ${response.status}`;
+                            try {
+                                const errorJson = JSON.parse(text);
+                                if (errorJson.error) errorMsg = errorJson.error;
+                            } catch (e) {
+                                if (text) errorMsg = text;
+                            }
+                            throw new Error(errorMsg);
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    debugLog('Brand added successfully:', data);
                     showToast(data.message || 'Brand added successfully!', 'success');
                     addBrandForm.reset();
                     closeModal('addBrandModal');
@@ -730,7 +834,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .catch(error => {
                     console.error('Error adding brand:', error);
-                    showToast('Failed to add brand', 'error');
+                    showToast(`Failed to add brand: ${error.message}`, 'error');
                 });
         });
     }
@@ -774,17 +878,29 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(addClothForm);
             const clothData = Object.fromEntries(formData);
 
-            // Convert rate to number
-            clothData.rate = parseFloat(clothData.rate);
+            // Form validation
+            if (!clothData.name || clothData.name.trim() === '') {
+                showToast('Cloth name is required', 'error');
+                return;
+            }
 
-            fetch('/api/admin/cloths', {
+            if (!clothData.rate || isNaN(parseFloat(clothData.rate)) || parseFloat(clothData.rate) <= 0) {
+                showToast('Please enter a valid rate greater than zero', 'error');
+                return;
+            }
+
+            // Convert rate to number and ensure brandId and folderId are numbers
+            clothData.rate = parseFloat(clothData.rate);
+            clothData.brandId = parseInt(clothData.brandId);
+            clothData.folderId = parseInt(clothData.folderId);
+
+            // Use same API base URL as defined earlier
+            const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:8080' : '';
+
+            apiFetch('/api/admin/cloths', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify(clothData),
             })
-                .then(response => response.json())
                 .then(data => {
                     showToast(data.message || 'Cloth added successfully!', 'success');
                     addClothForm.reset();
@@ -807,12 +923,15 @@ function loadBrands() {
         brandsGrid.innerHTML = '<div class="loading">Loading brands...</div>';
 
         // Fetch brands from API
-        fetch('/api/admin/brands')
-            .then(response => response.json())
+        apiFetch('/api/admin/brands')
             .then(data => {
-                if (data.brands && data.brands.length > 0) {
+                // Handle different response formats
+                const brands = data.brands || (Array.isArray(data) ? data : []);
+                debugLog('Processed brands data:', brands);
+
+                if (brands.length > 0) {
                     brandsGrid.innerHTML = '';
-                    data.brands.forEach(brand => {
+                    brands.forEach(brand => {
                         const brandCard = document.createElement('div');
                         brandCard.className = 'card brand-card';
                         brandCard.innerHTML = `
@@ -861,6 +980,9 @@ function selectBrand(brandId, brandName) {
     // Hide the cloths section if it's visible
     document.getElementById('clothSection').style.display = 'none';
 
+    // Reset current folder ID
+    currentFolderId = null;
+
     // Set the brand ID for the add folder form
     document.getElementById('folderBrandId').value = brandId;
 
@@ -874,21 +996,29 @@ function loadFolders(brandId) {
         // Clear previous content
         foldersGrid.innerHTML = '<div class="loading">Loading folders...</div>';
 
+        // Use same API base URL as defined earlier
+        const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:8080' : '';
+
         // Fetch folders from API for the selected brand
-        fetch(`/api/admin/folders?brandId=${brandId}`)
-            .then(response => response.json())
+        apiFetch(`/api/admin/folders?brandId=${brandId}`)
             .then(data => {
+                debugLog('Folders data received:', data);
                 if (data.folders && data.folders.length > 0) {
                     foldersGrid.innerHTML = '';
                     data.folders.forEach(folder => {
                         const folderCard = document.createElement('div');
                         folderCard.className = 'card folder-card';
+                        // Escape quotes and HTML in folder name to prevent XSS
+                        const folderName = folder.name
+                            .replace(/"/g, '&quot;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;');
                         folderCard.innerHTML = `
                             <div class="card-body">
-                                <h3>${folder.name}</h3>
-                                <p>${folder.description || 'No description'}</p>
+                                <h3>${folderName}</h3>
+                                <p>${folder.description ? folder.description.replace(/</g, '&lt;').replace(/>/g, '&gt;') : 'No description'}</p>
                                 <div class="card-actions">
-                                    <button class="btn btn-sm btn-primary" onclick="selectFolder(${folder.id}, '${folder.name}')">View Cloths</button>
+                                    <button class="btn btn-sm btn-primary" onclick="selectFolder(${folder.id}, '${folderName}')">View Cloths</button>
                                     <button class="btn btn-sm" onclick="editFolder(${folder.id})">Edit</button>
                                     <button class="btn btn-sm btn-danger" onclick="deleteFolder(${folder.id})">Delete</button>
                                 </div>
@@ -940,26 +1070,56 @@ function loadCloths(folderId) {
         // Clear previous content
         clothsGrid.innerHTML = '<div class="loading">Loading cloths...</div>';
 
+        // Show filter section if needed
+        const filterSection = document.getElementById('clothFilterSection');
+        if (filterSection) {
+            filterSection.style.display = 'block';
+        }
+
+        // Use same API base URL as defined earlier
+        const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:8080' : '';
+
         // Fetch cloths from API for the selected folder
-        fetch(`/api/admin/cloths?folderId=${folderId}`)
-            .then(response => response.json())
+        apiFetch(`/api/admin/cloths?folderId=${folderId}&brandId=${currentBrandId}`)
             .then(data => {
+                debugLog('Cloths data received:', data);
                 if (data.cloths && data.cloths.length > 0) {
                     clothsGrid.innerHTML = '';
                     data.cloths.forEach(cloth => {
                         const clothCard = document.createElement('div');
                         clothCard.className = 'card cloth-card';
+                        // Add active/inactive status class
+                        if (!cloth.isActive) {
+                            clothCard.classList.add('inactive-cloth');
+                        }
+
+                        // Sanitize cloth data to prevent XSS
+                        const sanitizedName = cloth.name
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;');
+                        const sanitizedDesc = (cloth.description || 'No description')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;');
+
                         clothCard.innerHTML = `
                             <div class="card-body">
-                                <h3>${cloth.name}</h3>
+                                <h3>${sanitizedName}</h3>
+                                ${cloth.imageUrl ? `<div class="cloth-image"><img src="${cloth.imageUrl}" alt="${sanitizedName}"></div>` : ''}
                                 <div class="cloth-details">
                                     <p><strong>ID:</strong> ${cloth.id}</p>
                                     <p><strong>Rate:</strong> $${cloth.rate.toFixed(2)}</p>
-                                    <p>${cloth.description || 'No description'}</p>
+                                    <p><strong>Brand:</strong> ${cloth.brandName}</p>
+                                    <p><strong>Folder:</strong> ${cloth.folderName}</p>
+                                    <p><strong>Status:</strong> <span class="status-badge ${cloth.isActive ? 'status-active' : 'status-inactive'}">${cloth.isActive ? 'Active' : 'Inactive'}</span></p>
+                                    <p>${sanitizedDesc}</p>
                                 </div>
                                 <div class="card-actions">
                                     <button class="btn btn-sm" onclick="editCloth(${cloth.id})">Edit</button>
                                     <button class="btn btn-sm btn-danger" onclick="deleteCloth(${cloth.id})">Delete</button>
+                                    ${cloth.isActive ?
+                                        `<button class="btn btn-sm btn-warning" onclick="toggleClothStatus(${cloth.id}, false)">Deactivate</button>` :
+                                        `<button class="btn btn-sm btn-success" onclick="toggleClothStatus(${cloth.id}, true)">Activate</button>`
+                                    }
                                 </div>
                             </div>
                         `;
@@ -1069,6 +1229,127 @@ function deleteFolder(folderId) {
     }
 }
 
+// Toggle cloth active status
+function toggleClothStatus(clothId, isActive) {
+    const data = { isActive: isActive };
+
+    apiFetch(`/api/admin/cloths/${clothId}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+    })
+    .then(data => {
+        showToast(data.message || `Cloth ${isActive ? 'activated' : 'deactivated'} successfully`, 'success');
+        loadCloths(currentFolderId);
+    })
+    .catch(error => {
+        console.error('Error updating cloth status:', error);
+        showToast('Failed to update cloth status', 'error');
+    });
+}
+
+// Filter cloths based on search and status
+function filterCloths() {
+    const searchTerm = document.getElementById('clothSearchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('clothStatusFilter').value;
+
+    // Build query parameters
+    let queryParams = `folderId=${currentFolderId}&brandId=${currentBrandId}`;
+
+    if (statusFilter === 'active') {
+        queryParams += '&active=true';
+    } else if (statusFilter === 'inactive') {
+        queryParams += '&active=false';
+    }
+
+    const clothsGrid = document.getElementById('clothsGrid');
+    clothsGrid.innerHTML = '<div class="loading">Filtering cloths...</div>';
+
+    // Fetch filtered cloths
+    apiFetch(`/api/admin/cloths?${queryParams}`)
+        .then(data => {
+            if (data.cloths && data.cloths.length > 0) {
+                // Client-side search filtering
+                const filteredCloths = searchTerm ?
+                    data.cloths.filter(cloth =>
+                        cloth.name.toLowerCase().includes(searchTerm) ||
+                        (cloth.description && cloth.description.toLowerCase().includes(searchTerm))
+                    ) : data.cloths;
+
+                if (filteredCloths.length > 0) {
+                    clothsGrid.innerHTML = '';
+                    // Use the same rendering logic as in loadCloths
+                    filteredCloths.forEach(cloth => {
+                        // Same cloth card rendering as in the loadCloths function
+                        const clothCard = document.createElement('div');
+                        clothCard.className = 'card cloth-card';
+                        if (!cloth.isActive) {
+                            clothCard.classList.add('inactive-cloth');
+                        }
+
+                        const sanitizedName = cloth.name
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;');
+                        const sanitizedDesc = (cloth.description || 'No description')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;');
+
+                        clothCard.innerHTML = `
+                            <div class="card-body">
+                                <h3>${sanitizedName}</h3>
+                                ${cloth.imageUrl ? `<div class="cloth-image"><img src="${cloth.imageUrl}" alt="${sanitizedName}"></div>` : ''}
+                                <div class="cloth-details">
+                                    <p><strong>ID:</strong> ${cloth.id}</p>
+                                    <p><strong>Rate:</strong> $${cloth.rate.toFixed(2)}</p>
+                                    <p><strong>Brand:</strong> ${cloth.brandName}</p>
+                                    <p><strong>Folder:</strong> ${cloth.folderName}</p>
+                                    <p><strong>Status:</strong> <span class="status-badge ${cloth.isActive ? 'status-active' : 'status-inactive'}">${cloth.isActive ? 'Active' : 'Inactive'}</span></p>
+                                    <p>${sanitizedDesc}</p>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="btn btn-sm" onclick="editCloth(${cloth.id})">Edit</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteCloth(${cloth.id})">Delete</button>
+                                    ${cloth.isActive ?
+                                        `<button class="btn btn-sm btn-warning" onclick="toggleClothStatus(${cloth.id}, false)">Deactivate</button>` :
+                                        `<button class="btn btn-sm btn-success" onclick="toggleClothStatus(${cloth.id}, true)">Activate</button>`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                        clothsGrid.appendChild(clothCard);
+                    });
+                } else {
+                    clothsGrid.innerHTML = `
+                        <div class="empty-state">
+                            <p>No cloths match your search criteria.</p>
+                        </div>
+                    `;
+                }
+            } else {
+                clothsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <p>No cloths found with the selected filters.</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error filtering cloths:', error);
+            clothsGrid.innerHTML = `
+                <div class="error-state">
+                    <p>Failed to filter cloths. Please try again later.</p>
+                </div>
+            `;
+            showToast('Failed to filter cloths', 'error');
+        });
+}
+
+// Reset cloth filters
+function resetClothFilters() {
+    document.getElementById('clothSearchInput').value = '';
+    document.getElementById('clothStatusFilter').value = 'all';
+    loadCloths(currentFolderId);
+}
+
 function editCloth(clothId) {
     console.log('Editing cloth:', clothId);
     // Fetch cloth details and populate edit form
@@ -1076,9 +1357,85 @@ function editCloth(clothId) {
         .then(response => response.json())
         .then(data => {
             if (data.cloth) {
-                // Populate form and show modal
-                // This would be implemented in a full solution
-                showToast('Cloth edit functionality coming soon', 'info');
+                // Create edit form modal dynamically
+                const editModal = document.createElement('div');
+                editModal.id = 'editClothModal';
+                editModal.className = 'modal';
+                editModal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Edit Cloth</h3>
+                            <span class="close" onclick="closeModal('editClothModal')">&times;</span>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editClothForm">
+                                <input type="hidden" id="editClothId" value="${data.cloth.id}">
+                                <input type="hidden" id="editClothFolderId" name="folderId" value="${data.cloth.folderId}">
+                                <input type="hidden" id="editClothBrandId" name="brandId" value="${data.cloth.brandId}">
+                                <div class="form-group">
+                                    <label for="name">Cloth Name</label>
+                                    <input type="text" id="editClothName" name="name" value="${data.cloth.name}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rate">Rate</label>
+                                    <input type="number" id="editClothRate" name="rate" step="0.01" min="0" value="${data.cloth.rate}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <textarea id="editClothDescription" name="description">${data.cloth.description || ''}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="imageUrl">Image URL</label>
+                                    <input type="url" id="editClothImage" name="imageUrl" value="${data.cloth.imageUrl || ''}">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary" onclick="closeModal('editClothModal')">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Update Cloth</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                `;
+
+                // Remove existing modal if present
+                const existingModal = document.getElementById('editClothModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+
+                // Add to document and show
+                document.body.appendChild(editModal);
+                editModal.style.display = 'block';
+
+                // Handle form submission
+                document.getElementById('editClothForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const clothData = Object.fromEntries(formData);
+
+                    // Convert rate to number
+                    clothData.rate = parseFloat(clothData.rate);
+                    clothData.folderId = parseInt(clothData.folderId);
+                    clothData.brandId = parseInt(clothData.brandId);
+
+                    fetch(`/api/admin/cloths/${data.cloth.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(clothData),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        showToast(data.message || 'Cloth updated successfully', 'success');
+                        closeModal('editClothModal');
+                        loadCloths(currentFolderId);
+                    })
+                    .catch(error => {
+                        console.error('Error updating cloth:', error);
+                        showToast('Failed to update cloth', 'error');
+                    });
+                });
             }
         })
         .catch(error => {

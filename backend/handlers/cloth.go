@@ -43,7 +43,7 @@ func CreateCloth(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return
@@ -127,7 +127,7 @@ func CreateCloth(c *gin.Context) {
 
 // ListCloths retrieves all cloths for the admin with optional filtering
 func ListCloths(c *gin.Context) {
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return
@@ -199,7 +199,7 @@ func GetCloth(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return
@@ -246,7 +246,7 @@ func UpdateCloth(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return
@@ -420,7 +420,7 @@ func DeleteCloth(c *gin.Context) {
 		return
 	}
 
-	adminID := c.GetInt("adminId")
+	adminID := c.GetInt("admin_id")
 	if adminID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found"})
 		return

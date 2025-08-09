@@ -49,7 +49,10 @@ func AdminAuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		c.Set("admin_id", int(adminID)) // Convert to int for handlers
+		id := int(adminID)
+		// Set both snake_case and camelCase for backward compatibility across handlers
+		c.Set("admin_id", id)
+		c.Set("adminId", id)
 		c.Next()
 	}
 }
