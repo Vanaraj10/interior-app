@@ -45,7 +45,7 @@ func CreateBrand(c *gin.Context) {
 	now := time.Now()
 	query := `
 		INSERT INTO brands (name, description, logo_url, admin_id, is_active, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7)
 	`
 	db := config.GetDB()
 	result, err := db.Exec(query, req.Name, req.Description, req.LogoURL, adminID, true, now, now)
@@ -88,13 +88,13 @@ func ListBrands(c *gin.Context) {
 	query := `
 		SELECT id, name, description, logo_url, admin_id, is_active, created_at, updated_at
 		FROM brands
-		WHERE admin_id = ?
+		WHERE admin_id = @p1
 	`
 	args := []interface{}{adminID}
 
 	if active != "" {
 		isActive := active == "true"
-		query += " AND is_active = ?"
+		query += " AND is_active = @p2"
 		args = append(args, isActive)
 	}
 
@@ -139,7 +139,7 @@ func GetBrand(c *gin.Context) {
 	query := `
 		SELECT id, name, description, logo_url, admin_id, is_active, created_at, updated_at
 		FROM brands
-		WHERE id = ? AND admin_id = ?
+		WHERE id = @p1 AND admin_id = @p2
 	`
 
 	var brand models.Brand
@@ -180,7 +180,7 @@ func UpdateBrand(c *gin.Context) {
 
 	// Check if brand exists and belongs to admin
 	var existingBrand models.Brand
-	checkQuery := "SELECT id FROM brands WHERE id = ? AND admin_id = ?"
+	checkQuery := "SELECT id FROM brands WHERE id = @p1 AND admin_id = @p2"
 	err = db.QueryRow(checkQuery, brandID, adminID).Scan(&existingBrand.ID)
 	if err == sql.ErrNoRows {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Brand not found"})
@@ -219,16 +219,25 @@ func UpdateBrand(c *gin.Context) {
 	// Add updated_at
 	updates = append(updates, "updated_at = ?")
 	args = append(args, time.Now())
-	args = append(args, brandID, adminID)
+	// brandID and adminID will be appended later when constructing execArgs
 
-	query := "UPDATE brands SET " + updates[0]
-	for i := 1; i < len(updates); i++ {
-		query += ", " + updates[i]
+	// Build SQL Server @p style UPDATE statement
+	// Convert each "column = ?" fragment into "column = @pN"
+	query := "UPDATE brands SET "
+	for i, part := range updates {
+		if i > 0 {
+			query += ", "
+		}
+		query += replaceFirstPlaceholder(part, "@p"+strconv.Itoa(i+1))
 	}
-	query += " WHERE id = ? AND admin_id = ?"
+	// WHERE clause uses next two parameter indexes
+	query += " WHERE id = @p" + strconv.Itoa(len(updates)+1) + " AND admin_id = @p" + strconv.Itoa(len(updates)+2)
 
-	_, err = db.Exec(query, args...)
-	if err != nil {
+	// Reconstruct ordered args: all update values (including updated_at) then id & admin_id
+	execArgs := append([]interface{}{}, args[:len(updates)]...)
+	execArgs = append(execArgs, brandID, adminID)
+
+	if _, err = db.Exec(query, execArgs...); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update brand"})
 		return
 	}
@@ -252,7 +261,7 @@ func DeleteBrand(c *gin.Context) {
 
 	// First check if brand exists and belongs to admin
 	var existingBrand models.Brand
-	checkQuery := "SELECT id FROM brands WHERE id = ? AND admin_id = ?"
+	checkQuery := "SELECT id FROM brands WHERE id = @p1 AND admin_id = @p2"
 	err = db.QueryRow(checkQuery, brandID, adminID).Scan(&existingBrand.ID)
 	if err == sql.ErrNoRows {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Brand not found"})
@@ -277,7 +286,7 @@ func DeleteBrand(c *gin.Context) {
 	}
 
 	// Delete the brand
-	query := "DELETE FROM brands WHERE id = ? AND admin_id = ?"
+	query := "DELETE FROM brands WHERE id = @p1 AND admin_id = @p2"
 	_, err = db.Exec(query, brandID, adminID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete brand"})
@@ -285,4 +294,14 @@ func DeleteBrand(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Brand deleted successfully"})
+}
+
+// replaceFirstPlaceholder replaces the first '?' in a fragment with the provided replacement.
+func replaceFirstPlaceholder(s, replacement string) string {
+	for i := 0; i < len(s); i++ {
+		if s[i] == '?' {
+			return s[:i] + replacement + s[i+1:]
+		}
+	}
+	return s
 }
